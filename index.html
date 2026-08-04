@@ -1,284 +1,415 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alan Miranda | Engenharia de Software, Inteligência Artificial & Robótica</title>
-    <meta name="description" content="Portfólio profissional de Alan Miranda. Especialista em Inteligência Artificial, Engenharia de Software, Automação, Robótica e Pesquisa Aplicada.">
-    <meta name="keywords" content="Inteligência Artificial, Engenharia de Software, Robótica, Automação, Sistemas Inteligentes, Machine Learning, Python, LLM">
-    <meta name="author" content="Alan Miranda">
-    
-    <!-- Open Graph / SEO Internacional -->
-    <meta property="og:title" content="Alan Miranda | AI & Software Engineering">
-    <meta property="og:description" content="Explorando a fronteira entre Sistemas Inteligentes, Robótica e Pesquisa Aplicada.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://alanmiranda021.github.io">
-    <meta property="og:image" content="assets/alan-hero.jpg">
-
-    <!-- Estilos e Fontes -->
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07101f">
+  <meta name="description" content="Alan Miranda — pesquisador e desenvolvedor de sistemas inteligentes. Agentes de IA, automação, robótica e pesquisa aplicada, da operação ao laboratório.">
+  <meta name="author" content="Alan Miranda">
+  <meta name="keywords" content="Alan Miranda, inteligência artificial, agentes de IA, AEON, RAG, LLM, sistemas inteligentes, automação, robótica educacional, engenharia de software, pesquisa aplicada, Rio de Janeiro">
+  <link rel="canonical" href="https://alanmiranda021.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:title" content="Alan Miranda | Inteligência Artificial e Sistemas Inteligentes">
+  <meta property="og:description" content="Agentes de IA, automação, robótica e pesquisa aplicada a problemas reais. Da logística à inteligência artificial.">
+  <meta property="og:image" content="https://alanmiranda021.github.io/assets/alan-hero.jpg">
+  <meta property="og:url" content="https://alanmiranda021.github.io/">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Alan Miranda | Inteligência Artificial e Sistemas Inteligentes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Alan Miranda",
+    "url": "https://alanmiranda021.github.io",
+    "image": "https://alanmiranda021.github.io/assets/alan-hero.jpg",
+    "jobTitle": "Pesquisador e desenvolvedor de sistemas inteligentes",
+    "address": { "@type": "PostalAddress", "addressLocality": "Rio de Janeiro", "addressRegion": "RJ", "addressCountry": "BR" },
+    "alumniOf": { "@type": "CollegeOrUniversity", "name": "Universidade Veiga de Almeida" },
+    "sameAs": [
+      "https://www.linkedin.com/in/alanmirandax",
+      "https://github.com/alanmiranda021",
+      "https://lattes.cnpq.br/2481190948486563",
+      "https://oshuman.com.br"
+    ],
+    "knowsAbout": ["Inteligência Artificial", "Agentes de IA", "RAG", "LLM", "Sistemas Inteligentes", "Automação", "Robótica", "Engenharia de Software", "Pesquisa Aplicada"]
+  }
+  </script>
 </head>
 <body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
 
-    <!-- Header / Navegação -->
-    <header id="header" class="header">
-        <div class="container nav-container">
-            <a href="#" class="logo">Alan<span>Miranda</span>.ai</a>
-            <nav class="nav-menu">
-                <a href="#sobre">Trajetória</a>
-                <a href="#evolucao">Evolução</a>
-                <a href="#tecnologias">Tech Stack</a>
-                <a href="#projetos">Projetos</a>
-                <a href="#experiencia">Experiência</a>
-                <a href="#formacao">Formação</a>
-                <a href="assets/Profile.pdf" class="btn-cv-nav" target="_blank" download>Currículo PDF</a>
-            </nav>
-            <button id="hamburger" class="hamburger" aria-label="Menu">
-                <i data-lucide="menu"></i>
-            </button>
+  <header class="site-header">
+    <a class="brand" href="#inicio" aria-label="Início — Alan Miranda">Alan<span>Miranda</span></a>
+    <button class="menu-button" type="button" aria-label="Abrir menu" aria-expanded="false">Menu</button>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a href="#sobre">Sobre</a>
+      <a href="#projetos">Projetos</a>
+      <a href="#tecnologias">Tecnologias</a>
+      <a href="#jornada">Jornada</a>
+      <a href="#experiencia">Experiência</a>
+      <a href="#competencias">Competências</a>
+      <a href="#publicacoes">Publicações</a>
+      <a href="#contato">Contato</a>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    <section id="inicio" class="hero section">
+      <div class="hero-copy reveal">
+        <p class="eyebrow">Inteligência artificial • Automação • Robótica • Pesquisa aplicada</p>
+        <h1>Transformo experiências do mundo real em <span>soluções inteligentes.</span></h1>
+        <p class="hero-role">Alan Miranda — pesquisador independente, autor e desenvolvedor de sistemas inteligentes.</p>
+        <p class="lead">Minha atuação conecta Inteligência Artificial, Engenharia de Software, automação, robótica e logística para criar tecnologias aplicáveis a operações, empresas e desafios concretos.</p>
+        <div class="actions">
+          <a class="button primary" href="#projetos">Conhecer projetos</a>
+          <a class="button secondary cv" href="assets/curriculo-alan-miranda.pdf" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg>
+            Baixar currículo
+          </a>
+          <a class="button text-button" href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
         </div>
-    </header>
+      </div>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="hero" class="hero-section">
-            <div class="container hero-grid">
-                <div class="hero-content">
-                    <div class="badge-pill">
-                        <span class="pulse-dot"></span> Disponível para Pesquisa & Inovação
-                    </div>
-                    <h1>Engenharia de Software, <span class="gradient-text">IA & Robótica</span></h1>
-                    <p class="hero-description">
-                        Transformando problemas complexos em sistemas inteligentes. Atuação na interseção entre desenvolvimento de alta performance, automação avançada e pesquisa aplicada em inteligência artificial.
-                    </p>
-                    <div class="hero-actions">
-                        <a href="#projetos" class="btn btn-primary">Ver Projetos <i data-lucide="arrow-right"></i></a>
-                        <a href="#evolucao" class="btn btn-secondary">Conheça minha Jornada</a>
-                    </div>
-                    <div class="hero-metrics">
-                        <div class="metric">
-                            <span class="metric-number">+5</span>
-                            <span class="metric-label">Anos de Experiência</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-number">+15</span>
-                            <span class="metric-label">Projetos de Destaque</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-number">IA & IoT</span>
-                            <span class="metric-label">Foco Principal</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-image-wrapper">
-                    <div class="image-glow"></div>
-                    <img src="assets/alan-hero.jpg" alt="Alan Miranda" class="hero-img">
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção: Da Prática à Pesquisa -->
-        <section id="evolucao" class="section evolution-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Da Prática à Pesquisa</h2>
-                    <p>Uma trajetória construída com base na vivência real de ponta a ponta na tecnologia.</p>
-                </div>
-                <div class="timeline-steps">
-                    <div class="step-card">
-                        <div class="step-number">01</div>
-                        <h3>Logística</h3>
-                        <p>Compreensão profunda de processos operacionais, otimização de fluxo e eficiência de recursos.</p>
-                    </div>
-                    <div class="step-arrow"><i data-lucide="chevron-down"></i></div>
-                    <div class="step-card">
-                        <div class="step-number">02</div>
-                        <h3>Infraestrutura</h3>
-                        <p>Sustesturação de redes, ambientes Linux, hardware e estabilidade de sistemas.</p>
-                    </div>
-                    <div class="step-arrow"><i data-lucide="chevron-down"></i></div>
-                    <div class="step-card">
-                        <div class="step-number">03</div>
-                        <h3>Desenvolvimento</h3>
-                        <p>Construção de aplicações robustas, APIs, interfaces responsivas e arquiteturas limpas.</p>
-                    </div>
-                    <div class="step-arrow"><i data-lucide="chevron-down"></i></div>
-                    <div class="step-card">
-                        <div class="step-number">04</div>
-                        <h3>Robótica</h3>
-                        <p>Integração eletromecânica, sistemas embarcados (Arduino) e automação física de robôs.</p>
-                    </div>
-                    <div class="step-arrow"><i data-lucide="chevron-down"></i></div>
-                    <div class="step-card">
-                        <div class="step-number">05</div>
-                        <h3>Pesquisa</h3>
-                        <p>Investigação científica aplicada, experimentação e validação de hipóteses tecnológicas.</p>
-                    </div>
-                    <div class="step-arrow"><i data-lucide="chevron-down"></i></div>
-                    <div class="step-card highlight">
-                        <div class="step-number">06</div>
-                        <h3>Inteligência Artificial</h3>
-                        <p>Modelos avançados, Machine Learning, Visão Computacional e Agentes Autônomos.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção: Featured Technologies -->
-        <section id="tecnologias" class="section tech-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Featured Technologies</h2>
-                    <p>Stack tecnológica consolidada em projetos de engenharia e pesquisa.</p>
-                </div>
-                <div class="tech-grid">
-                    <span class="tech-badge">Python</span>
-                    <span class="tech-badge">JavaScript</span>
-                    <span class="tech-badge">C#</span>
-                    <span class="tech-badge">React</span>
-                    <span class="tech-badge">React Native</span>
-                    <span class="tech-badge">Node.js</span>
-                    <span class="tech-badge">SQL Server</span>
-                    <span class="tech-badge">SQLite</span>
-                    <span class="tech-badge">Linux</span>
-                    <span class="tech-badge">Arduino</span>
-                    <span class="tech-badge">Git</span>
-                    <span class="tech-badge">GitHub</span>
-                    <span class="tech-badge">LLM</span>
-                    <span class="tech-badge">RAG</span>
-                    <span class="tech-badge">Machine Learning</span>
-                    <span class="tech-badge">AI Agents</span>
-                    <span class="tech-badge">Prompt Engineering</span>
-                    <span class="tech-badge">Computer Vision</span>
-                    <span class="tech-badge">Embedded Systems</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção: Projetos Principais (AEON, Alpha, INCLUDE) -->
-        <section id="projetos" class="section projects-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Projetos em Destaque</h2>
-                    <p>Sistemas inteligentes, robótica avançada e inovações apresentadas em grandes eventos.</p>
-                </div>
-                
-                <div class="projects-grid">
-                    <!-- Projeto AEON -->
-                    <div class="project-card">
-                        <div class="project-header">
-                            <span class="project-status active">Em Evolução</span>
-                            <h3>AEON</h3>
-                        </div>
-                        <p class="project-desc">Sistema inteligente focado em automação cognitiva e processamento de dados em tempo real.</p>
-                        <div class="project-techs">
-                            <span>Python</span><span>AI Agents</span><span>LLM</span>
-                        </div>
-                        <div class="project-footer">
-                            <a href="#" class="btn-text">Ver Arquitetura <i data-lucide="external-link"></i></a>
-                        </div>
-                    </div>
-
-                    <!-- Projeto Alpha -->
-                    <div class="project-card">
-                        <div class="project-header">
-                            <span class="project-status">Concluído</span>
-                            <h3>Alpha</h3>
-                        </div>
-                        <p class="project-desc">Plataforma robusta para computação aplicada e integração de sistemas inteligentes.</p>
-                        <div class="project-techs">
-                            <span>C#</span><span>SQL Server</span><span>Machine Learning</span>
-                        </div>
-                        <div class="project-footer">
-                            <a href="#" class="btn-text">Detalhes do Projeto <i data-lucide="external-link"></i></a>
-                        </div>
-                    </div>
-
-                    <!-- Projeto INCLUDE -->
-                    <div class="project-card">
-                        <div class="project-header">
-                            <span class="project-status highlight-status">Campus Party</span>
-                            <h3>Projeto INCLUDE</h3>
-                        </div>
-                        <p class="project-desc">Desenvolvido e apresentado na Campus Party, focado em inclusão tecnológica e robótica educacional/aplicada.</p>
-                        <div class="project-techs">
-                            <span>Arduino</span><span>Embedded Systems</span><span>Python</span>
-                        </div>
-                        <div class="project-footer">
-                            <a href="#" class="btn-text">Ver Galeria do Robô <i data-lucide="external-link"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção: Experiência & Timeline Profissional -->
-        <section id="experiencia" class="section timeline-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Trajetória Profissional</h2>
-                    <p>Experiências validadas no mercado e em centros de pesquisa.</p>
-                </div>
-                <!-- Timeline items podem ser injetados aqui -->
-                <div class="timeline-container">
-                    <div class="timeline-item">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <h3>Pesquisador & Desenvolvedor de Sistemas Inteligentes</h3>
-                            <span class="timeline-date">2023 - Presente</span>
-                            <p>Foco em Inteligência Artificial, RAG, Visão Computacional e Agentes Autônomos aplicados à resolução de problemas complexos.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <h3>Engenheiro de Software & Automação</h3>
-                            <span class="timeline-date">2021 - 2023</span>
-                            <p>Desenvolvimento de soluções web/mobile escaláveis, arquiteturas de backend e integração com sistemas embarcados e robótica.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção: Formação e Currículo -->
-        <section id="formacao" class="section resume-section">
-            <div class="container text-center">
-                <h2>Formação & Currículo</h2>
-                <p>Base acadêmica sólida orientada à engenharia e inovação tecnológica.</p>
-                <div class="resume-box">
-                    <div class="resume-info">
-                        <i data-lucide="file-text" size="48"></i>
-                        <h3>Baixe o currículo completo em PDF</h3>
-                        <p>Ideal para processos seletivos, mestrado e oportunidades em centros de P&D.</p>
-                    </div>
-                    <a href="assets/Profile.pdf" class="btn btn-primary" target="_blank" download>
-                        <i data-lucide="download"></i> Download Currículo (PDF)
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Rodapé -->
-    <footer class="footer">
-        <div class="container footer-content">
-            <p>&copy; 2026 Alan Miranda. Todos os direitos reservados.</p>
-            <div class="social-links">
-                <a href="https://github.com/alanmiranda021" target="_blank" aria-label="GitHub"><i data-lucide="github"></i></a>
-                <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
-            </div>
+      <div class="hero-visual reveal">
+        <div class="portrait-frame">
+          <img src="assets/alan-hero.jpg" alt="Retrato de Alan Miranda" width="1086" height="1357" loading="eager">
+          <div class="portrait-label">
+            <span class="pulse" aria-hidden="true"></span>
+            <div><strong>Foco atual</strong><small>Agentes de IA locais, arquiteturas cognitivas e sistemas aplicados</small></div>
+          </div>
         </div>
-    </footer>
+        <div class="orbit orbit-a" aria-hidden="true">IA</div>
+        <div class="orbit orbit-b" aria-hidden="true">RAG</div>
+        <div class="orbit orbit-c" aria-hidden="true">AUTOMAÇÃO</div>
+      </div>
+    </section>
 
-    <!-- Scripts -->
-    <script src="script.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <section class="proof section reveal" aria-label="Destaques da trajetória">
+      <article><strong>Sistemas de Informação</strong><span>Formação de base tecnológica</span></article>
+      <article><strong>6+ anos</strong><span>Entre infraestrutura, desenvolvimento e IA</span></article>
+      <article><strong>2 anos e meio</strong><span>Facilitador de Robótica — Campus Party</span></article>
+      <article><strong>Autor</strong><span>S.O. Humano e Human O.S.</span></article>
+    </section>
+
+    <section id="sobre" class="section about-grid">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Sobre</p>
+        <h2>Tecnologia com contexto humano e visão de operação.</h2>
+      </div>
+      <div class="about-copy reveal">
+        <p>Sou bacharel em Sistemas de Informação, com especialização em Neuromarketing e Marketing. Minha pesquisa e meus projetos se concentram em Inteligência Artificial aplicada, agentes inteligentes, modelos preditivos, automação de processos e sistemas de apoio à decisão.</p>
+        <p>Minha trajetória não começou dentro de um laboratório. Ela foi construída entre logística, atendimento técnico, suporte a equipamentos corporativos, desenvolvimento de sistemas e educação tecnológica voluntária. Essa vivência me ensinou a observar processos como eles realmente acontecem — com limitações, urgências, pessoas e decisões — e hoje orienta a forma como desenvolvo soluções.</p>
+        <blockquote>Não uso a tecnologia apenas para digitalizar tarefas. Procuro compreender o sistema inteiro e construir soluções capazes de aprender, apoiar decisões e gerar impacto real.</blockquote>
+      </div>
+    </section>
+
+    <section id="tecnologias" class="section tech-section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Stack</p>
+        <h2>Tecnologias em uso comprovado.</h2>
+        <p>Ferramentas aplicadas em projetos reais — de infraestrutura e desenvolvimento a agentes de IA e visão computacional.</p>
+      </div>
+      <div class="badge-cloud reveal" role="list">
+        <span class="core" role="listitem">Python</span>
+        <span class="core" role="listitem">LLM</span>
+        <span class="core" role="listitem">RAG</span>
+        <span class="core" role="listitem">AI Agents</span>
+        <span role="listitem">JavaScript</span>
+        <span role="listitem">C#</span>
+        <span role="listitem">React</span>
+        <span role="listitem">React Native</span>
+        <span role="listitem">Node.js</span>
+        <span role="listitem">SQL Server</span>
+        <span role="listitem">SQLite</span>
+        <span role="listitem">Linux</span>
+        <span role="listitem">Arduino</span>
+        <span role="listitem">Git</span>
+        <span role="listitem">GitHub</span>
+        <span role="listitem">Machine Learning</span>
+        <span role="listitem">Prompt Engineering</span>
+        <span role="listitem">Computer Vision</span>
+        <span role="listitem">Embedded Systems</span>
+      </div>
+    </section>
+
+    <section id="projetos" class="section">
+      <div class="section-heading reveal heading-row">
+        <div>
+          <p class="eyebrow">Projetos selecionados</p>
+          <h2>Pesquisa que se transforma em produto.</h2>
+        </div>
+        <p>Arquiteturas, protótipos e sistemas criados para explorar novas formas de interação entre pessoas, dados e Inteligência Artificial.</p>
+      </div>
+
+      <div class="project-grid">
+        <article class="project-card featured reveal">
+          <div class="project-number">01</div>
+          <div>
+            <span class="tag">Arquitetura de IA<span class="status-pill active">Em desenvolvimento</span></span>
+            <h3>AEON</h3>
+            <p>Motor de agentes de IA local, com memória, RAG, roteamento inteligente, observabilidade e infraestrutura de resiliência. O projeto investiga como construir uma inteligência organizacional própria, controlável e independente de provedores externos.</p>
+            <ul class="tech-list"><li>Agentes</li><li>RAG</li><li>LLM local</li><li>llama.cpp</li><li>Observabilidade</li></ul>
+            <div class="project-actions">
+              <a class="project-link" href="aeon.html">Ver arquitetura ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-number">02</div>
+          <span class="tag">IA • Análise preditiva<span class="status-pill">Pesquisa concluída</span></span>
+          <h3>Alpha</h3>
+          <p>Plataforma experimental de análise estatística, com mais de 30 métodos preditivos, calibração, combinação de modelos e backtesting histórico em milhares de casos.</p>
+          <ul class="tech-list"><li>React Native</li><li>Expo</li><li>Backtesting</li><li>Modelos híbridos</li></ul>
+          <div class="project-actions">
+            <a class="project-link" href="alpha.html">Ver metodologia ↗</a>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-number">03</div>
+          <span class="tag">Educação • Robótica<span class="status-pill">Concluído</span></span>
+          <h3>Projeto INCLUDE</h3>
+          <p>Educação em robótica e automação para jovens em contexto de vulnerabilidade, em parceria com a Campus Party Brasil. Dois anos e meio como facilitador voluntário.</p>
+          <ul class="tech-list"><li>Arduino</li><li>Eletrônica</li><li>Cultura Maker</li><li>STEM</li></ul>
+          <div class="project-actions">
+            <a class="project-link" href="include.html">Ver galeria ↗</a>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-number">04</div>
+          <span class="tag">Gestão • Automação</span>
+          <h3>ERP Inteligente</h3>
+          <p>Sistema para cadastro de equipamentos, chamados por QR Code, filas de atendimento, histórico técnico, indicadores e geração de relatórios operacionais.</p>
+          <ul class="tech-list"><li>Node.js</li><li>SQLite</li><li>QR Code</li><li>Dashboards</li></ul>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-number">05</div>
+          <span class="tag">IA Corporativa</span>
+          <h3>Agente de Atendimento</h3>
+          <p>Arquitetura de atendimento técnico orientada por base de conhecimento, recuperação de contexto, fluxos auditáveis e integração com processos empresariais.</p>
+          <ul class="tech-list"><li>RAG</li><li>Knowledge Base</li><li>API</li><li>Automação</li></ul>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-number">06</div>
+          <span class="tag">Health Tech</span>
+          <h3>BariHealth</h3>
+          <p>Conceito de plataforma digital para acompanhamento de pacientes bariátricos, anamnese, jornada personalizada e organização de informações de cuidado.</p>
+          <ul class="tech-list"><li>UX</li><li>Dados</li><li>Jornada do usuário</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="jornada" class="section flow-section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Da prática à pesquisa</p>
+        <h2>Uma trajetória de reinvenção, não uma lista de cargos.</h2>
+        <p>A experiência com operações e atendimento aparece aqui como parte da formação de uma visão sistêmica sobre processos, responsabilidade e tomada de decisão — a base sobre a qual a pesquisa em IA foi construída.</p>
+      </div>
+
+      <div class="flow-diagram reveal">
+        <article class="flow-step">
+          <div class="flow-index">01</div>
+          <div class="flow-body">
+            <h3>Logística <span class="flow-tag">PRONATEC • Atendimento comercial</span></h3>
+            <p>Formação como Assistente de Logística e anos em atendimento e negociação me deram contato direto com processos, fluxos e tomada de decisão sob pressão real.</p>
+          </div>
+        </article>
+        <article class="flow-step">
+          <div class="flow-index">02</div>
+          <div class="flow-body">
+            <h3>Infraestrutura <span class="flow-tag">Dady Ilha Soluções Integradas</span></h3>
+            <p>Diagnóstico eletrônico, manutenção de equipamentos corporativos, redes TCP/IP e implementação de atendimento remoto — a base técnica de hardware que sustenta tudo o que veio depois.</p>
+          </div>
+        </article>
+        <article class="flow-step">
+          <div class="flow-index">03</div>
+          <div class="flow-body">
+            <h3>Desenvolvimento <span class="flow-tag">Nuclep • Sistemas de Informação</span></h3>
+            <p>Como analista de sistemas, atuei em manutenção evolutiva de aplicações web com C#, JavaScript e SQL Server, enquanto cursava a graduação que formalizou essa transição.</p>
+          </div>
+        </article>
+        <article class="flow-step">
+          <div class="flow-index">04</div>
+          <div class="flow-body">
+            <h3>Robótica <span class="flow-tag">Campus Party • Projeto INCLUDE</span></h3>
+            <p>Dois anos e meio como facilitador voluntário de Robótica e Automação, levando programação, eletrônica e cultura maker a jovens em situação de vulnerabilidade.</p>
+          </div>
+        </article>
+        <article class="flow-step">
+          <div class="flow-index">05</div>
+          <div class="flow-body">
+            <h3>Pesquisa <span class="flow-tag">Aeons • Autoria</span></h3>
+            <p>Fundei a Aeons para conduzir pesquisa aplicada em IA e automação, e consolidei reflexões sobre tecnologia e comportamento humano no livro <em>S.O. Humano</em>.</p>
+          </div>
+        </article>
+        <article class="flow-step current">
+          <div class="flow-index">06</div>
+          <div class="flow-body">
+            <h3>Inteligência Artificial <span class="flow-tag">Foco atual</span></h3>
+            <p>Hoje, integro essas experiências no desenvolvimento do AEON e de outros sistemas com agentes de IA, LLMs locais, RAG e modelos preditivos voltados ao mundo real.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="experiencia" class="section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Experiência profissional</p>
+        <h2>Trajetória documentada, cargo a cargo.</h2>
+      </div>
+
+      <div class="timeline reveal">
+        <article class="timeline-item">
+          <div class="timeline-period">Fev 2022 — atual<span class="current-badge">Atual</span></div>
+          <div class="timeline-body">
+            <h3>Dady Ilha Soluções Integradas</h3>
+            <span class="timeline-role">Técnico de equipamentos</span>
+            <p>Manutenção preventiva e corretiva de equipamentos de impressão corporativos de grande porte (Xerox, Ricoh, HP, Brother, Samsung, Lexmark). Implementou o atendimento remoto inicial da operação, configuração de redes TCP/IP e diagnóstico eletrônico avançado.</p>
+            <ul class="timeline-skills"><li>Troubleshooting</li><li>Redes TCP/IP</li><li>Field Service</li><li>Documentação técnica</li></ul>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-period">Jul 2024 — Dez 2024</div>
+          <div class="timeline-body">
+            <h3>Aeons</h3>
+            <span class="timeline-role">CEO / Fundador</span>
+            <p>Planejamento estratégico, pesquisa e desenvolvimento de soluções em Inteligência Artificial e automação. Definição de arquitetura de software, validação de protótipos e condução do ciclo completo de produtos digitais.</p>
+            <ul class="timeline-skills"><li>Arquitetura de Sistemas</li><li>P&D</li><li>Node.js</li><li>React Native</li></ul>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-period">Mar 2021 — Ago 2023</div>
+          <div class="timeline-body">
+            <h3>Campus Party Brasil</h3>
+            <span class="timeline-role">Facilitador de Robótica e Automação</span>
+            <p>Aulas teóricas e práticas de robótica, eletrônica e programação para crianças e jovens em projeto educacional de alcance nacional, incentivando raciocínio lógico e cultura STEM.</p>
+            <ul class="timeline-skills"><li>Arduino</li><li>Cultura Maker</li><li>Educação Tecnológica</li><li>Liderança</li></ul>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-period">Mar 2020 — Mar 2022</div>
+          <div class="timeline-body">
+            <h3>Nuclebras Equipamentos Pesados S.A. (Nuclep)</h3>
+            <span class="timeline-role">Analista de sistema</span>
+            <p>Manutenção evolutiva e corretiva de aplicações corporativas web, consultas e manipulação de dados em Microsoft SQL Server e desenvolvimento em C# e JavaScript. Suporte técnico a usuários e redes.</p>
+            <ul class="timeline-skills"><li>C#</li><li>JavaScript</li><li>SQL Server</li><li>Suporte Técnico</li></ul>
+          </div>
+        </article>
+
+        <p class="timeline-group-label">Antes da tecnologia — gestão comercial e atendimento</p>
+
+        <article class="timeline-item">
+          <div class="timeline-period">Mai 2014 — Mai 2015</div>
+          <div class="timeline-body">
+            <h3>Ideal Negócios Imobiliários</h3>
+            <span class="timeline-role">Gerente de vendas</span>
+            <p>Gestão comercial de empreendimentos, coordenação de estratégias e acompanhamento de indicadores de desempenho da equipe.</p>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-period">Mai 2008 — Mai 2014</div>
+          <div class="timeline-body">
+            <h3>BrasilBrokers-RJ</h3>
+            <span class="timeline-role">Corretor imobiliário / Gerente on-line</span>
+            <p>Iniciou como corretor e foi promovido a Gerente de Atendimento On-line, participando da implantação dos canais digitais da empresa durante a transição do atendimento tradicional para o ambiente web.</p>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <div class="timeline-period">Mai 2007 — Mai 2008</div>
+          <div class="timeline-body">
+            <h3>Zelter Imóveis</h3>
+            <span class="timeline-role">Corretor imobiliário</span>
+            <p>Captação e comercialização de imóveis residenciais, com foco em contratos de exclusividade e atendimento consultivo.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="competencias" class="section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Competências</p>
+        <h2>Conhecimentos que se conectam.</h2>
+      </div>
+      <div class="capability-grid">
+        <article class="capability reveal"><span>01</span><h3>Inteligência Artificial</h3><p>Agentes inteligentes, LLMs locais, RAG, bases de conhecimento, arquiteturas cognitivas e modelos preditivos.</p></article>
+        <article class="capability reveal"><span>02</span><h3>Engenharia de Software</h3><p>Python, JavaScript, Node.js, C#, React Native, APIs, SQL Server, SQLite, Git, Linux e prototipação de sistemas.</p></article>
+        <article class="capability reveal"><span>03</span><h3>Automação e operações</h3><p>ERP, QR Code, fluxos técnicos, gestão de equipamentos, atendimento, indicadores e transformação de processos manuais.</p></article>
+        <article class="capability reveal"><span>04</span><h3>Robótica e eletrônica</h3><p>Arduino, sistemas embarcados, diagnóstico eletrônico e educação tecnológica prática com kits de robótica.</p></article>
+        <article class="capability reveal"><span>05</span><h3>Comportamento e comunicação</h3><p>Neuromarketing, experiência do usuário, comunicação, persuasão ética e adoção de tecnologia.</p></article>
+        <article class="capability reveal"><span>06</span><h3>Pesquisa aplicada</h3><p>Documentação técnica, exploração experimental, validação de métodos, backtesting e investigação interdisciplinar.</p></article>
+      </div>
+    </section>
+
+    <section id="publicacoes" class="section publications">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Publicações, formação e certificações</p>
+        <h2>Ideias documentadas, compartilhadas e colocadas em prática.</h2>
+      </div>
+      <div class="publication-grid">
+        <article class="publication-card reveal">
+          <p class="label">Livro</p><h3>S.O. Humano</h3>
+          <p>Guia de instalação da consciência — obra autoral sobre tecnologia, comportamento humano e transformações sociais. Amazon e Uiclap, 2026, 91p.</p>
+          <a href="https://oshuman.com.br" target="_blank" rel="noopener noreferrer">Site oficial ↗</a>
+        </article>
+        <article class="publication-card reveal">
+          <p class="label">Publicação internacional</p><h3>Human O.S.</h3>
+          <p>Versão em inglês da reflexão sobre sistemas humanos, tecnologia e os desafios de um futuro mediado por algoritmos.</p>
+        </article>
+        <article class="publication-card reveal">
+          <p class="label">Formação</p><h3>Universidade Veiga de Almeida</h3>
+          <p>Bacharelado em Sistemas de Informação — jan 2019 a dez 2023.</p>
+          <a href="https://lattes.cnpq.br/2481190948486563" target="_blank" rel="noopener noreferrer">Ver currículo Lattes ↗</a>
+        </article>
+        <article class="publication-card reveal">
+          <p class="label">Pós-graduação</p><h3>Instituto Faculeste</h3>
+          <p>MBA Executivo em Neuromarketing e Marketing — abr 2024 a nov 2024.</p>
+        </article>
+      </div>
+
+      <div class="cert-grid">
+        <div class="cert-card reveal"><p>Certificado de Palestrante</p><span>Campus Party Brasil</span></div>
+        <div class="cert-card reveal"><p>Networking Basics</p><span>Fundamentos de redes</span></div>
+        <div class="cert-card reveal"><p>Certificação Internacional de Proficiência</p><span>Inglês</span></div>
+      </div>
+    </section>
+
+    <section id="contato" class="section contact reveal">
+      <div>
+        <p class="eyebrow">Contato</p>
+        <h2>Vamos construir algo que resolva um problema real?</h2>
+        <p>Aberto a pesquisa, mestrado, projetos de Inteligência Artificial, automação, robótica e parcerias tecnológicas.</p>
+      </div>
+      <div class="contact-links">
+        <a class="button primary" href="mailto:alanmirandarj@gmail.com">Enviar e-mail</a>
+        <a class="button secondary" href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a class="button secondary" href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="button secondary cv" href="assets/curriculo-alan-miranda.pdf" download>Currículo (PDF)</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span> Alan Miranda.</p>
+    <p>Inteligência Artificial, sistemas inteligentes e tecnologia aplicada.</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
