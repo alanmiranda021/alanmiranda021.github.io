@@ -1,15 +1,16 @@
-# Portfólio Alan Miranda
+# Alan Miranda — Systems Lab
 
-Portfólio estático pronto para GitHub Pages.
+Portfólio experimental com linguagem visual de laboratório tecnológico.
 
-## Como publicar
+### Destaques
+- Interface AI / Robotics / Systems
+- Cursor interativo e barra de progresso
+- Command Center com `Ctrl/Cmd + K`
+- Projetos com modais interativos
+- Timeline / Evolution Log
+- Stack Map visual
+- Responsivo
+- Mantém as fotos originais do projeto
 
-1. Extraia o ZIP.
-2. Envie `index.html`, `style.css`, `script.js` e a pasta `assets` para o repositório `alanmiranda021.github.io`.
-3. Ative o GitHub Pages na branch principal.
-
-## Personalização rápida
-
-- Troque a foto em `assets/alan-hero.jpg`.
-- Edite textos e links no `index.html`.
-- Altere cores no início do `style.css`.
+### GitHub Pages
+O ponto de entrada é `index.html`. Não há framework ou build step obrigatório.
