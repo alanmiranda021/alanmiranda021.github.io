@@ -19,7 +19,7 @@ const data={
  include:{type:'EDTECH / HARDWARE',title:'INCLUDE',text:'Projeto de educação tecnológica em que robótica e automação são usadas para desenvolver raciocínio, criatividade e resolução de problemas. Uma experiência de ensino conectada a prototipagem prática.',tags:['ROBOTICS','AUTOMATION','EDTECH']},
  alpha:{type:'DATA / MACHINE LEARNING',title:'ALPHA APP',text:'Ambiente experimental de previsão e avaliação de modelos, com backtesting, calibração, engines híbridas e experimentação de aprendizado de máquina. O foco é medir, testar e iterar.',tags:['JAVASCRIPT','ML','BACKTEST','CALIBRATION']}
 };
-$$('.build-card').forEach(card=>card.addEventListener('click',()=>{
+$$('.build-card').forEach(card=>card.addEventListener('click',()=>{window.location.href='projects/'+card.dataset.modal+'.html';return;
  const d=data[card.dataset.modal];$('#modalType').textContent=d.type;$('#modalTitle').textContent=d.title;$('#modalText').textContent=d.text;$('#modalTags').innerHTML=d.tags.map(t=>`<span>${t}</span>`).join('');modal.classList.add('open');modal.setAttribute('aria-hidden','false');
 }));
 $('#closeModal').onclick=()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true')};
