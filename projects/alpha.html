@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ALPHA APP - sistema experimental de análise, modelagem, calibração e backtesting aplicado à Lotofácil.">
+<title>ALPHA APP // ALAN MIRANDA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../project.css">
+<link rel="stylesheet" href="../project-modern.css">
+<link rel="stylesheet" href="../future-interface.css">
+<link rel="stylesheet" href="../omni-interface.css">
+<link rel="stylesheet" href="../alan-os.css">
+<link rel="stylesheet" href="../library-news.css">
+</head>
+<body class="project-page omni-project">
+<header class="header">
+  <a class="logo" href="../index.html#inicio"><span>AM</span> ALAN.MIRANDA</a>
+  <nav class="nav">
+    <a href="../index.html#sobre">SOBRE</a>
+    <a href="../index.html#projetos">BUILDS</a>
+    <a href="../index.html#skills">SKILLS</a>
+    <a href="../index.html#biblioteca">LIBRARY</a>
+    <a href="../index.html#news">LIVE INTEL</a>
+    <a href="../index.html#contato">CONNECT</a>
+  </nav>
+  <a class="command" href="../index.html#projetos" style="text-decoration:none">← VOLTAR</a>
+</header>
+
+<main>
+<section class="project-hero alpha-hero">
+  <a class="back" href="../index.html#projetos">← VOLTAR PARA BUILDS</a>
+  <div class="project-code">BUILD_03 / DATA · EXPERIMENTATION · MOBILE APP</div>
+  <h1>ALPHA <em>APP</em></h1>
+  <p class="project-sub">Predictive Lottery Intelligence Engine: sistema experimental de análise, modelagem, calibração, combinação de modelos e validação histórica aplicado à Lotofácil.</p>
+  <div class="alpha-actions">
+    <a href="#arquitetura">EXPLORAR ARQUITETURA ↓</a>
+    <a href="https://drive.google.com/file/d/1dxKq6Haq57kUAngEWEMjDc_dZ3vQ-Ysb/view?usp=drive_link" target="_blank" rel="noopener">DOWNLOAD DO APP ↗</a>
+  </div>
+  <div class="include-stats alpha-stats">
+    <span><b>30+</b> métodos experimentais</span>
+    <span><b>WF</b> validação walk-forward</span>
+    <span><b>ML</b> modelagem e calibração</span>
+  </div>
+  <div class="project-orbit"><span>DATA NODE / ACTIVE</span></div>
+</section>
+
+<section class="project-content">
+  <div class="project-grid">
+    <article class="project-panel">
+      <h2>01 / VISÃO</h2>
+      <p>O Alpha App apresenta um laboratório de engenharia de dados e modelagem preditiva. A proposta não é vender promessa de acerto, mas organizar hipóteses, sinais, métricas e experimentos em uma arquitetura comparável.</p>
+      <p>O sistema trabalha com dados históricos, constrói features, executa famílias de modelos, calibra scores, combina sinais e avalia resultados por backtesting.</p>
+    </article>
+
+    <article class="project-panel">
+      <h2>02 / PRINCÍPIO</h2>
+      <p><b>Dados observados não são previsão.</b> O projeto separa estatística descritiva, geração de sinais, score calibrado e combinação final para evitar confundir histórico com garantia de resultado futuro.</p>
+      <p>A leitura correta é experimental: cada saída precisa ser comparada, validada e interpretada dentro de limites científicos.</p>
+    </article>
+
+    <article id="arquitetura" class="project-panel full">
+      <h2>03 / ARQUITETURA DO PIPELINE</h2>
+      <div class="alpha-flow">
+        <span>DATA<br>INGESTION</span>
+        <i>→</i>
+        <span>CLEANING<br>NORMALIZATION</span>
+        <i>→</i>
+        <span>FEATURE<br>ENGINE</span>
+        <i>→</i>
+        <span class="hot">MODEL<br>ENSEMBLE</span>
+        <i>→</i>
+        <span>CALIBRATION</span>
+        <i>→</i>
+        <span>RANKING</span>
+        <i>→</i>
+        <span class="hot">COMBINATION<br>ENGINE</span>
+      </div>
+    </article>
+
+    <article class="project-panel">
+      <h2>04 / DATA PIPELINE</h2>
+      <ul class="project-list">
+        <li><b>001</b>Ingestão de concursos históricos e dataset de entrada</li>
+        <li><b>002</b>Validação de integridade, duplicidade e formato</li>
+        <li><b>003</b>Normalização e preparação dos registros</li>
+        <li><b>004</b>Geração de features estatísticas e temporais</li>
+        <li><b>005</b>Execução de modelos e composição de scores</li>
+        <li><b>006</b>Saída com ranking, métricas e combinações experimentais</li>
+      </ul>
+    </article>
+
+    <article class="project-panel">
+      <h2>05 / FEATURE ENGINEERING</h2>
+      <div class="tags">
+        <span>FREQUENCY</span>
+        <span>DELAY / RECENCY</span>
+        <span>MOMENTUM</span>
+        <span>CO-OCCURRENCE</span>
+        <span>ODD / EVEN</span>
+        <span>LOW / HIGH</span>
+        <span>SUM</span>
+        <span>WINDOW STATISTICS</span>
+      </div>
+      <p>As features transformam o histórico em representações computacionais. Elas alimentam os métodos, mas isoladamente não devem ser lidas como previsão.</p>
+    </article>
+
+    <article class="project-panel full">
+      <h2>06 / FAMÍLIAS DE MODELOS</h2>
+      <div class="alpha-card-grid">
+        <div><b>CLASS A / STATISTICAL</b><p>Frequência, distribuição, recorrência e relações estatísticas.</p><span>M00 · M01 · M03 · M07 · M13</span></div>
+        <div><b>CLASS B / TEMPORAL</b><p>Janelas, recência, dinâmica e mudanças recentes nos sinais.</p><span>M14 · M17 MOMENTUM · M23 · M38</span></div>
+        <div><b>CLASS C / HYBRID</b><p>Combinação de famílias diferentes para produzir sinais compostos.</p><span>M46 HYBRID · M26 SUPREMO · M99</span></div>
+        <div><b>CLASS D / NEURAL</b><p>Representação de features e inferência neural experimental.</p><span>M30 NEURAL · M105 LITERT</span></div>
+        <div><b>CLASS E / AEON</b><p>Camada experimental conectada ao ecossistema AEON e análise de padrões.</p><span>M16 AEON</span></div>
+        <div><b>CLASS F / RESEARCH</b><p>Métodos e variações para investigação e comparação de hipóteses.</p><span>PURO102 · VARIANTS</span></div>
+      </div>
+    </article>
+
+    <article class="project-panel full">
+      <h2>07 / MODEL ENSEMBLE</h2>
+      <div class="alpha-codebox">
+        <p><span>M00</span> ─┐</p>
+        <p><span>M01</span> ─┤</p>
+        <p><span>M03</span> ─┤</p>
+        <p><span>M07</span> ─┤</p>
+        <p><span>M13</span> ─┤</p>
+        <p><span>M16</span> ─┤</p>
+        <p><span>M17</span> ─┤──► ENSEMBLE ──► CALIBRATOR ──► RANKING ENGINE</p>
+        <p><span>M23</span> ─┤</p>
+        <p><span>M26</span> ─┤</p>
+        <p><span>M30</span> ─┤</p>
+        <p><span>M38</span> ─┤</p>
+        <p><span>M46</span> ─┤</p>
+        <p><span>M99</span> ─┤</p>
+        <p><span>M105</span> ─┘</p>
+      </div>
+    </article>
+
+    <article class="project-panel">
+      <h2>08 / CALIBRAÇÃO</h2>
+      <ul class="project-list">
+        <li><b>RAW</b>Score original produzido por cada método</li>
+        <li><b>PROCESS</b>Aplicação de parâmetros e transformações</li>
+        <li><b>OUTPUT</b>Score calibrado para comparação e ranking</li>
+      </ul>
+      <p>A calibração torna scores mais comparáveis e úteis para a camada de decisão.</p>
+    </article>
+
+    <article class="project-panel">
+      <h2>09 / BACKTESTING</h2>
+      <ul class="project-list">
+        <li><b>001</b>Selecionar janela histórica disponível</li>
+        <li><b>002</b>Treinar ou configurar o experimento</li>
+        <li><b>003</b>Gerar scores e combinações para o ponto seguinte</li>
+        <li><b>004</b>Comparar com o resultado observado</li>
+        <li><b>005</b>Registrar métricas e estabilidade do método</li>
+      </ul>
+    </article>
+
+    <article class="project-panel full">
+      <h2>10 / WALK-FORWARD VALIDATION</h2>
+      <div class="alpha-flow compact">
+        <span>WINDOW 01<br>TRAIN → TEST</span>
+        <i>→</i>
+        <span>WINDOW 02<br>TRAIN → TEST</span>
+        <i>→</i>
+        <span>WINDOW 03<br>TRAIN → TEST</span>
+        <i>→</i>
+        <span class="hot">MOVE WINDOW<br>REPEAT</span>
+      </div>
+      <p>A janela avança ao longo do histórico para observar estabilidade em períodos diferentes, reduzindo atalhos metodológicos.</p>
+    </article>
+
+    <article class="project-panel">
+      <h2>11 / NEURAL ENGINE</h2>
+      <p>O M30 explora uma visão de pipeline neural: vetor de features, normalização, camadas de representação, transformação e score de saída.</p>
+      <div class="tags"><span>FEATURE VECTOR</span><span>INFERENCE</span><span>SCORE</span><span>EXPERIMENT</span></div>
+    </article>
+
+    <article class="project-panel">
+      <h2>12 / LITERT</h2>
+      <p>O M105 representa a linha experimental de execução neural em runtime leve, com foco em conversão, compatibilidade e inferência local.</p>
+      <div class="tags"><span>MODEL</span><span>CONVERSION</span><span>LITERT</span><span>LOCAL INFERENCE</span></div>
+    </article>
+
+    <article class="project-panel full">
+      <h2>13 / STACK & ENGENHARIA</h2>
+      <div class="tags">
+        <span>REACT NATIVE</span>
+        <span>EXPO</span>
+        <span>NODE.JS</span>
+        <span>JAVASCRIPT</span>
+        <span>JSON</span>
+        <span>ANDROID STUDIO</span>
+        <span>GRADLE</span>
+        <span>NDK</span>
+        <span>OPENJDK</span>
+        <span>BACKTEST</span>
+        <span>WALK-FORWARD</span>
+        <span>CALIBRATION</span>
+      </div>
+    </article>
+
+    <article class="project-panel full alpha-warning">
+      <h2>14 / LIMITAÇÃO CIENTÍFICA</h2>
+      <p>O ALPHA APP é um sistema experimental de modelagem e análise. Os métodos produzem scores e combinações baseados em padrões estatísticos, temporais e computacionais. Isso não significa capacidade comprovada de prever um processo aleatório nem garante resultados futuros. Backtesting mede comportamento histórico; não transforma o sistema em garantia de acerto.</p>
+    </article>
+
+    <article class="project-panel full alpha-method-window">
+      <h2>15 / JANELA M99 EXPERIMENTAL</h2>
+      <p>Simulação interativa do método M99: busca os últimos concursos da Lotofácil, calcula frequência, recência e atraso das dezenas e gera uma combinação experimental de 15 números.</p>
+      <div class="alpha-method-controls">
+        <label>Concursos analisados
+          <select id="m99-window-size">
+            <option value="10">10 últimos</option>
+            <option value="20" selected>20 últimos</option>
+            <option value="30">30 últimos</option>
+            <option value="50">50 últimos</option>
+          </select>
+        </label>
+        <button id="m99-fetch" type="button">PUXAR DA LOTOFÁCIL</button>
+        <button id="m99-generate" type="button">GERAR M99</button>
+      </div>
+      <div class="alpha-method-status" id="m99-status">Aguardando consulta aos concursos oficiais.</div>
+      <div class="alpha-number-grid" id="m99-output">
+        <span>--</span><span>--</span><span>--</span><span>--</span><span>--</span>
+        <span>--</span><span>--</span><span>--</span><span>--</span><span>--</span>
+        <span>--</span><span>--</span><span>--</span><span>--</span><span>--</span>
+      </div>
+      <div class="alpha-method-meta" id="m99-meta">Método demonstrativo. Não garante resultado futuro.</div>
+      <div class="alpha-draw-list" id="m99-draws"></div>
+    </article>
+
+    <article id="download" class="project-panel full alpha-download">
+      <h2>16 / DOWNLOAD</h2>
+      <p>Versão disponibilizada para experimentação e demonstração do projeto.</p>
+      <a href="https://drive.google.com/file/d/1dxKq6Haq57kUAngEWEMjDc_dZ3vQ-Ysb/view?usp=drive_link" target="_blank" rel="noopener">BAIXAR ALPHA APP →</a>
+      <span>Google Drive · build disponibilizada pelo projeto</span>
+    </article>
+  </div>
+
+  <div class="project-nav">
+    <a href="../index.html#projetos">↙ TODOS OS PROJETOS</a>
+    <a href="include.html">PRÓXIMO PROJETO →</a>
+  </div>
+</section>
+</main>
+<script>
+const m99State={draws:[]};
+const m99Status=document.getElementById("m99-status");
+const m99Output=document.getElementById("m99-output");
+const m99Draws=document.getElementById("m99-draws");
+const m99Meta=document.getElementById("m99-meta");
+const caixaBase="https://servicebus2.caixa.gov.br/portaldeloterias/api/lotofacil";
+
+function m99Pad(n){return String(n).padStart(2,"0")}
+async function m99FetchJson(url){
+  try{
+    const direct=await fetch(url,{headers:{Accept:"application/json"}});
+    if(direct.ok)return direct.json();
+  }catch(error){}
+  const proxy="https://api.allorigins.win/raw?url="+encodeURIComponent(url);
+  const proxied=await fetch(proxy);
+  if(!proxied.ok)throw new Error("Não foi possível acessar a API da Lotofácil.");
+  return proxied.json();
+}
+function m99NormalizeDraw(data){
+  return {
+    numero:data.numero,
+    data:data.dataApuracao||"",
+    dezenas:(data.listaDezenas||data.dezenasSorteadasOrdemSorteio||[]).map(Number).filter(Boolean).sort((a,b)=>a-b)
+  };
+}
+async function m99LoadDraws(){
+  const size=Number(document.getElementById("m99-window-size").value);
+  m99Status.textContent="Consultando último concurso da Lotofácil...";
+  const latest=m99NormalizeDraw(await m99FetchJson(caixaBase));
+  const first=Math.max(1,latest.numero-size+1);
+  const urls=[];
+  for(let n=latest.numero;n>=first;n--)urls.push(caixaBase+"/"+n);
+  m99Status.textContent="Baixando "+urls.length+" concursos para a janela M99...";
+  const results=await Promise.all(urls.map(async url=>m99NormalizeDraw(await m99FetchJson(url))));
+  m99State.draws=results.filter(draw=>draw.dezenas.length===15);
+  const oldest=m99State.draws[m99State.draws.length-1];
+  m99Status.textContent="Janela carregada: "+m99State.draws.length+" concursos, do "+oldest.numero+" ao "+m99State.draws[0].numero+".";
+  m99Draws.innerHTML=m99State.draws.slice(0,8).map(draw=>"<div><b>#"+draw.numero+"</b><span>"+draw.data+"</span><small>"+draw.dezenas.map(m99Pad).join(" ")+"</small></div>").join("");
+  m99Generate();
+}
+function m99Generate(){
+  if(!m99State.draws.length){
+    m99Status.textContent="Primeiro puxe os últimos concursos da Lotofácil.";
+    return;
+  }
+  const total=m99State.draws.length;
+  const stats=Array.from({length:25},(_,i)=>({n:i+1,freq:0,recent:0,last:null,score:0}));
+  m99State.draws.forEach((draw,index)=>{
+    const weight=(total-index)/total;
+    draw.dezenas.forEach(n=>{
+      const item=stats[n-1];
+      item.freq+=1;
+      item.recent+=weight;
+      if(item.last===null)item.last=index;
+    });
+  });
+  stats.forEach(item=>{
+    const freq=item.freq/total;
+    const recent=item.recent/total;
+    const delay=item.last===null?1:Math.min(item.last/Math.max(total-1,1),1);
+    const balance=1-Math.abs(freq-.6);
+    item.score=(freq*.42)+(recent*.28)+(delay*.18)+(balance*.12);
+  });
+  let selected=stats.sort((a,b)=>b.score-a.score).slice(0,15);
+  const oddCount=selected.filter(item=>item.n%2).length;
+  if(oddCount<6||oddCount>9){
+    const needOdd=oddCount<6;
+    const pool=stats.filter(item=>needOdd?item.n%2:!(item.n%2));
+    const remove=selected.filter(item=>needOdd?!(item.n%2):item.n%2).sort((a,b)=>a.score-b.score)[0];
+    const add=pool.find(item=>!selected.some(sel=>sel.n===item.n));
+    if(remove&&add)selected=selected.filter(item=>item.n!==remove.n).concat(add);
+  }
+  const numbers=selected.map(item=>item.n).sort((a,b)=>a-b);
+  m99Output.innerHTML=numbers.map(n=>"<span>"+m99Pad(n)+"</span>").join("");
+  const sum=numbers.reduce((acc,n)=>acc+n,0);
+  m99Meta.textContent="M99 gerado com "+total+" concursos · soma "+sum+" · pares "+numbers.filter(n=>!(n%2)).length+" · ímpares "+numbers.filter(n=>n%2).length+".";
+}
+document.getElementById("m99-fetch").addEventListener("click",()=>m99LoadDraws().catch(error=>{m99Status.textContent=error.message;}));
+document.getElementById("m99-generate").addEventListener("click",m99Generate);
+</script>
+<script src="../future-interface.js"></script>
+<script src="../omni-interface.js"></script>
+<script src="../alan-os.js"></script>
+</body>
+</html>

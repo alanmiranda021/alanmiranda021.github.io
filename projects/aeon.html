@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEON — Intelligent Systems Architecture</title>
+<meta name="description" content="AEON — arquitetura experimental de Inteligência Artificial modular, multiagente, orientada a memória, conhecimento, validação e execução.">
+<style>
+:root{
+  --bg:#030811; --panel:rgba(7,18,31,.72); --panel2:rgba(10,26,43,.58);
+  --cyan:#25e7ff; --cyan2:#7df5ff; --violet:#9a76ff; --green:#61ffc4;
+  --white:#ecfaff; --muted:#7893a2; --line:rgba(37,231,255,.16);
+  --mono:"Courier New",monospace; --sans:Inter,Segoe UI,Arial,sans-serif;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:
+radial-gradient(circle at 50% 10%,#0a2942 0,transparent 30%),
+radial-gradient(circle at 90% 70%,#22124b 0,transparent 25%),var(--bg);
+color:var(--white);font-family:var(--sans);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+background-image:linear-gradient(rgba(37,231,255,.028) 1px,transparent 1px),
+linear-gradient(90deg,rgba(37,231,255,.028) 1px,transparent 1px);
+background-size:48px 48px}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;
+background:linear-gradient(transparent 50%,rgba(37,231,255,.018) 50%);
+background-size:100% 5px;opacity:.22}
+a{color:inherit}.container{width:min(1400px,92vw);margin:auto}
+header{position:fixed;top:0;left:0;right:0;height:76px;z-index:50;display:flex;align-items:center;justify-content:space-between;
+padding:0 4vw;background:rgba(2,7,14,.76);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.logo{font:700 24px var(--mono);letter-spacing:-4px;text-decoration:none}.logo span{color:var(--cyan);text-shadow:0 0 18px var(--cyan)}
+nav{display:flex;gap:25px}nav a{text-decoration:none;font:11px var(--mono);color:#b8ccd5;letter-spacing:.08em}nav a:hover{color:var(--cyan)}
+.hud{font:10px var(--mono);color:var(--green)}.hud i{font-style:normal;text-shadow:0 0 10px var(--green)}
+.hero{min-height:900px;padding-top:150px;display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center;position:relative}
+.hero:before{content:"AEON // INTELLIGENT SYSTEMS";position:absolute;top:118px;left:0;font:10px var(--mono);color:#527280;letter-spacing:.2em}
+.kicker{font:11px var(--mono);color:var(--cyan);letter-spacing:.25em;margin-bottom:22px}
+h1{font:700 clamp(58px,9vw,130px)/.82 var(--mono);letter-spacing:-.09em;margin:0;text-shadow:0 0 50px rgba(37,231,255,.12)}
+.hero h1 span{color:transparent;-webkit-text-stroke:1px rgba(125,245,255,.7)}
+.lead{max-width:680px;font-size:20px;line-height:1.55;color:#b0c6cf;margin:34px 0}
+.lead b{color:#fff}.terminal-line{font:12px var(--mono);color:#5c7b89;border-left:2px solid var(--cyan);padding-left:15px}
+.hero-orbit{height:570px;display:grid;place-items:center;position:relative}
+.orbit{position:absolute;border:1px solid var(--line);border-radius:50%;transform:rotate(-18deg)}
+.o1{width:430px;height:430px;border-top-color:var(--cyan);animation:spin 14s linear infinite}
+.o2{width:330px;height:510px;border-color:rgba(154,118,255,.32);animation:spin2 18s linear infinite}
+.o3{width:560px;height:270px;border-style:dashed;animation:spin 24s linear infinite reverse}
+.core{width:220px;height:220px;border-radius:50%;border:1px solid var(--cyan);display:grid;place-items:center;
+background:radial-gradient(circle,#0b3248,#04111d 62%,transparent 70%);box-shadow:0 0 70px rgba(37,231,255,.15),inset 0 0 60px rgba(37,231,255,.08)}
+.core strong{font:700 48px var(--mono);letter-spacing:-8px}.core small{font:8px var(--mono);color:var(--cyan);position:absolute;margin-top:90px;letter-spacing:.25em}
+.node{position:absolute;width:130px;padding:12px;background:var(--panel);border:1px solid var(--line);font:9px var(--mono);color:#b8ccd5;backdrop-filter:blur(10px)}
+.node b{display:block;color:var(--cyan);margin-bottom:6px}.n1{top:40px;right:10px}.n2{bottom:80px;right:0}.n3{bottom:30px;left:15px}.n4{top:80px;left:0}
+.btn{display:inline-block;padding:13px 18px;border:1px solid rgba(37,231,255,.5);background:rgba(37,231,255,.05);text-decoration:none;font:10px var(--mono);color:var(--cyan);transition:.25s}
+.btn:hover{background:rgba(37,231,255,.12);box-shadow:0 0 30px rgba(37,231,255,.1);transform:translateY(-2px)}
+section{padding:105px 0}.section-head{display:flex;align-items:end;gap:20px;margin-bottom:35px}.section-head .num{font:10px var(--mono);color:var(--cyan)}.section-head h2{margin:0;font:700 clamp(30px,5vw,60px)/1 var(--mono);letter-spacing:-.07em}.section-head p{margin:0;color:#66808d;font:10px var(--mono);max-width:400px}
+.glass{background:linear-gradient(145deg,rgba(9,25,41,.78),rgba(3,11,19,.62));border:1px solid var(--line);box-shadow:0 25px 80px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.025);backdrop-filter:blur(14px)}
+.statement{display:grid;grid-template-columns:1fr 1fr;gap:0}.statement>div{padding:40px}.statement>div+div{border-left:1px solid var(--line)}
+.statement h3{font:20px var(--mono);color:var(--cyan)}.statement p{font-size:15px;line-height:1.8;color:#91a8b2}.statement strong{color:#fff}
+.flow{padding:35px;overflow:auto}.flow pre{margin:0;font:13px/1.8 var(--mono);color:#94afbb}.flow .cyan{color:var(--cyan)}.flow .violet{color:#bba6ff}.flow .green{color:var(--green)}
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{padding:25px;min-height:220px;position:relative;overflow:hidden}.card:before{content:attr(data-id);position:absolute;right:15px;top:12px;color:rgba(37,231,255,.22);font:10px var(--mono)}
+.card .icon{font:28px var(--mono);color:var(--cyan);margin-bottom:20px}.card h3{font:14px var(--mono);margin:0 0 10px}.card p{font-size:11px;line-height:1.7;color:#8098a3}.tag{display:inline-block;border:1px solid rgba(37,231,255,.2);padding:5px 7px;margin:4px 3px 0 0;color:#71e9fa;font:8px var(--mono)}
+.kernel{display:grid;grid-template-columns:1fr 1fr;gap:14px}.kernel .card{min-height:280px}
+.pipeline{display:flex;gap:8px;align-items:stretch;overflow:auto;padding-bottom:12px}.step{min-width:145px;padding:18px;border:1px solid var(--line);background:rgba(5,18,30,.72);position:relative}.step:not(:last-child):after{content:"→";position:absolute;right:-16px;top:45%;color:var(--cyan);z-index:2}.step small{font:8px var(--mono);color:#597783}.step b{display:block;margin-top:10px;font:11px var(--mono);color:#dff9ff}.step span{display:block;margin-top:8px;font-size:9px;line-height:1.5;color:#78929e}
+.arch-layers{display:flex;flex-direction:column;gap:5px}.layer{padding:17px 22px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(37,231,255,.08),rgba(154,118,255,.03));display:flex;justify-content:space-between;align-items:center}.layer b{font:12px var(--mono);color:#d9f8ff}.layer span{font:9px var(--mono);color:#698491}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}.compare .card{min-height:250px}.bad{color:#ff8797}.good{color:var(--green)}
+.timeline{border-left:1px solid var(--line);margin-left:12px}.phase{position:relative;padding:0 0 32px 35px}.phase:before{content:"";position:absolute;left:-5px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 15px var(--cyan)}.phase small{font:9px var(--mono);color:var(--cyan)}.phase h3{font:17px var(--mono);margin:8px 0}.phase p{font-size:11px;line-height:1.7;color:#8199a4}
+.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.status-card{padding:22px}.status-card small{font:8px var(--mono);color:#5e7a86}.status-card b{display:block;margin-top:12px;font:13px var(--mono);color:var(--cyan)}
+.quote{padding:50px;text-align:center}.quote p{font:700 clamp(25px,4vw,48px)/1.15 var(--mono);letter-spacing:-.05em;margin:0}.quote span{display:block;margin-top:20px;font:9px var(--mono);color:#6e8792}
+footer{padding:35px 0;border-top:1px solid var(--line);font:9px var(--mono);color:#587480;display:flex;justify-content:space-between}
+.reveal{opacity:0;transform:translateY(25px);transition:.7s}.reveal.on{opacity:1;transform:none}
+@keyframes spin{to{transform:rotate(342deg)}}@keyframes spin2{to{transform:rotate(342deg)}}
+@media(max-width:900px){nav{display:none}.hero{grid-template-columns:1fr;padding-top:130px}.hero-orbit{height:430px;order:-1}.statement,.kernel,.compare{grid-template-columns:1fr}.statement>div+div{border-left:0;border-top:1px solid var(--line)}.arch-grid{grid-template-columns:1fr 1fr}.status-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.hero{min-height:950px}.hero-orbit{height:380px}.o1{width:280px;height:280px}.o2{width:220px;height:350px}.o3{width:360px;height:190px}.core{width:155px;height:155px}.core strong{font-size:34px}.core small{margin-top:65px}.node{width:105px}.n1{top:15px;right:0}.n2{bottom:15px;right:0}.n3{bottom:0;left:0}.n4{top:30px;left:0}.arch-grid,.status-grid{grid-template-columns:1fr}.statement>div,.flow{padding:25px}.pipeline{display:grid}.step{min-width:0}.step:not(:last-child):after{display:none}footer{display:block;line-height:2}}
+</style>
+<link rel="stylesheet" href="../project-modern.css">
+<link rel="stylesheet" href="../future-interface.css">
+<link rel="stylesheet" href="../omni-interface.css">
+<link rel="stylesheet" href="../alan-os.css">
+<link rel="stylesheet" href="../library-news.css">
+</head>
+<body class="project-page aeon-page">
+<header>
+  <a class="logo" href="../index.html#inicio"><span>AEON</span></a>
+  <nav>
+    <a href="#visao">VISÃO</a><a href="#arquitetura">ARQUITETURA</a><a href="#fluxo">FLUXO</a>
+    <a href="#componentes">COMPONENTES</a><a href="#roadmap">ROADMAP</a>
+  </nav>
+  <div class="hud"><i>●</i> SYSTEM / ARCHITECTURE · <a href="../index.html#projetos" style="color:inherit;text-decoration:none">BACK TO BUILDS ↗</a></div>
+</header>
+
+<main>
+<section class="hero container">
+  <div>
+    <div class="kicker">AEON // INTELLIGENT SYSTEMS ARCHITECTURE</div>
+    <h1>NOT JUST<br><span>AI.</span><br>A SYSTEM.</h1>
+    <p class="lead">Uma arquitetura experimental para transformar modelos de Inteligência Artificial em <b>sistemas capazes de interpretar, lembrar, consultar, raciocinar, coordenar, validar e executar.</b></p>
+    <div class="terminal-line">MODEL ≠ SYSTEM // MEMORY + KNOWLEDGE + AGENTS + VALIDATION + ACTION</div>
+    <br><br>
+    <a class="btn" href="#visao">EXPLORE THE ARCHITECTURE ↓</a>
+  </div>
+  <div class="hero-orbit">
+    <div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
+    <div class="core"><strong>AEON</strong><small>INTELLIGENT CORE</small></div>
+    <div class="node n1"><b>MEMORY</b>persistent context & state</div>
+    <div class="node n2"><b>AGENTS</b>specialized intelligence</div>
+    <div class="node n3"><b>RAG / KG</b>knowledge retrieval</div>
+    <div class="node n4"><b>VALIDATOR</b>consistency & evidence</div>
+  </div>
+</section>
+
+<section id="visao"><div class="container">
+  <div class="section-head"><span class="num">01</span><h2>VISÃO</h2><p>Por que o AEON existe e qual problema arquitetural ele tenta resolver.</p></div>
+  <div class="statement glass reveal">
+    <div><h3>O PROBLEMA</h3><p>Uma LLM isolada é poderosa para geração e interpretação de linguagem, mas não constitui, sozinha, um sistema completo de inteligência operacional.</p><p>Ela não precisa ser confundida com <strong>memória persistente, conhecimento estruturado, agentes, validação ou execução</strong>.</p></div>
+    <div><h3>A PROPOSTA</h3><p>O AEON coloca o modelo dentro de uma arquitetura modular onde cada capacidade possui uma função definida.</p><p><strong>Modelo</strong> é um componente. O <strong>sistema inteligente</strong> nasce da combinação entre modelo, memória, conhecimento, agentes, raciocínio, validação e ação.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="container">
+  <div class="section-head"><span class="num">02</span><h2>EXECUTION FLOW</h2><p>Do pedido do usuário ao resultado verificável e ao registro na memória.</p></div>
+  <div class="flow glass reveal"><pre>
+<span class="cyan">USER</span>
+  │
+  ▼
+<span class="cyan">INTENT / INTERPRETATION</span>
+  │
+  ▼
+<span class="violet">TASK + CONTEXT</span>
+  │
+  ├───────────────┬────────────────┐
+  ▼               ▼                ▼
+<span class="cyan">MEMORY</span>          <span class="cyan">RAG</span>             <span class="cyan">KNOWLEDGE GRAPH</span>
+  │               │                │
+  └───────────────┴────────────────┘
+                  ▼
+          <span class="violet">AGENT ORCHESTRATION</span>
+                  │
+          ┌───────┼───────┐
+          ▼       ▼       ▼
+       AGENT A AGENT B AGENT C
+          │       │       │
+          └───────┼───────┘
+                  ▼
+             <span class="violet">REASONING</span>
+                  │
+                  ▼
+             <span class="green">VALIDATOR</span>
+                  │
+            ┌─────┴─────┐
+            ▼           ▼
+        CONSISTENT   REPROCESS
+            │
+            ▼
+          <span class="green">EXECUTION</span>
+            │
+            ▼
+          RESULT
+            │
+            ▼
+          <span class="cyan">MEMORY / STATE</span>
+  </pre></div>
+</div></section>
+
+<section id="arquitetura"><div class="container">
+  <div class="section-head"><span class="num">03</span><h2>ARCHITECTURE</h2><p>As camadas que transformam componentes independentes em uma arquitetura coordenada.</p></div>
+  <div class="arch-layers reveal">
+    <div class="layer"><b>INTERFACE</b><span>entrada, interação e apresentação</span></div>
+    <div class="layer"><b>ORCHESTRATOR</b><span>intenção, tarefas e coordenação</span></div>
+    <div class="layer"><b>AGENT SYSTEM</b><span>especialização e colaboração</span></div>
+    <div class="layer"><b>AEON KERNEL</b><span>núcleo lógico e controle do fluxo</span></div>
+    <div class="layer"><b>MEMORY · RAG · KNOWLEDGE GRAPH</b><span>contexto, recuperação e relações</span></div>
+    <div class="layer"><b>VALIDATOR</b><span>consistência, evidências e regras</span></div>
+    <div class="layer"><b>MODEL LAYER</b><span>LLMs locais ou outros modelos</span></div>
+    <div class="layer"><b>EXECUTION</b><span>ferramentas, automação e ações</span></div>
+  </div>
+</div></section>
+
+<section id="componentes"><div class="container">
+  <div class="section-head"><span class="num">04</span><h2>CORE COMPONENTS</h2><p>Cada módulo possui uma responsabilidade distinta.</p></div>
+  <div class="arch-grid">
+    <article class="card glass reveal" data-id="01"><div class="icon">◈</div><h3>AEON KERNEL</h3><p>O núcleo de coordenação. Recebe tarefas, cria contexto, chama agentes, acessa memória e conhecimento, encaminha resultados para validação e controla a execução.</p><span class="tag">ORCHESTRATION</span><span class="tag">STATE</span></article>
+    <article class="card glass reveal" data-id="02"><div class="icon">◌</div><h3>MEMORY</h3><p>Camada de persistência de contexto e estado. Pode organizar memória de curto prazo, longo prazo, episódica, semântica e operacional.</p><span class="tag">CONTEXT</span><span class="tag">STATE</span></article>
+    <article class="card glass reveal" data-id="03"><div class="icon">⌁</div><h3>RAG</h3><p>Recupera informação relevante antes da geração. O RAG complementa o modelo, mas não é o AEON inteiro.</p><span class="tag">EMBEDDING</span><span class="tag">RETRIEVAL</span></article>
+    <article class="card glass reveal" data-id="04"><div class="icon">◇</div><h3>KNOWLEDGE GRAPH</h3><p>Representa entidades, propriedades e relações. Complementa o RAG oferecendo estrutura explícita para o conhecimento.</p><span class="tag">ENTITIES</span><span class="tag">RELATIONS</span></article>
+    <article class="card glass reveal" data-id="05"><div class="icon">⌬</div><h3>MULTI-AGENT</h3><p>Agentes especializados podem planejar, pesquisar, analisar, programar, validar ou executar partes diferentes de uma tarefa.</p><span class="tag">SPECIALISTS</span><span class="tag">COLLABORATION</span></article>
+    <article class="card glass reveal" data-id="06"><div class="icon">✓</div><h3>VALIDATOR</h3><p>Camada destinada a analisar consistência, evidências, contexto, regras e conflitos antes que um resultado seja considerado válido.</p><span class="tag">VERIFY</span><span class="tag">CONSISTENCY</span></article>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">05</span><h2>KERNEL</h2><p>O AEON Kernel funciona como o “sistema operacional cognitivo” da arquitetura.</p></div>
+  <div class="kernel">
+    <article class="card glass reveal"><div class="icon">⌘</div><h3>RESPONSABILIDADES</h3><p>Receber tarefas · criar contexto · selecionar agentes · acessar memória · consultar conhecimento · chamar modelos · encaminhar resultados · validar · executar · registrar estado.</p></article>
+    <article class="card glass reveal"><div class="icon">∞</div><h3>SEPARAÇÃO DE CAMADAS</h3><p>O Kernel permite que modelo, memória, RAG, agentes, conhecimento e execução evoluam sem que toda a arquitetura dependa de um único componente.</p></article>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">06</span><h2>AGENT NETWORK</h2><p>Uma tarefa pode ser decomposta em papéis especializados.</p></div>
+  <div class="pipeline reveal">
+    <div class="step"><small>01</small><b>ORCHESTRATOR</b><span>entende a tarefa e coordena o fluxo</span></div>
+    <div class="step"><small>02</small><b>PLANNER</b><span>decompõe o problema em etapas</span></div>
+    <div class="step"><small>03</small><b>ANALYST</b><span>analisa dados e alternativas</span></div>
+    <div class="step"><small>04</small><b>RESEARCHER</b><span>busca contexto e evidências</span></div>
+    <div class="step"><small>05</small><b>EXECUTOR</b><span>realiza ações e operações</span></div>
+    <div class="step"><small>06</small><b>VALIDATOR</b><span>verifica o resultado</span></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">07</span><h2>MEMORY + KNOWLEDGE</h2><p>Contexto persistente e conhecimento estruturado trabalham juntos.</p></div>
+  <div class="compare">
+    <article class="card glass reveal"><div class="icon">◉</div><h3>MEMORY</h3><p><strong>Curto prazo:</strong> contexto da tarefa atual.</p><p><strong>Longo prazo:</strong> informações persistentes.</p><p><strong>Episódica:</strong> eventos e interações.</p><p><strong>Semântica:</strong> conhecimento abstraído.</p><p><strong>Operacional:</strong> estado necessário para execução.</p></article>
+    <article class="card glass reveal"><div class="icon">◈</div><h3>RAG + KNOWLEDGE GRAPH</h3><p><strong>RAG:</strong> recupera conteúdo relevante para contextualizar a geração.</p><p><strong>Graph:</strong> representa entidades e relações.</p><p>Combinados, permitem recuperar informação e compreender sua estrutura.</p></article>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">08</span><h2>AEON-KL / AMX</h2><p>Explorações experimentais para representação simbólica e empacotamento.</p></div>
+  <div class="arch-grid">
+    <article class="card glass reveal"><div class="icon">λ</div><h3>AEON-KL</h3><p>Camada experimental de representação simbólica. A proposta é representar entidades, operações, estados, relações, regras e instruções de forma estruturada.</p><span class="tag">SYMBOLIC</span><span class="tag">REPRESENTATION</span></article>
+    <article class="card glass reveal"><div class="icon">▣</div><h3>AMX</h3><p>Conceito experimental de container para organizar modelos, metadados, configurações, vocabulário, parâmetros e componentes necessários à execução.</p><span class="tag">PACKAGING</span><span class="tag">MODEL BUNDLE</span></article>
+    <article class="card glass reveal"><div class="icon">◫</div><h3>LOCAL AI</h3><p>Exploração de modelos locais e formatos como GGUF e safetensors, com possibilidade de utilizar runtimes como llama.cpp.</p><span class="tag">GGUF</span><span class="tag">SAFETENSORS</span><span class="tag">LLAMA.CPP</span></article>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">09</span><h2>VECTOR PIPELINE</h2><p>Uma arquitetura de conhecimento também precisa controlar seus índices.</p></div>
+  <div class="flow glass reveal"><pre>
+DOCUMENT
+   │
+   ▼
+<span class="cyan">CHUNKING</span>
+   │
+   ▼
+<span class="cyan">EMBEDDING</span>
+   │
+   ▼
+<span class="violet">VECTOR INDEX</span>
+   │
+   ▼
+RETRIEVAL
+   │
+   ▼
+CONTEXT
+   │
+   ▼
+MODEL
+
+<span class="green">ARCHITECTURAL CONCERN:</span>
+isolamento por projeto + metadata + namespaces + versionamento +
+limpeza/reindexação + validação de origem
+
+A contaminação de índices é um problema importante quando diferentes
+conjuntos de conhecimento são misturados sem isolamento adequado.
+  </pre></div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">10</span><h2>REAL USE CASE</h2><p>Exemplo de como o AEON pode atuar sobre uma tarefa complexa.</p></div>
+  <div class="statement glass reveal">
+    <div><h3>ENTRADA</h3><p><strong>“Quero reduzir o custo de uma operação logística.”</strong></p><p>O sistema identifica a intenção, cria uma tarefa e reúne o contexto necessário.</p></div>
+    <div><h3>PROCESSAMENTO</h3><p>Memória + RAG + Knowledge Graph → agentes especializados → análise → planejamento → validação → recomendação.</p><p>O resultado pode ser registrado para uso futuro.</p></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">11</span><h2>LOGISTICS</h2><p>Uma das direções estratégicas do AEON é a aplicação de agentes em operações logísticas.</p></div>
+  <div class="arch-grid">
+    <article class="card glass reveal"><div class="icon">↗</div><h3>PLANEJAMENTO</h3><p>Análise de cenários, recursos, restrições e alternativas operacionais.</p></article>
+    <article class="card glass reveal"><div class="icon">⌖</div><h3>ROTEIRIZAÇÃO</h3><p>Possibilidade de apoiar decisões de rotas, deslocamentos e alocação.</p></article>
+    <article class="card glass reveal"><div class="icon">◫</div><h3>MANUTENÇÃO</h3><p>Agentes podem cruzar histórico, equipamentos, eventos e conhecimento técnico.</p></article>
+  </div>
+  <p style="font:9px var(--mono);color:#607b87;margin-top:18px">NOTA: estas aplicações devem ser diferenciadas entre implementação atual, experimentação e roadmap.</p>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">12</span><h2>WHAT AEON IS NOT</h2><p>Precisão técnica é parte da identidade do projeto.</p></div>
+  <div class="compare">
+    <article class="card glass reveal"><h3 class="bad">NÃO É APENAS</h3><p>× um chatbot</p><p>× uma LLM</p><p>× um sistema RAG</p><p>× um Knowledge Graph</p><p>× um agente isolado</p><p>× um banco vetorial</p></article>
+    <article class="card glass reveal"><h3 class="good">É UMA ARQUITETURA</h3><p>✓ Model layer</p><p>✓ Memory</p><p>✓ Knowledge</p><p>✓ Agents</p><p>✓ Reasoning</p><p>✓ Validation</p><p>✓ Execution</p></article>
+  </div>
+</div></section>
+
+<section id="roadmap"><div class="container">
+  <div class="section-head"><span class="num">13</span><h2>ROADMAP</h2><p>Uma evolução progressiva da arquitetura.</p></div>
+  <div class="timeline">
+    <div class="phase"><small>PHASE 01</small><h3>KERNEL</h3><p>Núcleo de coordenação e controle do fluxo.</p></div>
+    <div class="phase"><small>PHASE 02</small><h3>MEMORY</h3><p>Persistência de contexto, estado e experiências.</p></div>
+    <div class="phase"><small>PHASE 03</small><h3>RAG</h3><p>Recuperação contextual e pipeline vetorial.</p></div>
+    <div class="phase"><small>PHASE 04</small><h3>KNOWLEDGE GRAPH</h3><p>Entidades, relações e conhecimento estruturado.</p></div>
+    <div class="phase"><small>PHASE 05</small><h3>MULTI-AGENT</h3><p>Especialização, planejamento e colaboração.</p></div>
+    <div class="phase"><small>PHASE 06</small><h3>VALIDATOR</h3><p>Verificação, consistência e evidências.</p></div>
+    <div class="phase"><small>PHASE 07</small><h3>AEON-KL</h3><p>Representação simbólica experimental.</p></div>
+    <div class="phase"><small>PHASE 08</small><h3>AMX</h3><p>Empacotamento e organização de componentes.</p></div>
+    <div class="phase"><small>PHASE 09</small><h3>LOCAL AI</h3><p>Modelos locais e execução controlada.</p></div>
+    <div class="phase"><small>PHASE 10</small><h3>REAL APPLICATIONS</h3><p>Aplicações práticas, incluindo operações logísticas.</p></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">14</span><h2>STATUS</h2><p>Uma visão honesta do projeto.</p></div>
+  <div class="status-grid">
+    <div class="status-card glass"><small>CORE</small><b>ARQUITETURA</b><p>Estrutura modular em desenvolvimento.</p></div>
+    <div class="status-card glass"><small>EXPERIMENTAL</small><b>AGENTS / RAG / MEMORY</b><p>Exploração e integração progressiva.</p></div>
+    <div class="status-card glass"><small>RESEARCH</small><b>AEON-KL / AMX</b><p>Conceitos e experimentações.</p></div>
+    <div class="status-card glass"><small>ROADMAP</small><b>AUTONOMOUS SYSTEMS</b><p>Evolução para aplicações reais.</p></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="quote glass reveal"><p>“Não construir apenas uma IA que responde.<br>Construir uma arquitetura que consulta, raciocina, valida e executa.”</p><span>AEON // PROJECT PHILOSOPHY</span></div>
+</div></section>
+</main>
+
+<footer class="container">
+  <span>AEON — INTELLIGENT SYSTEMS ARCHITECTURE</span>
+  <span>EXPERIMENTAL / RESEARCH / DEVELOPMENT</span>
+</footer>
+
+<script>
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+<script src="../future-interface.js"></script>
+<script src="../omni-interface.js"></script>
+<script src="../alan-os.js"></script>
+</body>
+</html>
