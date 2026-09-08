@@ -28,6 +28,7 @@
     <a href="#sobre">SOBRE</a>
     <a href="#projetos">BUILDS</a>
     <a href="#mission-control">CORE</a>
+    <a href="#comet-run">GAME</a>
     <a href="#jornada">LOG</a>
     <a href="#contato">CONNECT</a>
   </nav>
@@ -166,6 +167,35 @@
         <br><div><span class="prompt">alan@omni</span>:~$ <span style="color:#fff">_</span></div>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="comet-run" class="section comet-section">
+  <div class="section-top reveal"><span>02.7</span><p>COMET RUN / REFLEX LAB</p></div>
+  <div class="comet-head reveal">
+    <div>
+      <p class="eyebrow">INFINITE ARCADE / DEFEND THE SIGNAL</p>
+      <h2>Desvie do ruído.<br><em>Proteja o núcleo.</em></h2>
+    </div>
+    <p>Um intervalo interativo no meio do sistema. Mire, dispare e sobreviva enquanto a velocidade aumenta.</p>
+  </div>
+  <div class="game-shell reveal">
+    <div class="game-topbar">
+      <div><span class="game-label">SCORE</span><strong id="gameScore">000000</strong></div>
+      <div><span class="game-label">WAVE</span><strong id="gameWave">01</strong></div>
+      <div><span class="game-label">BEST</span><strong id="gameBest">000000</strong></div>
+      <div class="game-lives" aria-label="Vidas restantes"><span></span><span></span><span></span></div>
+    </div>
+    <div class="game-stage">
+      <canvas id="cometCanvas" aria-label="Jogo Comet Run: atire nos cometas"></canvas>
+      <div class="game-message visible" id="gameMessage">
+        <span class="game-kicker">COMET RUN // INFINITE MODE</span>
+        <h3>O núcleo está sob ataque.</h3>
+        <p>Mova a nave com o mouse, toque na arena ou use A/D. Clique, toque ou pressione espaço para disparar.</p>
+        <button class="btn hot" id="startGame">INICIAR MISSÃO <b>↗</b></button>
+      </div>
+    </div>
+    <div class="game-controls"><span><b>MOVE</b> mouse / toque / A D</span><span><b>FIRE</b> clique / toque / espaço</span><span id="gameStatus">STATUS: STANDBY</span></div>
   </div>
 </section>
 
@@ -326,7 +356,7 @@
 
 <div class="command-panel" id="commandPanel" aria-hidden="true">
   <div class="command-box"><div class="command-head"><span>CENTRAL DE COMANDOS</span><button id="closeCommand">ESC</button></div>
-    <button data-go="#inicio">01 — Home</button><button data-go="#sobre">02 — Perfil do Sistema</button><button data-go="#projetos">03 — Builds</button><button data-go="#jornada">04 — Evolução</button><button data-go="#contato">05 — Contato</button>
+    <button data-go="#inicio">01 — Home</button><button data-go="#sobre">02 — Perfil do Sistema</button><button data-go="#projetos">03 — Builds</button><button data-go="#comet-run">GAME — Comet Run</button><button data-go="#jornada">04 — Evolução</button><button data-go="#contato">05 — Contato</button>
   </div>
 </div>
 <script src="script.js"></script>
