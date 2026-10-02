@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#061018">
+  <meta name="description" content="Simulador didático da hélice Wageningen Série B com cálculo aberto e validação numérica.">
+  <title>NAVAL PROPULSION LAB // ALAN MIRANDA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="naval.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span>AM</span> ALAN.MIRANDA <i>/</i> NAVAL LAB</a>
+    <a class="back-link" href="index.html">← PORTFÓLIO</a>
+  </header>
+
+  <main class="workspace">
+    <section class="masthead">
+      <div>
+        <p class="eyebrow"><span class="status-dot"></span> LABORATÓRIO DE PROPULSÃO · V0.1.0</p>
+        <h1>NAVAL <em>PROPULSION</em><br>SIMULATOR</h1>
+        <p class="lede">Missão 01 · Primeiro Propulsor. Explore a hélice Wageningen B-series e acompanhe cada etapa do cálculo.</p>
+      </div>
+      <div class="scope-note"><b>ESCOPO V0.1</b><span>Série B em águas abertas</span><span>Resistência quadrática da missão</span><span>Holtrop e Burrill: em breve</span></div>
+    </section>
+
+    <section class="sim-layout" aria-label="Simulação da hélice">
+      <div class="visual-column">
+        <section class="ship-panel panel" aria-label="Visualização do navio">
+          <div class="panel-heading"><div><span class="eyebrow">MISSÃO 01 / OCEANO ABERTO</span><h2>Condição de operação</h2></div><span class="live-tag" id="liveTagText"><i></i> SIMULAÇÃO PRONTA</span></div>
+          <div class="sea-scene" id="seaScene">
+            <div class="horizon"></div>
+            <div class="wake wake-one"></div><div class="wake wake-two"></div>
+            <svg class="ship" id="shipVisual" viewBox="0 0 720 240" role="img" aria-labelledby="shipTitle shipDesc">
+              <title id="shipTitle">Navio cargueiro com hélice animada</title>
+              <desc id="shipDesc">Visualização esquemática da embarcação; a rotação do hélice acompanha a rotação informada.</desc>
+              <defs><linearGradient id="hull" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#e5eee8"/><stop offset="1" stop-color="#718d8c"/></linearGradient></defs>
+              <path class="hull" d="M92 155h535l-48 39H162c-31-6-52-18-70-39Z" fill="url(#hull)"/>
+              <path d="M126 163h477" stroke="#e9a765" stroke-width="3"/>
+              <path d="M426 154V91h48V65h100v89M452 91h23m19 0h21m-63 22h23m19 0h21" fill="#d6e0d9" stroke="#9baea8" stroke-width="2"/>
+              <path d="M464 64V46h4v18m0-13 31 9" stroke="#e9a765" stroke-width="3" fill="none"/>
+              <g class="propeller" id="propeller" transform="translate(116 189)"><circle id="propellerHub" r="6" fill="#071820" stroke="#e9a765" stroke-width="2"/><g class="propeller-blades" id="propellerBlades"><path d="M0-4c-12-22-7-31 0-30 7 1 9 16 4 30M4 0c22-12 31-7 30 0-1 7-16 9-30 4M0 4c12 22 7 31 0 30-7-1-9-16-4-30M-4 0c-22 12-31 7-30 0 1 7 16 9 30 4" fill="#a9c0b9" stroke="#e9a765" stroke-width="2"/></g></g>
+              <path d="M0 214q46-12 92 0t92 0 92 0 92 0 92 0 92 0 92 0 92 0 92 0" fill="none" stroke="#5dd9d0" stroke-opacity=".55" stroke-width="2"/>
+            </svg>
+            <div class="scene-readout"><span>VELOCIDADE</span><b id="sceneSpeed">12,0 kn</b><span>ROTAÇÃO VISUAL</span><b id="sceneRpm">100 rpm</b></div>
+          </div>
+          <div class="thrust-line"><span>FOLGA DE EMPUXO <small>T(1 − t) − R</small></span><b id="thrustMargin">0,0 kN</b><span class="balance-state" id="balanceState">EM EQUILÍBRIO</span></div>
+        </section>
+
+        <section class="metrics-grid" aria-label="Resultados principais" aria-live="polite">
+          <article class="metric"><span>COEF. DE AVANÇO</span><b id="metricJ">0,593</b><small>J [—]</small></article>
+          <article class="metric"><span>EFICIÊNCIA η₀</span><b id="metricEta">68,1%</b><small>águas abertas</small></article>
+          <article class="metric"><span>EMPuxo T</span><b id="metricThrust">179,0</b><small>kN</small></article>
+          <article class="metric"><span>POTÊNCIA P<sub>D</sub></span><b id="metricPower">1.298</b><small>kW entregues</small></article>
+        </section>
+
+        <section class="charts-panel panel">
+          <div class="panel-heading chart-heading"><div><span class="eyebrow">CURVAS DE DESEMPENHO</span><h2>Coeficientes × avanço</h2></div><span class="chart-note">OPERAÇÃO MARCADA · CURVAS 0 → J₀</span></div>
+          <div class="charts-grid">
+            <figure><figcaption><i class="legend-kt"></i> KT × J</figcaption><canvas id="chartKt" aria-label="Gráfico do coeficiente de empuxo KT por J"></canvas></figure>
+            <figure><figcaption><i class="legend-kq"></i> 10·KQ × J</figcaption><canvas id="chartKq" aria-label="Gráfico de dez vezes o coeficiente de torque por J"></canvas></figure>
+            <figure class="wide-chart"><figcaption><i class="legend-eta"></i> η₀ × J <small>máximo indicado</small></figcaption><canvas id="chartEta" aria-label="Gráfico de eficiência em águas abertas por J"></canvas></figure>
+          </div>
+          <details class="curve-table"><summary>Ver tabela da curva</summary><div class="table-scroll"><table><thead><tr><th>J</th><th>KT</th><th>10·KQ</th><th>η₀</th></tr></thead><tbody id="curveRows"></tbody></table></div></details>
+        </section>
+      </div>
+
+      <aside class="control-column">
+        <section class="panel controls-panel">
+          <div class="panel-heading"><div><span class="eyebrow">PAINEL DE CONTROLE</span><h2>Parâmetros</h2></div><button class="reset-button" id="resetButton" type="button" title="Restaurar missão">↺</button></div>
+          <div class="model-select" role="group" aria-label="Nível do modelo">
+            <button type="button" data-level="A" aria-pressed="false"><b>A</b><span>POLINÔMIO</span></button>
+            <button type="button" data-level="B" aria-pressed="false"><b>B</b><span>+ REYNOLDS</span></button>
+            <button type="button" data-level="C" aria-pressed="true"><b>C</b><span>+ RUGOSIDADE</span></button>
+          </div>
+          <p class="model-caption" id="modelCaption">Modelo C · Reynolds + rugosidade de 30 µm.</p>
+          <form id="simForm" novalidate>
+            <div class="input-grid">
+              <label class="field"><span>Velocidade do navio <i>V</i></span><span class="input-wrap"><input name="speed" type="number" min="0.1" max="40" step="0.1" value="12" required><small>kn</small></span></label>
+              <label class="field"><span>Rotação <i>n</i></span><span class="input-wrap"><input name="rpm" type="number" min="5" max="600" step="1" value="100" required><small>rpm</small></span></label>
+              <label class="field"><span>Diâmetro <i>D</i></span><span class="input-wrap"><input name="diameter" type="number" min="0.1" max="12" step="0.01" value="5" required><small>m</small></span></label>
+              <label class="field"><span>Número de pás <i>Z</i></span><span class="input-wrap"><select name="blades"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option></select><small>pás</small></span></label>
+              <label class="field"><span>Passo / diâmetro <i>P/D</i></span><span class="input-wrap"><input name="pd" type="number" min="0.5" max="1.4" step="0.01" value="0.75" required><small>—</small></span></label>
+              <label class="field"><span>Razão de áreas <i>AE/AO</i></span><span class="input-wrap"><input name="area" type="number" min="0.3" max="1.05" step="0.01" value="0.74" required><small>—</small></span><small class="range-hint" id="areaRange">faixa para Z = 4: 0,40–1,00</small></label>
+              <label class="field"><span>Coef. de esteira <i>w</i></span><span class="input-wrap"><input name="wake" type="number" min="0" max="0.6" step="0.01" value="0.20" required><small>—</small></span></label>
+              <label class="field"><span>Redução de empuxo <i>t</i></span><span class="input-wrap"><input name="deduction" type="number" min="0" max="0.35" step="0.01" value="0.16" required><small>—</small></span></label>
+              <label class="field"><span>Densidade da água <i>ρ</i></span><span class="input-wrap"><input name="rho" type="number" min="990" max="1035" step="1" value="1025" required><small>kg/m³</small></span></label>
+              <label class="field"><span>Deslocamento <i>Δ</i></span><span class="input-wrap"><input name="displacement" type="number" min="1" max="500000" step="1" value="10000" required><small>t</small></span><small class="range-hint">usado somente para a dinâmica visual</small></label>
+              <label class="field"><span>Viscosidade cinemática <i>ν</i></span><span class="input-wrap"><input name="nu" type="number" min="0.0000008" max="0.0000018" step="0.00000001" value="0.0000011883" required><small>m²/s</small></span></label>
+            </div>
+            <p class="form-message" id="formMessage" role="alert"></p>
+            <div class="action-row"><button class="primary-button" type="submit">ATUALIZAR SIMULAÇÃO <span>↗</span></button><button class="icon-button" id="exportJson" type="button" title="Exportar resultados como JSON" aria-label="Exportar resultados como JSON">JSON</button></div>
+          </form>
+          <div class="validity" id="validity"><span class="validity-light"></span><div><b id="validityTitle">DENTRO DO DOMÍNIO</b><small id="validityText">Série B · Z = 4 · P/D = 0,75</small></div></div>
+        </section>
+
+        <section class="panel mission-panel">
+          <div class="eyebrow">DADOS FIXOS DA MISSÃO</div>
+          <div class="mission-row"><span>Resistência de referência</span><b>150,4 kN</b></div>
+          <div class="mission-row"><span>Velocidade de referência</span><b>12 kn</b></div>
+          <div class="mission-row"><span>Curva de resistência</span><b>R ∝ V²</b></div>
+          <button class="text-button" id="equationButton" type="button">COMO CHEGAMOS AOS RESULTADOS? <span>↗</span></button>
+          <div class="mission-actions"><button class="text-button" id="exportCsv" type="button">EXPORTAR CURVAS CSV ↓</button><button class="text-button" id="challengeButton" type="button" aria-pressed="false">MODO DESAFIO <span>＋</span></button></div>
+          <div class="challenge-result" id="challengeResult" hidden></div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="transparency"><span class="eyebrow">TRANSPARÊNCIA DO MODELO</span><p>Wageningen B-series · Oosterveld &amp; van Oossanen (1975). η₀ é a eficiência em águas abertas; o critério de resistência é uma aproximação quadrática didática. Burrill e Holtrop-Mennen não fazem parte desta versão.</p><span class="version">COEFICIENTES VALIDADOS · FONTE E LIMITES EXIBIDOS</span></section>
+  </main>
+
+  <dialog class="equation-dialog" id="equationDialog"><form method="dialog"><button class="dialog-close" aria-label="Fechar explicação">×</button></form><span class="eyebrow">CADEIA DE CÁLCULO / CASO ATUAL</span><h2>Como chegamos a esse valor?</h2><p class="dialog-intro">Cada grandeza abaixo usa os valores atuais da simulação. Unidades em SI no cálculo.</p><ol id="equationSteps"></ol><p class="source-note">Polinômio Wageningen B-series · Correções de Reynolds para Rn &gt; 2×10⁶ · rugosidade kp = 30 µm.</p></dialog>
+  <script src="naval.js"></script>
+</body>
+</html>
