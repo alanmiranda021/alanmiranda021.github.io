@@ -42,3 +42,14 @@ body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;back
 .ticker,.lab,footer{border-color:var(--line);background:rgba(3,8,17,.72)}.ticker i,.metrics b,.event time{color:var(--cyan)}.metrics,.metrics div,.timeline,.event,.contact-links a{border-color:var(--line)}
 .build-card:hover{border-color:rgba(37,231,255,.48);box-shadow:0 30px 100px rgba(37,231,255,.06)}.aeon{background:radial-gradient(circle,rgba(37,231,255,.16) 0,transparent 42%),linear-gradient(135deg,#061321,#030811)}.core{border-color:var(--cyan);box-shadow:0 0 70px rgba(37,231,255,.22)}.core:before,.core:after{border-color:rgba(37,231,255,.35)}.circuit{background:radial-gradient(circle,rgba(154,118,255,.14),transparent 55%)}.circuit>span{color:#7df5ff}.circuit-lines{background-image:linear-gradient(90deg,transparent 49%,rgba(37,231,255,.12) 50%,transparent 51%),linear-gradient(transparent 49%,rgba(37,231,255,.12) 50%,transparent 51%)}.data-viz i{background:linear-gradient(to top,var(--cyan),var(--violet))}
 .quote{border-left-color:var(--cyan);color:#dff9ff}.manifesto{background:radial-gradient(circle at 70% 50%,rgba(37,231,255,.08),transparent 35%)}.book-cover-wrap a,.book-tags span,.modal-tags span{border-color:rgba(37,231,255,.28);background:rgba(37,231,255,.05);color:#7df5ff}.skill-card:after{border-color:rgba(154,118,255,.24)}.skill-card i em{background:linear-gradient(90deg,var(--violet),var(--cyan))}
+
+/* BUILD_04 — Simulador Naval (mesmo padrão dos outros cards) */
+.build-card.build-wide{grid-column:1/-1;min-height:0;display:grid;grid-template-columns:1.2fr .8fr;column-gap:25px;align-items:center}
+.build-card.build-wide .build-no{grid-column:1/-1}
+.naval{background:radial-gradient(circle,rgba(37,231,255,.16) 0,transparent 45%),linear-gradient(135deg,#061321,#030811)}
+.radar{width:190px;height:190px;border-radius:50%;border:1px solid var(--cyan);box-shadow:0 0 70px rgba(37,231,255,.22);position:relative;background:conic-gradient(from 0deg,rgba(37,231,255,.35),transparent 28%);animation:spin 6s linear infinite}
+.radar i{position:absolute;inset:0;margin:auto;border:1px solid rgba(37,231,255,.35);border-radius:50%}
+.radar i:nth-child(1){width:66%;height:66%}.radar i:nth-child(2){width:33%;height:33%}.radar i:nth-child(3){width:100%;height:1px;border:0;border-top:1px solid rgba(37,231,255,.25);border-radius:0}
+.blip{position:absolute;font:7px var(--mono);color:#6f7b75;border:1px solid var(--line);padding:7px;background:rgba(5,7,11,.8)}
+.blip.b1{top:28px;left:14%}.blip.b2{top:75px;right:14%}.blip.b3{bottom:28px;left:24%}
+@media(max-width:850px){.build-card.build-wide{display:block}}
