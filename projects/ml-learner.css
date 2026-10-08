@@ -41,3 +41,10 @@ html {
     border-radius: 10px;
   }
 }
+
+
+/* CORREÇÃO: o atributo [hidden] era anulado por "display:grid" em .ml-app-fallback,
+   deixando o aviso "não carregou" sempre por cima do iframe. */
+.ml-app-fallback[hidden] {
+  display: none !important;
+}
