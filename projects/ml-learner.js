@@ -16,7 +16,7 @@
     shell.dataset.failed = 'true';
     fallback.hidden = false;
     status.textContent = 'Abra em nova aba para continuar';
-  }, 15000);
+  }, 45000);
 
   frame.addEventListener('load', () => {
     window.clearTimeout(timer);
