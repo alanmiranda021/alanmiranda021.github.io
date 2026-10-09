@@ -52,7 +52,7 @@ def holdout(pipe, X, y, task, test_size=0.2, seed=42):
     return m, extra
 
 
-def cross_val(pipe, X, y, task, k=5, repeats=1, seed=42):
+def cross_val(pipe, X, y, task, k=5, repeats=1, seed=42, progress=None):
     if task == "classification":
         cv = RepeatedStratifiedKFold(n_splits=k, n_repeats=repeats, random_state=seed) if repeats > 1 \
             else StratifiedKFold(k, shuffle=True, random_state=seed)
@@ -61,7 +61,17 @@ def cross_val(pipe, X, y, task, k=5, repeats=1, seed=42):
         cv = RepeatedKFold(n_splits=k, n_repeats=repeats, random_state=seed) if repeats > 1 \
             else KFold(k, shuffle=True, random_state=seed)
         sc = REG_SCORING
-    res = cross_validate(pipe, X, y, cv=cv, scoring=sc, n_jobs=1)
+    if progress is None:
+        res = cross_validate(pipe, X, y, cv=cv, scoring=sc, n_jobs=1)
+    else:
+        total = cv.get_n_splits(X, y)
+        parts = []
+        for i, split in enumerate(cv.split(X, y)):
+            progress(i / total, f"Validação {i + 1}/{total}: treinando e testando")
+            parts.append(cross_validate(pipe, X, y, cv=[split], scoring=sc, n_jobs=1,
+                                        error_score="raise"))
+            progress((i + 1) / total, f"Validação {i + 1}/{total} concluída")
+        res = {key: np.concatenate([part[key] for part in parts]) for key in parts[0]}
     out = {}
     for name in sc:
         v = res[f"test_{name}"]

@@ -82,6 +82,14 @@ def _label(cfg):
 def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=None, budget_s=None, max_sel_rows=None):
     """budget_s: orçamento de tempo (s). O sistema pula modelos pesados / desliga a otimização se estourar."""
     t0 = time.time()
+    notify = progress
+    last_progress = 0.0
+    def update_progress(value, text):
+        nonlocal last_progress
+        last_progress = max(last_progress, min(value, 1.0))
+        notify(last_progress, text)
+    progress = update_progress if notify else None
+    if progress: progress(0.01, "Preparando dados e separando treino/teste")
     rapido = mode == "rápido"
     # navegador (Pyodide) roda em 1 thread e é bem mais lento: limites mais enxutos
     max_sel_rows = max_sel_rows or (2000 if IN_BROWSER else (4000 if rapido else 8000))
@@ -118,16 +126,26 @@ def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=N
     if rapido:
         cfgs = cfgs[:2] if IN_BROWSER else cfgs[:3]
     Xc, yc = (Xs.iloc[:1500], ys.iloc[:1500]) if rapido and len(Xs) > 1500 else (Xs, ys)
-    for cfg in cfgs:
+    for cfg_i, cfg in enumerate(cfgs):
         try:
             pre = build_preprocessor(num, cat, cfg["scaler"], cfg["winsor"], 1.5, cfg["pca"])
-            sc = np.mean([cross_val(make_pipeline(pre, zoo[m][0], task=task), Xc, yc, task, 3, 1, seed)[key][0] for m in ref])
+            scores = []
+            for ref_i, model_name in enumerate(ref):
+                def prep_progress(p, text):
+                    if progress:
+                        fraction = (cfg_i + (ref_i + p) / len(ref)) / len(cfgs)
+                        progress(0.05 + 0.10 * fraction,
+                                 f"Preparação {cfg_i + 1}/{len(cfgs)} · {model_name} · {text}")
+                scores.append(cross_val(make_pipeline(pre, zoo[model_name][0], task=task),
+                                        Xc, yc, task, 3, 1, seed,
+                                        progress=prep_progress if progress else None)[key][0])
+            sc = np.mean(scores)
         except Exception as e:  # auto-recuperação: configuração inviável é descartada
             adj.append(f"Configuração descartada ({_label(cfg)}): {str(e)[:60]}"); continue
         tried.append((sc, cfg))
         if sc > best_sc + 1e-4:
             best_sc, best_cfg = sc, cfg
-        if progress: progress(0.05 + 0.1 * len(tried) / max(len(cfgs), 1), f"Testando pré-processamento: {_label(cfg)}")
+        if progress: progress(0.05 + 0.1 * (cfg_i + 1) / len(cfgs), "Preparação concluída: " + _label(cfg))
     if best_cfg is None:
         best_cfg = dict(scaler="Z-score (Standard)", winsor=True, pca=False)
         adj.append("Nenhuma configuração avaliável; usando o padrão.")
@@ -150,6 +168,8 @@ def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=N
     # 3) comparação com orçamento de tempo (preditivo: mede 1 treino antes de decidir)
     rows, skipped, fit_t = [], [], {}
     for i, n in enumerate(names):
+        start = 0.15 + 0.8 * i / len(names)
+        if progress: progress(start, f"Modelo {i + 1}/{len(names)} · {n}: iniciando treino")
         m, g = get_model(n)
         remaining = budget_s - (time.time() - t0)
         use_reps = reps
@@ -168,14 +188,19 @@ def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=N
                     skipped.append(n); continue
         s_ = time.time()
         try:
-            r = cross_val(make_pipeline(pre, m, task=task), Xs, ys, task, 5, use_reps, seed)
+            def model_progress(p, text):
+                if progress:
+                    progress(start + 0.8 * p / len(names),
+                             f"Modelo {i + 1}/{len(names)} · {n} · {text}")
+            r = cross_val(make_pipeline(pre, m, task=task), Xs, ys, task, 5, use_reps, seed,
+                          progress=model_progress if progress else None)
         except Exception as e:
             adj.append(f"Modelo {n} falhou e foi ignorado: {str(e)[:60]}"); continue
         dt = time.time() - s_
         fit_t[n] = dt / (5 * use_reps)
         rows.append({"Modelo": n, **{k: v[0] for k, v in r.items()}, **{f"{k} (±)": v[1] for k, v in r.items()},
                      "tempo (s)": round(dt, 1)})
-        if progress: progress(0.15 + 0.8 * (i + 1) / (len(names) + 1), f"Validando {n}")
+        if progress: progress(0.15 + 0.8 * (i + 1) / len(names), f"Validação concluída: {n}")
     if skipped:
         adj.append("Pulados por orçamento de tempo: " + ", ".join(skipped))
     board = pd.DataFrame(rows).sort_values(key, ascending=False).reset_index(drop=True)
@@ -192,8 +217,10 @@ def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=N
     if progress: progress(0.97, f"Ajustando {best}")
     final = make_pipeline(pre, m, g, tune=do_tune, task=task)
     final.fit(Xtr, ytr)
+    if progress: progress(0.98, "Avaliando o melhor modelo nos dados de teste")
     pred = final.predict(Xte)
     test = reg_metrics(yte, pred) if task == "regression" else clf_metrics(yte, pred)
+    if progress: progress(1.0, "Treino e teste concluídos")
     return {"task": task, "target": target, "features": feats, "log": log, "adjustments": adj, "config": best_cfg,
             "leaderboard": board, "best": best, "best_params": getattr(final, "best_params_", {}),
             "test_metrics": test, "model": final, "y_true": np.asarray(yte), "y_pred": np.asarray(pred),

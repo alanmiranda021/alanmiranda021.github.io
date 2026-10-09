@@ -76,18 +76,22 @@ if multi.startswith("Processar"):
     lo = st.slider("Orçamento de tempo por arquivo (s)", 30, 600, 90, 30, key="lo")
     if st.button("▶️ Rodar todos os arquivos", type="primary"):
         import zipfile
-        rows, pdfs, bar = [], {}, st.progress(0.0)
+        rows, pdfs, bar = [], {}, st.progress(0.0, text="Iniciando o lote...")
         for i, (nome, d) in enumerate(loaded):
             bar.progress(i / len(loaded), text=f"Processando {nome} ({i + 1}/{len(loaded)})")
             try:
-                r = run_auto(d, None, lv, budget_s=lo)
+                def batch_progress(p, text):
+                    value = (i + 0.95 * p) / len(loaded)
+                    bar.progress(value, text=f"{value:.0%} · Arquivo {i + 1}/{len(loaded)} · {nome} · {text}")
+                r = run_auto(d, None, lv, budget_s=lo, progress=batch_progress)
                 k = "R2" if r["task"] == "regression" else "F1 (macro)"
                 rows.append({"arquivo": nome, "tipo": "regressão" if r["task"] == "regression" else "classificação", "alvo": r["target"],
                              "melhor modelo": r["best"], "métrica": k, "nota (teste)": round(r["test_metrics"][k], 4), "tempo (s)": r["seconds"]})
+                bar.progress((i + 0.95) / len(loaded), text=f"Arquivo {i + 1}/{len(loaded)} · {nome} · Gerando PDF...")
                 pdfs[nome], _aviso = safe_pdf(r, nome)
             except Exception as e:
                 rows.append({"arquivo": nome, "tipo": "ERRO", "alvo": str(e)[:80]})
-        bar.progress(1.0)
+        bar.progress(1.0, text="100% · Lote concluído")
         tab = pd.DataFrame(rows)
         zb = io.BytesIO()
         with zipfile.ZipFile(zb, "w", zipfile.ZIP_DEFLATED) as z:
@@ -140,21 +144,22 @@ if modo.startswith("🚀"):
         for _k in ("pdf", "pdf_aviso", "pdf_path", "bundle"):
             st.session_state.pop(_k, None)
         try:
-            st.session_state["auto"] = run_auto(df, alvo, velocidade, progress=lambda p, t: barra.progress(min(p, 1.0), text=t), budget_s=orcamento)
+            st.session_state["auto"] = run_auto(df, alvo, velocidade,
+                progress=lambda p, t: barra.progress(0.95 * p, text=f"{0.95 * p:.0%} · {t}"), budget_s=orcamento)
         except Exception as e:
             barra.empty()
             st.session_state.pop("auto", None)
             st.error(f"A execução automática falhou: {e}")
             st.exception(e)
             st.stop()
-        barra.progress(0.99, text="Montando o relatório PDF...")
+        barra.progress(0.96, text="96% · Montando o relatório PDF...")
         try:
             pdf_bytes, aviso = safe_pdf(st.session_state["auto"], ", ".join(f.name for f in files))
             st.session_state["pdf"], st.session_state["pdf_aviso"] = pdf_bytes, aviso
             st.session_state["pdf_path"] = save_pdf(pdf_bytes)
         except Exception as e:
             st.session_state["pdf_aviso"] = f"Não foi possível gerar o PDF: {e}"
-        barra.empty()
+        barra.progress(1.0, text="100% · Execução concluída")
     if "auto" in st.session_state:
         r = st.session_state["auto"]
         st.success(f"Concluído em {r['seconds']} s — melhor modelo: **{r['best']}**")
@@ -341,8 +346,12 @@ if st.button("▶️ Treinar e comparar", type="primary"):
         from imblearn.over_sampling import ADASYN, SMOTE
         sampler = {"SMOTE": SMOTE, "ADASYN": ADASYN}[sampler_name](random_state=int(seed))
     rows, store = [], {}
-    bar = st.progress(0.0)
+    if not chosen:
+        st.warning("Selecione pelo menos um algoritmo.")
+        st.stop()
+    bar = st.progress(0.0, text="Iniciando treino e teste...")
     for i, name in enumerate(chosen):
+        bar.progress(i / len(chosen), text=f"Modelo {i + 1}/{len(chosen)} · {name}: treinando e testando")
         model, grid = zoo[name]
         pipe = make_pipeline(pre, model, grid, tune and strategy == "Hold-out", task=task, sampler=sampler)
         try:
@@ -351,11 +360,15 @@ if st.button("▶️ Treinar e comparar", type="primary"):
                 store[name] = extra
                 rows.append({"Modelo": name, **{a: round(b, 4) for a, b in m.items()}})
             else:
-                m = cross_val(make_pipeline(pre, model, grid, False, task=task, sampler=sampler), X, y, task, k, reps, int(seed))
+                def manual_progress(p, text):
+                    value = (i + p) / len(chosen)
+                    bar.progress(value, text=f"{value:.0%} · {name} · {text}")
+                m = cross_val(make_pipeline(pre, model, grid, False, task=task, sampler=sampler), X, y, task, k, reps, int(seed), progress=manual_progress)
                 rows.append({"Modelo": name, **{a: f"{b[0]:.4f} ± {b[1]:.4f}" for a, b in m.items()}})
         except Exception as e:
             rows.append({"Modelo": name, "erro": str(e)[:80]})
-        bar.progress((i + 1) / len(chosen))
+        bar.progress((i + 1) / len(chosen), text=f"Modelo {i + 1}/{len(chosen)} · {name}: concluído")
+    bar.progress(1.0, text="100% · Comparação concluída")
     st.session_state["res"] = (pd.DataFrame(rows), store, task)
 
 if "res" in st.session_state:
