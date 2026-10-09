@@ -71,15 +71,6 @@ if(gameCanvas){
   const points = [...scene.querySelectorAll('.ship-hotspot')];
   const touchMode = () => window.matchMedia('(hover: none), (pointer: coarse)').matches;
   points.forEach(point => {
-    point.addEventListener('click', event => {
-      if (!touchMode() || point.classList.contains('is-active')) return;
-      event.preventDefault();
-      points.forEach(p => p.classList.remove('is-active'));
-      point.classList.add('is-active');
-      if (title) title.textContent = point.dataset.title || 'PROJETO';
-      if (paragraph) paragraph.textContent = point.dataset.description || '';
-      if (action) action.textContent = (point.dataset.action || 'ABRIR PROJETO') + ' · TOQUE NOVAMENTE PARA ABRIR';
-    });
     point.addEventListener('mouseenter', () => {
       if (touchMode()) return;
       if (title) title.textContent = point.dataset.title || 'PROJETO';
