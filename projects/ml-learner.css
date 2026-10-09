@@ -6,3 +6,7 @@
 @media(max-width:700px){.ml-feature-grid,.ml-demo-grid{grid-template-columns:1fr}.ml-launch{min-height:560px;padding:24px}.ml-tags span{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.ml-demo{transition:none}}
 @media(max-width:700px){.ml-learner-page .header{position:static}.ml-learner-hero{padding-top:45px}.ml-app-shell{scroll-margin-top:16px}}
+
+/* Laborat?rio aberto diretamente */
+.ml-learner-content{padding-top:100px}.ml-app-shell{min-height:calc(100vh - 130px)}.ml-app-shell iframe{height:calc(100vh - 175px);min-height:700px}
+@media(max-width:700px){.ml-learner-content{padding-top:16px}.ml-app-shell iframe{min-height:650px}}

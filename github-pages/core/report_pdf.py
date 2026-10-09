@@ -168,6 +168,23 @@ def _insights(r):
     return out
 
 
+def build_results_pdf(results, filename, target, task, strategy, features) -> bytes:
+    """Exporta a comparação manual, incluindo erros e métricas de validação."""
+    buf = io.BytesIO()
+    doc = BaseDocTemplate(buf, pagesize=A4, leftMargin=2 * cm, rightMargin=2 * cm,
+                          topMargin=1.8 * cm, bottomMargin=1.8 * cm, title="ML-Learner - resultados")
+    doc.addPageTemplates([PageTemplate(id="manual", frames=[Frame(2 * cm, 1.8 * cm,
+        A4[0] - 4 * cm, A4[1] - 3.6 * cm, id="f")], onPage=_page)])
+    story = [P("ML-Learner - comparacao manual", H1), P(f"Arquivo: {filename}"),
+             P(f"Alvo: {target}. Tipo: {task}. Validacao: {strategy}."),
+             P("Caracteristicas: " + ", ".join(map(str, features)), SMALL),
+             Spacer(1, 12), _table(results)]
+    if strategy != "Hold-out":
+        story.append(P("Metricas de validacao cruzada: media e desvio padrao. Nao foi reservado um teste independente.", SMALL))
+    doc.build(story)
+    return buf.getvalue()
+
+
 def build_pdf(r, filename="dados", importance=True) -> bytes:
     from sklearn.inspection import permutation_importance
     from sklearn.metrics import classification_report, confusion_matrix

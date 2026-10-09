@@ -20,32 +20,10 @@
   </header>
 
   <main>
-    <section class="project-hero ml-learner-hero">
-      <a class="back" href="../index.html#projetos">← VOLTAR PARA PROJETOS</a>
-      <div class="project-code">BUILD_05 / DADOS · ENGENHARIA · MACHINE LEARNING</div>
-      <h1>Dos dados<br>à <em>previsão.</em></h1>
-      <p class="project-sub">ML Learner é um laboratório de aprendizado de máquina inspirado no Regression e Classification Learner do MATLAB. Envie uma planilha, compare algoritmos e transforme experimentos em modelos que você pode usar.</p>
-      <div class="ml-actions"><a class="btn hot" href="#aplicacao">EXPERIMENTAR O LABORATÓRIO ↗</a><a class="btn" href="../github-pages/index.html" target="_blank" rel="noopener">ABRIR EM NOVA ABA ↗</a></div>
-      <div class="ml-tags"><span>PYTHON + SCIKIT-LEARN</span><span>REGRESSÃO / CLASSIFICAÇÃO</span><span>EXECUÇÃO NO NAVEGADOR</span></div>
-    </section>
-
     <section class="project-content ml-learner-content">
-      <div class="ml-heading"><span>01 / O PROCESSO</span><h2>Um fluxo completo. Decisões visíveis.</h2></div>
-      <div class="ml-feature-grid">
-        <article class="project-panel"><span class="ml-number">01</span><h3>Explore sua base</h3><p>Importe CSV, Excel ou matrizes MATLAB. Confira as colunas, escolha o alvo e identifique ausentes e possíveis vazamentos.</p></article>
-        <article class="project-panel"><span class="ml-number">02</span><h3>Compare modelos</h3><p>Use o modo automático ou controle escalonamento, outliers, algoritmos e validação no modo manual.</p></article>
-        <article class="project-panel"><span class="ml-number">03</span><h3>Leve o resultado</h3><p>Analise R², RMSE, MAE, acurácia e F1. Exporte relatório PDF, modelo .joblib e previsões para novos dados.</p></article>
-      </div>
-      <article class="project-panel ml-notice"><b>DA ENGENHARIA PARA O EXPERIMENTO</b><p>Estime consumo a partir de condições de operação ou classifique estados de um motor. No modo automático, o teste é reservado antes da comparação dos modelos; imputação e escalonamento são ajustados dentro dos pipelines de treino. As métricas dependem da sua base e da validação escolhida.</p></article>
-      <div class="ml-heading"><span>02 / EXPERIMENTE</span><h2>Comece com uma pergunta.</h2><p>Baixe uma base sintética e envie no laboratório, ou use os seus próprios dados. Os exemplos são didáticos e não representam medições reais.</p></div>
-      <div class="ml-demo-grid">
-        <a class="project-panel ml-demo" href="../github-pages/examples/consumo_navio.csv" download><span>REGRESSÃO / CSV</span><h3>Quanto o navio consome? ↗</h3><p>Velocidade, calado e estado do mar → consumo_m3_h.</p><small>240 amostras sintéticas · baixar exemplo</small></a>
-        <a class="project-panel ml-demo" href="../github-pages/examples/estados_motor.csv" download><span>CLASSIFICAÇÃO / CSV</span><h3>Qual é o estado do motor? ↗</h3><p>Vibração, temperatura e pressão → estado.</p><small>240 amostras sintéticas · baixar exemplo</small></a>
-      </div>
       <section id="aplicacao" class="ml-app-shell" data-app-url="../github-pages/index.html">
-        <div class="ml-app-bar"><span><i></i> ML LEARNER / LABORATÓRIO</span><small id="app-status" role="status">Pronto para iniciar</small></div>
-        <div id="app-launch" class="ml-launch"><span class="ml-number">ML / LAB</span><h2>Seu próximo experimento<br>começa aqui.</h2><p>A primeira abertura baixa o ambiente Python e pode levar alguns minutos. Os arquivos enviados são processados nesta aba.</p><button id="launch-app" class="btn hot" type="button">INICIAR LABORATÓRIO →</button><small>Recomendado: computador e navegador atualizado.</small></div>
-        <iframe id="ml-app" title="Laboratório ML Learner: regressão e classificação" hidden allow="clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <div class="ml-app-bar"><span><i></i> ML LEARNER / LABORATÓRIO</span><small id="app-status" role="status">Iniciando o laboratório…</small></div>
+        <iframe id="ml-app" title="Laboratório ML Learner: regressão e classificação" allow="clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe>
         <noscript>Ative o JavaScript para executar o laboratório.</noscript>
       </section>
       <div class="ml-help"><p>Se o carregamento falhar, <a href="../github-pages/index.html" target="_blank" rel="noopener">abra o laboratório em uma nova aba ↗</a>.</p><details><summary>Como usar e quais são os limites?</summary><p>Envie a base, confira a variável alvo e escolha Automático ou Manual. Depois de avaliar, treine o modelo final e baixe os arquivos antes de fechar a aba. O modo automático considera poucos valores numéricos distintos como classes; use o modo manual para corrigir essa escolha.</p><p>A execução no navegador depende dos pacotes disponíveis em WebAssembly. MAT com table, MAT v7.3 e balanceamento podem ter restrições. Para bases maiores, execute a versão Python local seguindo o <a href="../github-pages/LEIAME.md">guia do projeto</a>. Cada experimento utiliza um alvo.</p></details></div>
