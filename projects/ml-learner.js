@@ -2,42 +2,16 @@
   const shell = document.querySelector('.ml-app-shell');
   const frame = document.querySelector('#ml-app');
   const status = document.querySelector('#app-status');
-  const fallback = document.querySelector('#app-fallback');
-  const openLink = document.querySelector('#app-open');
-
-  if (!shell || !frame) return;
-
-  const appUrl = (shell.dataset.appUrl || '').replace(/\/+$/, '');
-  if (!appUrl) {
-    if (status) status.textContent = 'URL da aplicação não configurada';
-    return;
-  }
-
-  if (openLink) openLink.href = appUrl;
-
-  let loaded = false;
-
-  const showFallback = () => {
-    if (loaded) return;
-    if (fallback) fallback.hidden = false;
-    if (status) status.textContent = 'Não foi possível carregar o embed';
-  };
-
-  const hideFallback = () => {
-    if (fallback) fallback.hidden = true;
-  };
-
-  // Listeners ANTES de definir o src, para não perder o evento "load".
-  frame.addEventListener('load', () => {
-    loaded = true;
-    hideFallback();
-    if (status) status.textContent = 'Aplicação pronta para receber dados';
+  const appUrl = new URL(shell.dataset.appUrl, window.location.href);
+  document.querySelector('#launch-app').addEventListener('click', () => {
+    document.querySelector('#app-launch').hidden = true;
+    frame.hidden = false;
+    status.textContent = 'Baixando e iniciando o ambiente Python…';
+    frame.src = appUrl.href;
+  }, { once: true });
+  window.addEventListener('message', (event) => {
+    if (event.origin !== appUrl.origin || event.source !== frame.contentWindow) return;
+    if (event.data?.type === 'ml-learner-ready') status.textContent = 'Interface disponível — confira o laboratório abaixo';
+    if (event.data?.type === 'ml-learner-error') status.textContent = 'Falha ao carregar — tente abrir em nova aba';
   });
-  frame.addEventListener('error', showFallback);
-
-  // A aplicação é carregada dentro desta própria página.
-  frame.src = `${appUrl}/?embed=true`;
-
-  // Apps Streamlit "dormindo" podem demorar; só mostra o aviso se nada carregar.
-  setTimeout(showFallback, 45000);
 })();
