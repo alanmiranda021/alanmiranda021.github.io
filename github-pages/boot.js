@@ -38,7 +38,7 @@ window.addEventListener('unhandledrejection', (event) => failure(event.reason));
 try {
   if (window.location.protocol === 'file:') throw new Error('Use um servidor HTTP para abrir a aplicação.');
   // Fetch and validate the project before starting the Python environment.
-  const paths = ['app.py', 'core/__init__.py', 'core/env.py', 'core/io.py',
+  const paths = ['app.py', 'core/env.py', 'core/io.py',
     'core/preprocess.py', 'core/models.py', 'core/evaluate.py', 'core/auto.py',
     'core/report_pdf.py', 'core/predict.py'];
   const files = Object.fromEntries(await Promise.all(paths.map(async (path) => {
@@ -46,6 +46,8 @@ try {
     if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
     return [path, await response.text()];
   })));
+  // Empty package marker: no network request needed (Jekyll may hide underscored files).
+  files['core/__init__.py'] = '';
   tip.textContent = 'Baixando Python e os pacotes de análise…';
   const { mount } = await import('https://cdn.jsdelivr.net/npm/@stlite/browser@0.85.1/build/stlite.js');
   await mount({

@@ -83,13 +83,55 @@
   </div>
 </section><section id="projetos" class="section builds">
   <div class="section-top reveal"><span>02</span><p>PROJETOS SELECIONADOS / LAB</p></div>
-  <div class="build-head reveal">
-    <h2>Projetos como<br><em>experimentos vivos.</em></h2>
-    <div class="build-intro">
-      <p>Não são apenas itens de portfólio. Cada projeto é uma hipótese, um laboratório e uma forma de testar uma ideia.</p>
+  <div class="ship-project-stage reveal" aria-label="Navio interativo: passe o cursor ou toque nos pontos para explorar os projetos">
+    <div class="build-no ship-stage-code">PROJECT HUB / ENGENHARIA · DADOS · IA</div>
+    <div class="build-visual naval ship-scene ship-only-scene">
+      <div class="sea-glow"></div><div class="sea-lines"></div>
+      <svg class="ship-illustration" viewBox="0 0 1000 430" role="img" aria-label="Navio de apoio offshore em perfil, navegando no oceano">
+      <defs>
+        <linearGradient id="hull" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8edf0"/><stop offset=".12" stop-color="#8dabb8"/><stop offset=".16" stop-color="#183d50"/><stop offset=".56" stop-color="#092332"/><stop offset=".58" stop-color="#b94735"/><stop offset="1" stop-color="#511e24"/></linearGradient>
+        <linearGradient id="deck" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dce5e8"/><stop offset="1" stop-color="#647e8a"/></linearGradient>
+        <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#0c4661" stop-opacity=".15"/><stop offset="1" stop-color="#020912" stop-opacity=".8"/></linearGradient>
+        <filter id="shipShadow" x="-20%" y="-30%" width="140%" height="170%"><feGaussianBlur stdDeviation="9"/></filter>
+      </defs>
+      <ellipse cx="520" cy="344" rx="430" ry="26" fill="#000" opacity=".6" filter="url(#shipShadow)"/>
+      <!-- casco e linha d'água -->
+      <path d="M74 257 L895 257 Q929 257 956 276 L919 311 Q886 330 805 334 L194 329 Q117 322 88 293 Z" fill="url(#hull)" stroke="#9ab4c0" stroke-width="2"/>
+      <path d="M91 292 Q350 306 585 304 T927 286" fill="none" stroke="#e35e48" stroke-width="4" opacity=".9"/>
+      <path d="M102 256 L900 256 L934 277 L115 279 Z" fill="#172d38" stroke="#d0dce0" stroke-width="2"/>
+      <!-- convés, equipamentos e contentores -->
+      <path d="M133 244 L824 244 L892 257 L115 257 Z" fill="url(#deck)" stroke="#e4edf0" stroke-width="2"/>
+      <g stroke="#879da6" stroke-width="2" fill="#a9bbc2"><rect x="190" y="211" width="92" height="32"/><rect x="288" y="202" width="90" height="41"/><rect x="385" y="214" width="70" height="29"/><rect x="466" y="206" width="86" height="37"/><rect x="560" y="215" width="64" height="28"/></g>
+      <g stroke="#dce7eb" stroke-width="2" fill="none"><path d="M145 241V190H165V241 M145 198H165 M145 210H165 M145 222H165"/><path d="M180 195H630 M190 195V207 M220 195V207 M250 195V207 M280 195V207 M310 195V207 M340 195V207 M370 195V207 M400 195V207 M430 195V207 M460 195V207 M490 195V207 M520 195V207 M550 195V207 M580 195V207 M610 195V207"/></g>
+      <!-- guindaste -->
+      <g stroke="#d9e2e5" stroke-width="5" fill="none"><path d="M638 242 L661 154 L682 242 M650 194H674 M661 154L714 154L738 172 M714 154V188 M738 172L724 188"/><path d="M724 188V216" stroke-width="2"/></g>
+      <!-- superestrutura / ponte -->
+      <path d="M702 243 L702 179 L730 142 L797 142 L824 176 L824 243 Z" fill="url(#deck)" stroke="#f1f5f6" stroke-width="2"/>
+      <path d="M716 178 L732 151 L795 151 L811 178 Z" fill="#102b3d" stroke="#9bb9c7" stroke-width="2"/>
+      <g stroke="#64c7e7" stroke-width="2"><path d="M725 160H801 M721 168H806"/><path d="M739 153V175 M758 153V175 M778 153V175 M797 153V175"/></g>
+      <rect x="729" y="184" width="67" height="7" fill="#c6d6dc"/><rect x="741" y="196" width="42" height="19" fill="#9db1bb"/>
+      <g stroke="#e0e8eb" stroke-width="3" fill="none"><path d="M762 142V83 M762 95L738 114 M762 107L784 122 M762 84L750 96 M762 84L775 96"/><path d="M748 83H776 M754 72H770"/></g>
+      <circle cx="762" cy="69" r="4" fill="#65e5ff"/><path d="M762 69V53" stroke="#65e5ff" stroke-width="2"/>
+      <!-- proa, defensa e detalhes -->
+      <path d="M824 243 L892 243 L925 263 L855 262 Z" fill="#d8e1e4" stroke="#f3f7f8" stroke-width="2"/>
+      <g fill="#e5ecee"><circle cx="853" cy="253" r="3"/><circle cx="872" cy="253" r="3"/><circle cx="891" cy="253" r="3"/></g>
+      <g stroke="#d6e3e8" stroke-width="2" fill="none"><path d="M123 245V231H137V245 M160 244V229H174V244 M190 244V230H204V244"/><path d="M836 237H903 M842 231H896"/></g>
+      <!-- popa / hélice com alvo interativo sobreposto -->
+      <g class="propeller-art" transform="translate(94 313)"><circle r="18" fill="#07151e" stroke="#7bdcf7" stroke-width="2"/><circle r="5" fill="#b9cbd0"/><path d="M0 -5 Q-16 -36 -5 -40 Q8 -36 5 -5 M5 0 Q36 -16 40 -5 Q36 8 5 5 M0 5 Q16 36 5 40 Q-8 36 -5 5 M-5 0 Q-36 16 -40 5 Q-36 -8 -5 -5" fill="#8eabb7" stroke="#d3e2e7" stroke-width="1.5"/></g>
+      <path d="M35 347 Q110 332 173 349 T300 349 T440 348 T590 350 T740 349 T970 346" stroke="#38bfe9" stroke-width="2" opacity=".55" fill="none"/>
+      <path d="M60 366 Q145 356 226 369 T394 366 T566 370 T750 365 T930 369" stroke="#4b9eb9" stroke-width="1.5" opacity=".35" fill="none"/>
+    </svg>
+      <div class="ship-hud"><span><i></i> SISTEMA INTERATIVO</span><span>SELECIONE UM PONTO DO NAVIO</span></div>
+      <a class="ship-hotspot hs-propeller" href="naval.html" data-title="SIMULADOR DE PROPULSÃO" data-description="Explore o desempenho da hélice naval por meio dos coeficientes Kt, Kq e J e da eficiência propulsiva. Abra o simulador para alterar os parâmetros." data-action="ABRIR SIMULADOR ↗" aria-label="Abrir simulador de propulsão"><span class="hotspot-ring"></span><span class="hotspot-dot"></span></a>
+      <a class="ship-hotspot hs-ml" href="projects/ml-learner.html" data-title="ML LEARNER V3 · MACHINE LEARNING" data-description="Laboratório Python no navegador: envie CSV ou Excel, escolha o alvo, compare modelos de regressão ou classificação e exporte relatório, modelo e previsões." data-action="ABRIR ML LEARNER V3 ↗" aria-label="Abrir ML Learner V3"><span class="hotspot-ring"></span><span class="hotspot-dot"></span></a>
+      <div class="ship-project-tooltip" role="status" aria-live="polite"><b>EXPLORE O NAVIO</b><p>Passe o cursor ou toque em um dos pontos luminosos para conhecer um projeto.</p><span>2 PONTOS INTERATIVOS</span></div>
+      <span class="ship-caption">INTERACTIVE PROJECT MAP</span>
     </div>
   </div>
-
+</section>
+<section id="outros-projetos" class="section builds">
+  <div class="section-top reveal"><span>03</span><p>OUTROS PROJETOS / LAB</p></div>
+  <div class="build-head reveal"><h2>Outros projetos<br><em>em desenvolvimento.</em></h2><div class="build-intro"><p>AEON, INCLUDE e Alpha App continuam separados, como antes. Somente o simulador de propulsão e o ML Learner V3 ficam acessíveis pelos pontos interativos do navio.</p></div></div>
   <div class="build-grid">
     <article class="build-card featured reveal" data-modal="aeon">
       <div class="build-no">BUILD_01</div>
@@ -109,24 +151,9 @@
   <div class="build-info"><span>DADOS / MODELOS</span><h3>ALPHA APP</h3><p>Laboratório de modelos, backtesting, calibração e experimentação preditiva.</p><a class="btn-project" href="projects/alpha.html">ABRIR PROJETO ↗</a></div>
 </article>
 
-<article class="build-card build-wide reveal" data-modal="naval" data-href="naval.html">
-  <div class="build-no">BUILD_04</div>
-  <div class="build-visual naval"><div class="radar"><i></i><i></i><i></i></div><span class="blip b1">CONTATO 01</span><span class="blip b2">CONTATO 02</span><span class="blip b3">CONTATO 03</span></div>
-  <div class="build-info"><span>SIMULAÇÃO </span><h3>SIMULADOR SISTEMA DE PROPULSÃO</h3><p>Simulador interativo de eficiência do sistema de propulsão da serie-b, utilizando 3 métodos.</p><a class="btn-project" href="naval.html">ABRIR PROJETO ↗</a></div>
-</article>
-
-<article class="build-card build-wide reveal ml-learner-card" data-href="projects/ml-learner.html">
-  <div class="build-no">BUILD_05</div>
-  <div class="build-visual ml-learner-visual" aria-hidden="true">
-    <div class="ml-orbit"></div>
-    <div class="ml-axis"><i></i><i></i><i></i><i></i><i></i></div>
-    <span class="ml-tag t1">UPLOAD</span><span class="ml-tag t2">TRAIN</span><span class="ml-tag t3">SHAP</span>
   </div>
-  <div class="build-info"><span>CIÊNCIA DE DADOS / MACHINE LEARNING</span><h3>ML LEARNER V3</h3><p>Laboratório Python para regressão e classificação: importe dados, compare modelos, avalie métricas e exporte previsões no navegador.</p><a class="btn-project" href="projects/ml-learner.html">ABRIR ML LEARNER ↗</a></div>
-</article>
-
-   </div>
-</section><section class="lab">
+</section>
+<section class="lab">
   <div class="lab-copy reveal">
     <p class="eyebrow">STACK / MAPA DE SKILLS</p>
     <h2>Onde hardware<br>encontra <em>software.</em></h2>

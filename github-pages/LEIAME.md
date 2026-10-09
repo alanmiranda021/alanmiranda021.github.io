@@ -18,6 +18,8 @@ Mantenha a estrutura existente. Envie a pasta `github-pages/` inteira, incluindo
 
 No GitHub Pages, use a raiz do repositório do portfólio como origem. A página ficará em `/projects/ml-learner.html` e o laboratório em `/github-pages/`.
 
+Mantenha o arquivo `.nojekyll` na raiz do repositório. Ele impede que o processamento Jekyll exclua arquivos como `core/__init__.py`. O carregador também cria esse marcador vazio diretamente no ambiente Python, sem depender do download.
+
 ## Usar
 
 1. Baixe um dos CSV demonstrativos na página; são dados sintéticos.

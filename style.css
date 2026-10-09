@@ -54,3 +54,62 @@ body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;back
 .blip.b1{top:28px;left:14%}.blip.b2{top:75px;right:14%}.blip.b3{bottom:28px;left:24%}
 .ml-learner-visual{background:radial-gradient(circle at 50% 50%,rgba(37,231,255,.16),transparent 42%),linear-gradient(135deg,#061321,#030811)}.ml-orbit{width:170px;height:170px;border:1px solid rgba(37,231,255,.4);border-radius:50%;position:absolute;box-shadow:0 0 65px rgba(37,231,255,.16);animation:spin 12s linear infinite}.ml-orbit:before,.ml-orbit:after{content:"";position:absolute;border:1px dashed rgba(154,118,255,.45);border-radius:50%;inset:25px}.ml-orbit:after{inset:54px;border-color:rgba(37,231,255,.6)}.ml-axis{height:104px;display:flex;align-items:end;gap:9px;z-index:1}.ml-axis i{display:block;width:15px;background:linear-gradient(to top,var(--cyan),var(--violet));box-shadow:0 0 14px rgba(37,231,255,.3)}.ml-axis i:nth-child(1){height:33%}.ml-axis i:nth-child(2){height:58%}.ml-axis i:nth-child(3){height:86%}.ml-axis i:nth-child(4){height:62%}.ml-axis i:nth-child(5){height:98%}.ml-tag{position:absolute;z-index:2;padding:6px 8px;border:1px solid rgba(37,231,255,.28);background:rgba(2,7,14,.85);color:#8eeeff;font:7px var(--mono);letter-spacing:.08em}.ml-tag.t1{left:17%;top:22%}.ml-tag.t2{right:14%;top:39%}.ml-tag.t3{left:21%;bottom:20%}
 @media(max-width:850px){.build-card.build-wide{display:block}}
+
+/* BUILD_04 — navio interativo e hotspot do propulsor */
+.naval-project{--ship-cyan:#38c8f2}
+.naval-project .ship-scene{height:clamp(250px,31vw,390px);min-height:250px;margin:15px 0 20px;border:1px solid rgba(72,190,224,.2);border-radius:3px;background:linear-gradient(180deg,#102b42 0%,#183b52 42%,#061725 43%,#020811 100%);isolation:isolate}
+.naval-project .sea-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 51% 74%,rgba(37,160,203,.25),transparent 47%),linear-gradient(180deg,rgba(114,177,205,.12),transparent 36%);pointer-events:none}
+.naval-project .sea-lines{position:absolute;left:0;right:0;bottom:0;height:34%;opacity:.45;background:repeating-linear-gradient(174deg,transparent 0 12px,rgba(71,184,220,.18) 13px,transparent 15px 25px);mask-image:linear-gradient(transparent,#000)}
+.naval-project .ship-illustration{position:absolute;width:100%;height:100%;inset:0;overflow:visible;transition:transform .7s cubic-bezier(.2,.7,.2,1);transform-origin:52% 58%}
+.naval-project .ship-scene:hover .ship-illustration{transform:scale(1.035)}
+.naval-project .ship-hud{position:absolute;top:12px;left:13px;right:13px;display:flex;justify-content:space-between;gap:10px;font:clamp(6px,.65vw,8px) var(--mono);letter-spacing:.08em;color:#b5dce9;text-shadow:0 1px 4px #00101a;pointer-events:none}
+.naval-project .ship-hud i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5ff0b3;box-shadow:0 0 10px #5ff0b3;margin-right:6px}
+.naval-project .propeller-hotspot{position:absolute;left:8.8%;top:69%;width:60px;height:60px;display:grid;place-items:center;border-radius:50%;color:#d9f8ff;text-decoration:none;z-index:3;outline-offset:4px}
+.naval-project .hotspot-ring{position:absolute;inset:0;border:1px solid rgba(79,221,255,.9);border-radius:50%;box-shadow:0 0 17px rgba(44,190,240,.35),inset 0 0 17px rgba(44,190,240,.12);animation:propellerPulse 2.5s ease-in-out infinite}
+.naval-project .hotspot-ring:before,.naval-project .hotspot-ring:after{content:"";position:absolute;inset:7px;border:1px solid rgba(79,221,255,.55);border-radius:50%}
+.naval-project .hotspot-ring:after{inset:-7px;border-style:dashed;opacity:.6}
+.naval-project .hotspot-dot{width:7px;height:7px;border-radius:50%;background:#a7f3ff;box-shadow:0 0 15px #39d5ff;z-index:1}
+.naval-project .hotspot-label{position:absolute;left:62px;top:13px;width:max-content;max-width:180px;padding:8px 10px;background:rgba(2,12,22,.92);border:1px solid rgba(69,204,245,.65);font:8px var(--mono);color:#a8efff;letter-spacing:.04em;box-shadow:0 8px 30px #0008;transition:opacity .2s,transform .2s}
+.naval-project .hotspot-label small{display:block;margin-top:5px;font-size:6px;color:#83aab9}
+.naval-project .propeller-tooltip{position:absolute;z-index:4;left:7%;bottom:12%;width:min(310px,66%);padding:15px 17px;background:rgba(3,12,22,.96);border:1px solid rgba(56,200,242,.7);box-shadow:0 12px 45px #0009;backdrop-filter:blur(12px);opacity:0;visibility:hidden;transform:translateY(8px) scale(.97);transform-origin:left bottom;transition:opacity .25s,transform .25s,visibility .25s;pointer-events:none}
+.naval-project .propeller-tooltip b{font:10px var(--mono);letter-spacing:.1em;color:#7fe6ff}
+.naval-project .propeller-tooltip p{font-size:11px;line-height:1.55;color:#c2d2db;margin:8px 0}
+.naval-project .propeller-tooltip p strong{color:#fff}
+.naval-project .propeller-tooltip>span{font:8px var(--mono);color:#57d7ff}
+.naval-project .propeller-hotspot:hover .hotspot-ring,.naval-project .propeller-hotspot:focus-visible .hotspot-ring{transform:scale(1.18);background:rgba(50,197,245,.12)}
+.naval-project .propeller-hotspot:hover .hotspot-label,.naval-project .propeller-hotspot:focus-visible .hotspot-label{opacity:0;transform:translateX(-6px)}
+.naval-project .ship-scene:has(.propeller-hotspot:hover) .propeller-tooltip,.naval-project .ship-scene:has(.propeller-hotspot:focus-visible) .propeller-tooltip{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+.naval-project .ship-scene:has(.propeller-hotspot:hover) .ship-illustration,.naval-project .ship-scene:has(.propeller-hotspot:focus-visible) .ship-illustration{transform:scale(1.08);transform-origin:12% 72%}
+.naval-project .ship-caption{position:absolute;bottom:10px;right:12px;font:6px var(--mono);letter-spacing:.12em;color:#8db6c6;pointer-events:none}
+.naval-project .ship-caption b{color:#4bd4ff;padding:0 5px}
+@keyframes propellerPulse{0%,100%{opacity:.7;transform:scale(.96)}50%{opacity:1;transform:scale(1.04)}}
+@media(max-width:850px){.naval-project .ship-scene{height:270px}.naval-project .propeller-hotspot{left:7%;top:69%;width:48px;height:48px}.naval-project .hotspot-label{left:49px;top:8px;max-width:145px;padding:7px}.naval-project .propeller-tooltip{left:4%;bottom:10%;width:82%;padding:12px}.naval-project .ship-caption{font-size:5px}.naval-project .ship-hud{font-size:6px}}
+@media(prefers-reduced-motion:reduce){.naval-project .hotspot-ring{animation:none}.naval-project .ship-illustration,.naval-project .propeller-tooltip{transition:none}}
+
+
+/* Projeto hub: um único navio concentra todos os projetos, sem cartões laterais. */
+.ship-project-stage{width:min(1180px,100%);margin:0 auto;}
+.ship-stage-code{margin:0 0 12px 2px;letter-spacing:.12em;}
+.ship-only-scene{height:clamp(390px,52vw,620px)!important;min-height:390px!important;margin:0!important;overflow:hidden;border:1px solid rgba(72,190,224,.28);background:linear-gradient(180deg,#102b42 0%,#183b52 42%,#061725 43%,#020811 100%);}
+.ship-only-scene .ship-illustration{transform-origin:50% 55%;}
+.ship-project-tooltip{position:absolute;z-index:6;left:50%;bottom:7%;transform:translate(-50%,12px);width:min(420px,78%);padding:17px 20px;background:rgba(2,10,19,.94);border:1px solid rgba(56,200,242,.72);box-shadow:0 16px 55px #000b;backdrop-filter:blur(14px);opacity:0;visibility:hidden;transition:opacity .2s,transform .2s,visibility .2s;pointer-events:none;text-align:left;}
+.ship-project-tooltip b{display:block;color:#83eaff;font:500 11px var(--mono);letter-spacing:.1em;}
+.ship-project-tooltip p{color:#d2e0e7;font-size:12px;line-height:1.6;margin:9px 0;}
+.ship-project-tooltip span{color:#55d9ff;font:8px var(--mono);letter-spacing:.08em;}
+.ship-hotspot{position:absolute;z-index:5;width:clamp(42px,5vw,58px);height:clamp(42px,5vw,58px);display:grid;place-items:center;border-radius:50%;text-decoration:none;outline-offset:5px;touch-action:manipulation;}
+.ship-hotspot .hotspot-ring{position:absolute;inset:0;border:1px solid rgba(79,221,255,.95);border-radius:50%;box-shadow:0 0 18px rgba(44,190,240,.4),inset 0 0 17px rgba(44,190,240,.14);animation:propellerPulse 2.5s ease-in-out infinite;}
+.ship-hotspot .hotspot-ring:before{content:"";position:absolute;inset:8px;border:1px solid rgba(79,221,255,.6);border-radius:50%;}
+.ship-hotspot .hotspot-ring:after{content:"";position:absolute;inset:-7px;border:1px dashed rgba(79,221,255,.55);border-radius:50%;}
+.ship-hotspot .hotspot-dot{width:8px;height:8px;background:#baf5ff;border-radius:50%;box-shadow:0 0 18px #39d5ff;}
+.ship-hotspot:hover .hotspot-ring,.ship-hotspot:focus-visible .hotspot-ring,.ship-hotspot.is-active .hotspot-ring{background:rgba(50,197,245,.17);transform:scale(1.2);}
+.ship-only-scene:has(.ship-hotspot:hover) .ship-project-tooltip,.ship-only-scene:has(.ship-hotspot:focus-visible) .ship-project-tooltip,.ship-only-scene:has(.ship-hotspot.is-active) .ship-project-tooltip{opacity:1;visibility:visible;transform:translate(-50%,0);}
+.ship-only-scene:has(.ship-hotspot:hover) .ship-illustration,.ship-only-scene:has(.ship-hotspot:focus-visible) .ship-illustration{transform:scale(1.045);}
+.hs-propeller{left:8%;top:69%;}
+.hs-aeon{left:38%;top:49%;}
+.hs-include{left:76%;top:30%;}
+.hs-alpha{left:56%;top:57%;}
+.hs-ml{left:68%;top:67%;}
+@media(max-width:850px){.ship-only-scene{height:430px!important;min-height:430px!important}.ship-hotspot{width:43px;height:43px}.hs-propeller{left:5%;top:69%}.hs-aeon{left:34%;top:50%}.hs-include{left:77%;top:31%}.hs-alpha{left:54%;top:57%}.hs-ml{left:68%;top:68%}.ship-project-tooltip{bottom:4%;width:88%;padding:12px 14px}.ship-project-tooltip p{font-size:11px}.ship-only-scene .ship-hud{font-size:6px}}
+@media(prefers-reduced-motion:reduce){.ship-hotspot .hotspot-ring{animation:none}.ship-project-tooltip,.ship-only-scene .ship-illustration{transition:none}}
+/* Decorative fixed overlays must not expand the page horizontally. */
+html{overflow-x:clip}

@@ -59,3 +59,37 @@ if(gameCanvas){
  function start(){resizeGame();resetGame();playing=true;gameMessage.classList.remove('visible');gameStatus.textContent='STATUS: ACTIVE';lastFrame=performance.now();animationFrame=requestAnimationFrame(frame)}
  startGame.addEventListener('click',start);gameCanvas.addEventListener('pointermove',setPlayerPosition);gameCanvas.addEventListener('pointerdown',event=>{setPlayerPosition(event);fire()});window.addEventListener('keydown',event=>{if(event.key===' '){event.preventDefault();fire()}if(event.key.toLowerCase()==='a'||event.key==='ArrowLeft')playerX=Math.max(26,playerX-28);if(event.key.toLowerCase()==='d'||event.key==='ArrowRight')playerX=Math.min(gameWidth-26,playerX+28)});window.addEventListener('resize',resizeGame);resizeGame();draw();
 }
+
+// Interactive ship project map: supports touch without forcing immediate navigation on first tap.
+(() => {
+  const scene = document.querySelector('.ship-only-scene');
+  if (!scene) return;
+  const tooltip = scene.querySelector('.ship-project-tooltip');
+  const title = tooltip?.querySelector('b');
+  const paragraph = tooltip?.querySelector('p');
+  const action = tooltip?.querySelector('span');
+  const points = [...scene.querySelectorAll('.ship-hotspot')];
+  const touchMode = () => window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  points.forEach(point => {
+    point.addEventListener('click', event => {
+      if (!touchMode() || point.classList.contains('is-active')) return;
+      event.preventDefault();
+      points.forEach(p => p.classList.remove('is-active'));
+      point.classList.add('is-active');
+      if (title) title.textContent = point.dataset.title || 'PROJETO';
+      if (paragraph) paragraph.textContent = point.dataset.description || '';
+      if (action) action.textContent = (point.dataset.action || 'ABRIR PROJETO') + ' · TOQUE NOVAMENTE PARA ABRIR';
+    });
+    point.addEventListener('mouseenter', () => {
+      if (touchMode()) return;
+      if (title) title.textContent = point.dataset.title || 'PROJETO';
+      if (paragraph) paragraph.textContent = point.dataset.description || '';
+      if (action) action.textContent = point.dataset.action || 'ABRIR PROJETO';
+    });
+    point.addEventListener('focus', () => {
+      if (title) title.textContent = point.dataset.title || 'PROJETO';
+      if (paragraph) paragraph.textContent = point.dataset.description || '';
+      if (action) action.textContent = point.dataset.action || 'ABRIR PROJETO';
+    });
+  });
+})();
