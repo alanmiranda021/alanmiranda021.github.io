@@ -1,5 +1,4 @@
 import io
-import hashlib
 import joblib
 import numpy as np
 import pandas as pd
@@ -14,7 +13,7 @@ HAS_IMB = importlib.util.find_spec("imblearn") is not None
 from core.auto import report_md, run_auto
 from core.evaluate import cross_val, holdout, make_pipeline
 from core.predict import final_model, load_bundle, make_bundle, predict_table, retrain_bundle, to_bytes
-from core.report_pdf import build_pdf, build_results_pdf
+from core.report_pdf import safe_pdf, save_pdf
 from core.io import load_table
 from core.models import CLASSIFICATION, REGRESSION
 from core.preprocess import (SCALERS, build_preprocessor, outlier_report,
@@ -44,7 +43,10 @@ CSS = """
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
-st.title("ML-Learner")
+st.markdown("""<div class="hero"><span class="orb">🧠</span><h1>AutoML Acadêmico</h1>
+<p>Suba a planilha. O sistema limpa, compara, escolhe, avalia e entrega o relatório.</p>
+<span class="chip">Regressão</span><span class="chip">Classificação</span><span class="chip">Auto-ajuste</span><span class="chip">Relatório PDF</span></div>""",
+            unsafe_allow_html=True)
 px.defaults.color_discrete_sequence = ["#6c5ce7", "#00b8a9", "#fd79a8", "#fdcb6e", "#0984e3"]
 
 # ---------- 1. DADOS ----------
@@ -63,30 +65,13 @@ with st.sidebar:
             st.error(f"{f.name}: {e}")
     if not loaded:
         st.stop()
-    signature = tuple((f.name, hashlib.sha256(f.getvalue()).hexdigest()) for f in files)
-    if st.session_state.get("data_signature") != signature:
-        for key in ("auto", "pdf", "bundle", "lote", "res", "retrain", "manual_pdf"):
-            st.session_state.pop(key, None)
-        st.session_state["data_signature"] = signature
     multi = "juntar"
     if len(loaded) > 1:
-        multi = st.radio("Vários arquivos", ["Processar cada arquivo (lote)", "Juntar em uma base (mesmas colunas)"])
-        if any(set(d.columns) != set(loaded[0][1].columns) for _, d in loaded):
-            if not multi.startswith("Processar"):
-                st.info("Colunas diferentes: processando cada arquivo separadamente.")
-            multi = "Processar cada arquivo (lote)"
+        multi = st.radio("Vários arquivos", ["Juntar em uma base (mesmas colunas)", "Processar cada arquivo (lote)"])
 
 if multi.startswith("Processar"):
     st.subheader("🗂️ Modo lote: cada arquivo vira um projeto")
-    st.caption("Cada base é treinada separadamente e recebe seu próprio PDF.")
-    targets = {}
-    with st.expander("Variável alvo de cada arquivo", expanded=True):
-        for i, (nome, d) in enumerate(loaded):
-            targets[nome] = st.selectbox(nome, list(d.columns), index=len(d.columns) - 1, key=f"batch_target_{signature}_{i}")
-    batch_config = (signature, tuple(targets.items()))
-    if st.session_state.get("batch_config") != batch_config:
-        st.session_state.pop("lote", None)
-        st.session_state["batch_config"] = batch_config
+    st.caption("Para cada arquivo: alvo = última coluna, tipo detectado, modelos comparados, relatório PDF. Erros em um arquivo não param os outros.")
     lv = st.radio("Velocidade", ["rápido", "completo"], horizontal=True, key="lv")
     lo = st.slider("Orçamento de tempo por arquivo (s)", 30, 600, 90, 30, key="lo")
     if st.button("▶️ Rodar todos os arquivos", type="primary"):
@@ -95,11 +80,11 @@ if multi.startswith("Processar"):
         for i, (nome, d) in enumerate(loaded):
             bar.progress(i / len(loaded), text=f"Processando {nome} ({i + 1}/{len(loaded)})")
             try:
-                r = run_auto(d, targets[nome], lv, budget_s=lo)
+                r = run_auto(d, None, lv, budget_s=lo)
                 k = "R2" if r["task"] == "regression" else "F1 (macro)"
                 rows.append({"arquivo": nome, "tipo": "regressão" if r["task"] == "regression" else "classificação", "alvo": r["target"],
                              "melhor modelo": r["best"], "métrica": k, "nota (teste)": round(r["test_metrics"][k], 4), "tempo (s)": r["seconds"]})
-                pdfs[nome] = build_pdf(r, nome)
+                pdfs[nome], _aviso = safe_pdf(r, nome)
             except Exception as e:
                 rows.append({"arquivo": nome, "tipo": "ERRO", "alvo": str(e)[:80]})
         bar.progress(1.0)
@@ -109,14 +94,11 @@ if multi.startswith("Processar"):
             z.writestr("resumo.csv", tab.to_csv(index=False))
             for n, b in pdfs.items():
                 z.writestr(f"relatorio_{n.rsplit('.', 1)[0]}.pdf", b)
-        st.session_state["lote"] = (tab, zb.getvalue(), pdfs)
+        st.session_state["lote"] = (tab, zb.getvalue())
     if "lote" in st.session_state:
-        tab, zb, pdfs = st.session_state["lote"]
+        tab, zb = st.session_state["lote"]
         st.dataframe(tab, **STRETCH)
-        st.subheader("Exportar relatórios")
-        for i, (nome, pdf) in enumerate(pdfs.items()):
-            st.download_button(f"Baixar PDF — {nome}", pdf, f"relatorio_{nome.rsplit('.', 1)[0]}.pdf", "application/pdf", key=f"batch_pdf_{i}")
-        st.download_button("Baixar todos os PDFs + resumo (.zip)", zb, "lote_automl.zip", "application/zip")
+        st.download_button("⬇️ Baixar tudo (.zip com resumo + 1 PDF por arquivo)", zb, "lote_automl.zip")
     st.stop()
 
 cols_sets = [set(map(str, d.columns)) for _, d in loaded]
@@ -139,6 +121,14 @@ with st.sidebar:
 
 if modo.startswith("🚀"):
     st.subheader("🚀 Modo automático")
+    st.write("O sistema escolhe o alvo (última coluna, mude se precisar), detecta regressão/classificação, "
+             "descarta colunas inúteis, trata outliers, escalona, compara os algoritmos com validação cruzada "
+             "repetida, otimiza o melhor e avalia num teste nunca visto.")
+    _sig = (tuple(f.name for f in files), df.shape)
+    if st.session_state.get("auto_sig") != _sig:  # arquivo mudou: descarta resultados antigos
+        for _k in ("auto", "pdf", "pdf_aviso", "pdf_path", "bundle"):
+            st.session_state.pop(_k, None)
+        st.session_state["auto_sig"] = _sig
     a1, a2 = st.columns(2)
     alvo = a1.selectbox("Variável alvo", df.columns, index=len(df.columns) - 1)
     velocidade = a2.radio("Velocidade", ["rápido", "completo"], horizontal=True,
@@ -147,21 +137,34 @@ if modo.startswith("🚀"):
                           help="O sistema pula modelos lentos ou desliga a otimização para respeitar esse tempo.")
     if st.button("▶️ Rodar tudo automaticamente", type="primary"):
         barra = st.progress(0.0, text="Iniciando...")
-        st.session_state.pop("pdf", None); st.session_state.pop("bundle", None)
-        st.session_state["auto"] = run_auto(df, alvo, velocidade, progress=lambda p, t: barra.progress(min(p, 1.0), text=t), budget_s=orcamento)
+        for _k in ("pdf", "pdf_aviso", "pdf_path", "bundle"):
+            st.session_state.pop(_k, None)
+        try:
+            st.session_state["auto"] = run_auto(df, alvo, velocidade, progress=lambda p, t: barra.progress(min(p, 1.0), text=t), budget_s=orcamento)
+        except Exception as e:
+            barra.empty()
+            st.session_state.pop("auto", None)
+            st.error(f"A execução automática falhou: {e}")
+            st.exception(e)
+            st.stop()
+        barra.progress(0.99, text="Montando o relatório PDF...")
+        try:
+            pdf_bytes, aviso = safe_pdf(st.session_state["auto"], ", ".join(f.name for f in files))
+            st.session_state["pdf"], st.session_state["pdf_aviso"] = pdf_bytes, aviso
+            st.session_state["pdf_path"] = save_pdf(pdf_bytes)
+        except Exception as e:
+            st.session_state["pdf_aviso"] = f"Não foi possível gerar o PDF: {e}"
         barra.empty()
     if "auto" in st.session_state:
         r = st.session_state["auto"]
         st.success(f"Concluído em {r['seconds']} s — melhor modelo: **{r['best']}**")
-        st.subheader("Exportar relatório")
-        if "pdf" not in st.session_state:
-            try:
-                with st.spinner("Gerando PDF..."):
-                    st.session_state["pdf"] = build_pdf(r, ", ".join(n for n, _ in loaded))
-            except Exception as exc:
-                st.error(f"Não foi possível gerar o PDF: {exc}")
-        if "pdf" in st.session_state:
-            st.download_button("Baixar relatório PDF", st.session_state["pdf"], "relatorio_automl.pdf", "application/pdf", type="primary")
+        if st.session_state.get("pdf"):
+            st.download_button("📄 Baixar relatório completo (.pdf)", st.session_state["pdf"], "relatorio_automl.pdf",
+                               "application/pdf", type="primary", key="dl_pdf_top")
+            if st.session_state.get("pdf_path"):
+                st.caption(f"Cópia salva automaticamente em: {st.session_state['pdf_path']}")
+        if st.session_state.get("pdf_aviso"):
+            st.warning(st.session_state["pdf_aviso"])
         cols = st.columns(len(r["test_metrics"]))
         for c, (k, v) in zip(cols, r["test_metrics"].items()):
             c.metric(k + " (teste)", f"{v:.4f}")
@@ -174,10 +177,10 @@ if modo.startswith("🚀"):
                        f'<div class="n">{row.Modelo}</div><div class="s">{sc:.3f}</div><div style="opacity:.7;font-size:.8rem">{key_} (validação)</div></div>',
                        unsafe_allow_html=True)
         st.write("")
-        with st.expander("Decisões tomadas automaticamente", expanded=False):
+        with st.expander("Decisões tomadas automaticamente", expanded=True):
             for x in r["log"]:
                 st.write("• " + x)
-        with st.expander("🔧 Auto-ajustes (o sistema se adaptou aos seus dados)", expanded=False):
+        with st.expander("🔧 Auto-ajustes (o sistema se adaptou aos seus dados)", expanded=True):
             for x in r["adjustments"]:
                 st.write("• " + x)
         st.dataframe(r["leaderboard"].round(4), **STRETCH)
@@ -213,6 +216,16 @@ if modo.startswith("🚀"):
                     st.download_button("⬇️ Baixar previsões (.csv)", res_new.to_csv(index=False).encode("utf-8"), "previsoes.csv")
                 except Exception as e:
                     st.error(str(e))
+        st.markdown("#### 📄 Relatório detalhado em PDF")
+        if st.button("Gerar relatório PDF novamente"):
+            with st.spinner("Montando o PDF (gráficos, tabelas e importância das variáveis)..."):
+                try:
+                    st.session_state["pdf"], st.session_state["pdf_aviso"] = safe_pdf(r, ", ".join(f.name for f in files))
+                    st.session_state["pdf_path"] = save_pdf(st.session_state["pdf"])
+                except Exception as e:
+                    st.error(f"Falha ao gerar o PDF: {e}")
+        if "pdf" in st.session_state:
+            st.download_button("⬇️ Baixar relatório (.pdf)", st.session_state["pdf"], "relatorio_automl.pdf", "application/pdf", key="dl_pdf_bottom")
     st.stop()
 
 if modo.startswith("📦"):
@@ -344,14 +357,11 @@ if st.button("▶️ Treinar e comparar", type="primary"):
             rows.append({"Modelo": name, "erro": str(e)[:80]})
         bar.progress((i + 1) / len(chosen))
     st.session_state["res"] = (pd.DataFrame(rows), store, task)
-    st.session_state["manual_pdf"] = build_results_pdf(pd.DataFrame(rows), ", ".join(n for n, _ in loaded), target, task, strategy, feats)
 
 if "res" in st.session_state:
     res, store, rtask = st.session_state["res"]
     st.subheader("Resultados")
     st.dataframe(res, **STRETCH)
-    if "manual_pdf" in st.session_state:
-        st.download_button("Baixar relatório PDF", st.session_state["manual_pdf"], "relatorio_manual.pdf", "application/pdf", type="primary")
     st.download_button("⬇️ Baixar tabela (CSV)", res.to_csv(index=False).encode(), "resultados.csv")
     if store:
         pick = st.selectbox("Detalhar modelo", list(store))

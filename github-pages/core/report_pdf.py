@@ -168,23 +168,6 @@ def _insights(r):
     return out
 
 
-def build_results_pdf(results, filename, target, task, strategy, features) -> bytes:
-    """Exporta a comparação manual, incluindo erros e métricas de validação."""
-    buf = io.BytesIO()
-    doc = BaseDocTemplate(buf, pagesize=A4, leftMargin=2 * cm, rightMargin=2 * cm,
-                          topMargin=1.8 * cm, bottomMargin=1.8 * cm, title="ML-Learner - resultados")
-    doc.addPageTemplates([PageTemplate(id="manual", frames=[Frame(2 * cm, 1.8 * cm,
-        A4[0] - 4 * cm, A4[1] - 3.6 * cm, id="f")], onPage=_page)])
-    story = [P("ML-Learner - comparacao manual", H1), P(f"Arquivo: {filename}"),
-             P(f"Alvo: {target}. Tipo: {task}. Validacao: {strategy}."),
-             P("Caracteristicas: " + ", ".join(map(str, features)), SMALL),
-             Spacer(1, 12), _table(results)]
-    if strategy != "Hold-out":
-        story.append(P("Metricas de validacao cruzada: media e desvio padrao. Nao foi reservado um teste independente.", SMALL))
-    doc.build(story)
-    return buf.getvalue()
-
-
 def build_pdf(r, filename="dados", importance=True) -> bytes:
     from sklearn.inspection import permutation_importance
     from sklearn.metrics import classification_report, confusion_matrix
@@ -257,6 +240,9 @@ def build_pdf(r, filename="dados", importance=True) -> bytes:
     if importance:
         try:
             Xte = r["X_test"]
+            if len(Xte) > 500:  # subamostra: importancia por permutacao e cara
+                _ix = np.random.RandomState(0).choice(len(Xte), 500, replace=False)
+                Xte, yt = Xte.iloc[_ix], yt[_ix]
             pi = permutation_importance(r["model"], Xte, yt, n_repeats=2 if Xte.shape[1] > 50 else 4, random_state=0, n_jobs=1,
                                         scoring="r2" if task == "regression" else "f1_macro")
             imp = pd.Series(pi.importances_mean, index=Xte.columns).sort_values(ascending=False).head(15)
@@ -281,3 +267,48 @@ def build_pdf(r, filename="dados", importance=True) -> bytes:
             "<b>Recall</b> = das amostras X, quantas foram achadas. <b>F1</b> = media harmonica de precisao e recall; <b>macro</b> = media simples entre classes.".replace("<b>", "").replace("</b>", ""), SMALL)]
     doc.build(S)
     return buf.getvalue()
+
+
+def _minimal_pdf(r, filename="dados", motivo="") -> bytes:
+    """Último recurso: PDF simples (só texto) para o usuário nunca ficar sem relatório."""
+    buf = io.BytesIO()
+    doc = BaseDocTemplate(buf, pagesize=A4, leftMargin=2 * cm, rightMargin=2 * cm, topMargin=1.8 * cm, bottomMargin=1.8 * cm)
+    doc.addPageTemplates([PageTemplate(id="p", frames=[Frame(2 * cm, 1.8 * cm, A4[0] - 4 * cm, A4[1] - 3.6 * cm, id="f")], onPage=_page)])
+    S = [P("Relatorio de Modelagem Automatica (versao simplificada)", H1), P(f"Arquivo: {filename}"),
+         P(f"Alvo: {r['target']} | Tipo: {r['task']} | Melhor modelo: {r['best']}")]
+    S += [P(f"{k}: {v:.4f}") for k, v in r["test_metrics"].items()]
+    S += [P("Ranking", H2), _table(r["leaderboard"].round(4))]
+    S += [P("Decisoes automaticas", H2)] + [P("- " + x, SMALL) for x in r["log"] + r["adjustments"]]
+    if motivo:
+        S += [P(f"Observacao: o relatorio completo falhou ({motivo}).", SMALL)]
+    doc.build(S)
+    return buf.getvalue()
+
+
+def safe_pdf(r, filename="dados"):
+    """Gera o PDF sem nunca levantar erro. Devolve (bytes, aviso). Tenta: completo -> sem importancia -> minimo."""
+    try:
+        return build_pdf(r, filename), ""
+    except Exception as e1:
+        try:
+            return build_pdf(r, filename, importance=False), f"PDF gerado sem alguns itens ({type(e1).__name__}: {str(e1)[:120]})"
+        except Exception as e2:
+            try:
+                return _minimal_pdf(r, filename, str(e2)[:120]), f"PDF simplificado ({type(e2).__name__}: {str(e2)[:120]})"
+            except Exception as e3:
+                raise RuntimeError(f"Falha ao gerar o PDF: {e3}") from e3
+
+
+def save_pdf(data: bytes, base="relatorio_automl"):
+    """Grava uma copia em ./relatorios/ quando roda no computador. No navegador nao ha disco: devolve None."""
+    import sys
+    if sys.platform == "emscripten":
+        return None
+    try:
+        from pathlib import Path
+        d = Path("relatorios"); d.mkdir(exist_ok=True)
+        f = d / f"{base}_{datetime.now():%Y%m%d_%H%M%S}.pdf"
+        f.write_bytes(data)
+        return str(f.resolve())
+    except Exception:
+        return None

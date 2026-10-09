@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.base import clone
 from sklearn.model_selection import train_test_split
 
+from core.env import IN_BROWSER
 from core.evaluate import clf_metrics, cross_val, make_pipeline, reg_metrics
 from core.models import CLASSIFICATION, REGRESSION
 from core.preprocess import build_preprocessor
@@ -78,9 +79,12 @@ def _label(cfg):
     return f"{cfg['scaler']}, outliers={'limitados' if cfg['winsor'] else 'mantidos'}" + (", PCA 95%" if cfg["pca"] else "")
 
 
-def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=None, budget_s=None, max_sel_rows=8000):
+def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=None, budget_s=None, max_sel_rows=None):
     """budget_s: orçamento de tempo (s). O sistema pula modelos pesados / desliga a otimização se estourar."""
     t0 = time.time()
+    rapido = mode == "rápido"
+    # navegador (Pyodide) roda em 1 thread e é bem mais lento: limites mais enxutos
+    max_sel_rows = max_sel_rows or (2000 if IN_BROWSER else (4000 if rapido else 8000))
     budget_s = budget_s or (150 if mode == "rápido" else 900)
     df, target, task, feats, log = detect(df, target)
     adj = []  # decisões de auto-ajuste
@@ -93,7 +97,7 @@ def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=N
     strat = y if task == "classification" else None
     Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=test_size, random_state=seed, stratify=strat)
     key = "R2" if task == "regression" else "F1 (macro)"
-    reps = 2 if mode == "rápido" else 3
+    reps = 1 if (rapido and IN_BROWSER) else (2 if rapido else 3)
 
     prof = profile(Xtr, ytr, task)
     adj.append(f"Perfil: {prof['n']} linhas × {prof['p']} colunas, {prof['skew_frac']:.0%} das colunas assimétricas, "
@@ -110,16 +114,20 @@ def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=N
     # 1) busca da melhor configuração de pré-processamento (modelos de referência sensíveis à escala)
     ref = ["KNN", "Ridge" if task == "regression" else "Regressão Logística"]
     best_cfg, best_sc, tried = None, -np.inf, []
-    for cfg in candidate_configs(prof):
+    cfgs = candidate_configs(prof)
+    if rapido:
+        cfgs = cfgs[:2] if IN_BROWSER else cfgs[:3]
+    Xc, yc = (Xs.iloc[:1500], ys.iloc[:1500]) if rapido and len(Xs) > 1500 else (Xs, ys)
+    for cfg in cfgs:
         try:
             pre = build_preprocessor(num, cat, cfg["scaler"], cfg["winsor"], 1.5, cfg["pca"])
-            sc = np.mean([cross_val(make_pipeline(pre, zoo[m][0], task=task), Xs, ys, task, 3, 1, seed)[key][0] for m in ref])
+            sc = np.mean([cross_val(make_pipeline(pre, zoo[m][0], task=task), Xc, yc, task, 3, 1, seed)[key][0] for m in ref])
         except Exception as e:  # auto-recuperação: configuração inviável é descartada
             adj.append(f"Configuração descartada ({_label(cfg)}): {str(e)[:60]}"); continue
         tried.append((sc, cfg))
         if sc > best_sc + 1e-4:
             best_sc, best_cfg = sc, cfg
-        if progress: progress(0.05 + 0.1 * len(tried) / 5, f"Testando pré-processamento: {_label(cfg)}")
+        if progress: progress(0.05 + 0.1 * len(tried) / max(len(cfgs), 1), f"Testando pré-processamento: {_label(cfg)}")
     if best_cfg is None:
         best_cfg = dict(scaler="Z-score (Standard)", winsor=True, pca=False)
         adj.append("Nenhuma configuração avaliável; usando o padrão.")
@@ -176,8 +184,10 @@ def run_auto(df, target=None, mode="rápido", test_size=0.2, seed=42, progress=N
     m, g = get_model(best)
     combos = int(np.prod([len(v) for v in g.values()])) if g else 0
     est_tune = fit_t.get(best, 1.0) * 5 * combos * (len(Xtr) / max(len(Xs), 1))
-    do_tune = bool(g) and est_tune < 0.8 * (budget_s - (time.time() - t0))
-    if g and not do_tune:
+    do_tune = bool(g) and (not rapido) and est_tune < 0.8 * (budget_s - (time.time() - t0))
+    if g and rapido:
+        adj.append("Modo rápido: otimização de hiperparâmetros desligada (use 'completo' para ativá-la).")
+    elif g and not do_tune:
         adj.append(f"Otimização de hiperparâmetros desligada (estimada em {est_tune:.0f}s, acima do orçamento restante).")
     if progress: progress(0.97, f"Ajustando {best}")
     final = make_pipeline(pre, m, g, tune=do_tune, task=task)
