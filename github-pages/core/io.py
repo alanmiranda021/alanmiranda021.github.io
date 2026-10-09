@@ -76,7 +76,10 @@ def _mcos_cells(m):
     rd.mat_stream.seek(128)
     hdr, _ = rd.read_var_header()
     st = rd.read_var_array(hdr, process=False)
-    return list(st[0, 0]["MCOS"][0]["arr"].ravel())
+    wrapper = st[0, 0]["MCOS"][0]
+    # SciPy exposes the MATLAB opaque payload under different field names.
+    field = "arr" if "arr" in wrapper.dtype.names else "_ObjectMetadata"
+    return list(wrapper[field].ravel())
 
 
 def _is_ref(x):

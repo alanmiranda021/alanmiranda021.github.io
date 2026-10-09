@@ -10,7 +10,7 @@ Portfólio experimental com linguagem visual de laboratório tecnológico.
 - Timeline / Evolution Log
 - Stack Map visual
 - Responsivo
-- Mantém as fotos originais do projeto
+- Home sem foto: linhas de pesquisa no topo; "Sobre mim" (apenas texto) no fim da página
 
 ### GitHub Pages
 O ponto de entrada é `index.html`. Não há framework ou build step obrigatório.

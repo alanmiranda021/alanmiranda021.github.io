@@ -26,7 +26,7 @@ $('#closeModal').onclick=()=>{modal.classList.remove('open');modal.setAttribute(
 modal.addEventListener('click',e=>{if(e.target===modal)$('#closeModal').click()});
 
 const panel=$('#commandPanel');
-function openCommands(){panel.classList.add('open');panel.setAttribute('aria-hidden','false')}
+function openCommands(){if(document.querySelector('.omni-command'))return;panel.classList.add('open');panel.setAttribute('aria-hidden','false')}
 function closeCommands(){panel.classList.remove('open');panel.setAttribute('aria-hidden','true')}
 $('#commandBtn').onclick=openCommands;$('#closeCommand').onclick=closeCommands;
 $$('.command-box [data-go]').forEach(b=>b.onclick=()=>{closeCommands();document.querySelector(b.dataset.go).scrollIntoView({behavior:'smooth'})});
