@@ -29,3 +29,9 @@
 .manifesto-page footer{color:#62725e}.manifesto-page footer>a{color:#304d34}.manifesto-page .menu-toggle span{background:#304d34}
 @media(max-width:760px){.manifesto-notice{padding:28px 7vw 38px}.manifesto-notice .notice-label{font-size:9px;letter-spacing:.1em}.manifesto-notice .notice-intro{font-size:14px}.manifesto-notice blockquote{font-size:15px}.home-with-manifesto .hero-copy{margin-top:80px}.manifesto-page nav{background:#f2efe6;top:90px}.manifesto-cover{padding:65px 7vw 0}.manifesto-cover h1{font-size:clamp(36px,9vw,64px)}.manifesto-deck{font-size:15px}.manifesto-reading{width:86%;padding-bottom:50px}.reading-intro{font-size:9px;margin-bottom:35px;line-height:1.6}.manifesto-body p{font-size:17px;line-height:1.85;margin-bottom:25px}.manifesto-body p.principle{font-size:22px;margin:35px 0;padding:25px 0}.landscape{width:120%;max-width:none;margin-left:-10%}}
 @media(prefers-reduced-motion:reduce){.notice-light{animation:none}}
+.manifesto-recommendations{padding:65px 8vw 75px;border-top:1px solid var(--line);max-width:1100px;margin:0 auto}
+.manifesto-recommendations .eyebrow{color:#68765f}
+.manifesto-recommendations h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,4vw,48px);font-weight:400;line-height:1.2;letter-spacing:-.03em}
+.manifesto-recommendations>p:not(.eyebrow){max-width:680px;font-size:16px;line-height:1.8;color:#647264}
+.recommended-links{display:flex;flex-wrap:wrap;gap:20px 35px;margin-top:25px}
+.recommended-links .text-link{font-size:13px;line-height:1.6;border-bottom:1px solid #344a3350;padding:8px 0}

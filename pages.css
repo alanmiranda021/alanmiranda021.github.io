@@ -9,3 +9,36 @@
 .naval-signature{margin:0;padding:25px 8vw 30px;color:var(--muted);font-size:11px;letter-spacing:.08em;border-bottom:1px solid var(--line)}
 .project-list>a{grid-template-columns:1fr 180px 24px}
 @media(max-width:760px){.hero-copy h1{font-size:clamp(32px,7.9vw,60px)}.hero-copy{margin-top:150px;margin-bottom:85px}.hero-statement{font-size:14px}.hero-statement .hero-lead{font-size:17px}.hero-author{font-size:11px}.naval-signature{padding:22px 7vw;font-size:10px}.project-list>a{grid-template-columns:1fr 20px}}
+
+/* ===== Melhorias visuais ===== */
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 30px}
+.hero-tags span{border:1px solid var(--line);border-radius:99px;padding:8px 14px;font-size:11px;letter-spacing:.08em;color:#c4c7ca;background:#ffffff08}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#0c1014}
+.stats div{padding:34px 8vw 34px 4vw;border-right:1px solid var(--line)}.stats div:first-child{padding-left:8vw}.stats div:last-child{border-right:0}
+.stats strong{display:block;font-size:clamp(26px,3vw,42px);font-weight:600;letter-spacing:-.03em}.stats span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:20px}
+.card-grid.two{grid-template-columns:repeat(2,1fr)}
+.card{display:flex;flex-direction:column;border:1px solid var(--line);background:#0d1217;overflow:hidden;transition:transform .25s,border-color .25s}
+.card:hover{transform:translateY(-5px);border-color:#b7cedd80}
+.card img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;background:#0b1219;transition:transform .5s}.card:hover img{transform:scale(1.04)}
+.card .thumb{overflow:hidden}
+.card>div:last-child{padding:24px 24px 28px}
+.tag{display:inline-block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9fc1d6;margin-bottom:12px}
+.card h3{font-size:24px;font-weight:500;margin-bottom:10px}.card p{font-size:14px;color:var(--muted);margin:0 0 16px}
+.card .more{font-size:12px;border-bottom:1px solid #ffffff50;padding-bottom:4px}
+.home-projects{align-items:stretch}.home-projects>.button{align-self:flex-start;margin-top:40px}
+.about-hero{display:grid;grid-template-columns:1.3fr .7fr;gap:7vw;align-items:end}
+.portrait{margin:0;position:relative}.portrait img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:50% 20%;filter:grayscale(.25) contrast(1.03);box-shadow:0 30px 70px #0008}
+.portrait:before{content:"";position:absolute;inset:18px -18px -18px 18px;border:1px solid #b7cedd55;z-index:-1}
+.portrait figcaption{font-size:11px;color:var(--muted);margin-top:14px;letter-spacing:.06em}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:40px;border-top:1px solid var(--line)}
+.timeline>div{padding:30px 26px 10px 0;position:relative}.timeline>div:before{content:"";position:absolute;top:-5px;left:0;width:9px;height:9px;border-radius:50%;background:#b7cedd}
+.timeline small{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9fc1d6}.timeline h3{font-size:20px;font-weight:500;margin:10px 0}.timeline p{font-size:14px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.chips span{border:1px solid var(--line);padding:7px 12px;font-size:12px;color:#c0c5c9}
+footer .foot-links{display:flex;gap:22px}footer .foot-links a:hover{color:white}
+.reveal-ready .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}.reveal-ready .reveal.in{opacity:1;transform:none}
+nav a[aria-current=page]:after{width:100%}
+.err{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 8vw}.err h1{font-size:clamp(90px,18vw,240px);margin:0}
+@media(max-width:900px){.card-grid,.card-grid.two{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.stats div,.stats div:first-child{padding:26px 7vw;border-bottom:1px solid var(--line)}.about-hero{grid-template-columns:1fr}.portrait{max-width:320px}.timeline{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.timeline{grid-template-columns:1fr}.hero-tags span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.reveal-ready .reveal{opacity:1;transform:none}.card,.card img{transition:none}}

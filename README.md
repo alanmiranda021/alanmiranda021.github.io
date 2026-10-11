@@ -1,26 +1,28 @@
-# Alan Miranda — Systems Lab
+# Alan Miranda — Pesquisa & Sistemas
 
-### Página inicial simplificada
+Portfólio estático para GitHub Pages. Sem build, sem dependências: basta publicar a raiz do repositório.
 
-`index.html` usa `minimal.css` e `minimal.js`: visual escuro, tipografia ampla, navegação curta e projetos com mais espaço. Não exige instalação ou build.
+## Estrutura
 
-A página inicial direciona para `projetos-navais.html` (navio, ML Learner, simulador, notícias e contato), `outros-projetos.html` (AEON, INCLUDE e Alpha App), `sobre.html` (formação, trajetória e audiobooks) e `arquivos-uteis.html` (pasta no Drive). A seção do livro permanece na página inicial com capa e link.
+| Caminho | Conteúdo |
+|---|---|
+| `index.html` | Página inicial (manifesto, hero, projetos, livro) |
+| `projetos-navais.html` | Navio interativo, simulador, ML Learner, radar de notícias e contato |
+| `outros-projetos.html` | AEON, INCLUDE e Alpha App |
+| `sobre.html` | Formação, trajetória, competências e links |
+| `arquivos-uteis.html` | Pastas do Google Drive e acervo de audiobooks |
+| `manifesto.html` | Texto completo do manifesto |
+| `naval.html` | Simulador de propulsão (`naval.css`, `naval.js`) |
+| `projects/` | Páginas dos projetos (`aeon`, `alpha`, `include`, `ml-learner`) |
+| `github-pages/` | Aplicativo ML Learner (Stlite/Pyodide) — veja `github-pages/LEIAME.md` |
+| `assets/` | Imagens, ilustrações SVG e arquivos da oficina (`assets/robo/`) |
 
-As páginas compartilham `minimal.css`, `pages.css` e `minimal.js`. O radar naval usa `naval-hub.js` e depende de um serviço externo de RSS; em caso de falha oferece links diretos às fontes. O formulário de contato prepara um e-mail no aplicativo do visitante.
+Estilos compartilhados: `minimal.css`, `pages.css`, `manifesto.css`, `minimal.js`. Páginas de projeto usam `alan-os`, `future-interface`, `omni-interface`, `project`, `project-modern`, `style` e `library-news` (CSS).
 
-A interface experimental anterior foi preservada em `exploracoes.html`. Os estilos e scripts antigos continuam disponíveis para essa página e os projetos.
+## Visualizar localmente
 
-Portfólio experimental com linguagem visual de laboratório tecnológico.
+```bash
+python -m http.server 8080
+```
 
-### Destaques
-- Interface AI / Robotics / Systems
-- Cursor interativo e barra de progresso
-- Command Center com `Ctrl/Cmd + K`
-- Projetos com modais interativos
-- Timeline / Evolution Log
-- Stack Map visual
-- Responsivo
-- Home sem foto: linhas de pesquisa no topo; "Sobre mim" (apenas texto) no fim da página
-
-### GitHub Pages
-O ponto de entrada é `index.html`. Não há framework ou build step obrigatório.
+Abra http://localhost:8080. Mantenha o arquivo `.nojekyll` na raiz.
