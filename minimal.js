@@ -46,7 +46,7 @@ window.matchMedia('(min-width: 761px)').addEventListener('change', closeMenu);
 })();
 // popup de alerta do manifesto (uma vez por sessão; fora da página do manifesto)
 (() => {
-  if (document.body.classList.contains('manifesto-page')) return;
+  if (document.body.classList.contains('manifesto-page') || document.body.classList.contains('home')) return;
   const KEY = 'manifesto-alert-seen';
   const read = () => { try { return sessionStorage.getItem(KEY); } catch (e) { return null; } };
   const mark = () => { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} };

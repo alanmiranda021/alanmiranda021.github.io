@@ -7,7 +7,7 @@ document.documentElement.classList.add('js');
 
   /* ---------- infraestrutura de canvas ---------- */
   function scene(id, init, draw) {
-    const cv = document.getElementById(id), ctx = cv.getContext('2d'); let W, H, vis = false, st = {};
+    const cv = document.getElementById(id); if (!cv) return; const ctx = cv.getContext('2d'); let W, H, vis = false, st = {};
     const size = () => { const d = Math.min(devicePixelRatio || 1, 2); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); st = init(W, H) || {}; };
     size(); addEventListener('resize', size);
     new IntersectionObserver(([e]) => vis = e.isIntersecting).observe(cv);

@@ -6,9 +6,8 @@ const errors=[];page.on('pageerror',e=>errors.push(e.message));
 try{
   await page.goto(base+'/');
   if(await page.locator('#manifesto-alert').isVisible())await page.locator('#manifesto-alert .alert-x').click();
-  await page.locator('#inicio .copy').waitFor();
-  if(!(await page.locator('#inicio').innerText()).includes('AEON AQUA'))throw new Error('Home sem AEON AQUA');
-  await page.locator('#inicio a[href="projects/aeon-aqua/"]').waitFor();
+  await page.locator('main > section:first-child#manifesto .copy').waitFor();
+  if((await page.locator('main').innerText()).includes('AEON AQUA'))throw new Error('AEON AQUA deve ficar apenas em projetos navais');
   await page.waitForTimeout(1200);
   if(await page.locator('#manifesto-alert').isVisible()){
     await page.locator('#manifesto-alert .alert-x').click();
@@ -17,8 +16,15 @@ try{
   await page.screenshot({path:'docs/previews/site-home.png'});
   await page.goto(base+'/projetos-navais.html');
   await page.locator('.ship-map img[src="assets/aeon-cargo.webp"]').waitFor();
+  for(const [selector,href,x,y] of [['.point-rov','projects/aeon-aqua/',.219,.609],['.point-propulsion','naval.html',.255,.565],['.point-ml','projects/ml-learner.html',.337,.34]]){
+    const pin=page.locator('.aeon-ship-map '+selector);
+    if(await pin.getAttribute('href')!==href)throw new Error('Destino incorreto: '+selector);
+    const position=await pin.boundingBox(),map=await page.locator('.aeon-ship-map').boundingBox();
+    if(Math.abs((position.x+position.width/2-map.x)/map.width-x)>.01 || Math.abs((position.y+position.height/2-map.y)/map.height-y)>.01)throw new Error('Posição incorreta: '+selector);
+  }
   if(!await page.locator('.ship-map img').evaluate(img=>img.complete && img.naturalWidth>0))throw new Error('Imagem do cargueiro não carregou');
   await page.screenshot({path:'docs/previews/site-naval.png'});
+  await page.locator('.aeon-ship-map').screenshot({path:'docs/previews/site-navio-links.png'});
   await page.setViewportSize({width:390,height:844});
   await page.goto(base+'/');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);

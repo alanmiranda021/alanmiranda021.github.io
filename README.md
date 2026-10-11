@@ -31,4 +31,4 @@ Abra http://localhost:8080. Mantenha o arquivo `.nojekyll` na raiz.
 
 - Simulador publicado em `projects/aeon-aqua/index.html` (HTML autossuficiente).
 - Fontes, assets otimizados e testes em `projects/aeon-aqua/source/`.
-- A home destaca o projeto e projetos-navais.html mostra o cargueiro atual.
+- A home abre com o manifesto; o AEON AQUA fica em projetos-navais.html, junto ao cargueiro e aos links de ROV, propulsao e ML Learner.
