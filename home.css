@@ -67,3 +67,18 @@ body.home{background:#04070a;overflow-x:hidden}
 #manifesto .copy{padding:0 6vw;width:100%;max-width:1000px}
 #manifesto .copy h1{font-size:clamp(30px,4.4vw,64px);line-height:1.08;margin-bottom:24px}
 @media(max-width:900px){#manifesto{justify-content:center;padding-top:120px;padding-bottom:48px}#manifesto .copy{padding:0 6vw}}
+
+/* Natureza com uma camada clara para preservar o contraste do texto. */
+#manifesto{color:#16384e;background:linear-gradient(90deg,rgba(234,247,253,.97),rgba(234,247,253,.91) 55%,rgba(234,247,253,.58)),url('assets/natureza.jpg') center/cover no-repeat}
+#manifesto:after{background:none}
+#manifesto .copy h1{color:#16384e}
+#manifesto .copy p{color:#294c60}
+#manifesto .copy .eyebrow{color:#286779}
+#manifesto .copy .eyebrow:before{background:#286779}
+#manifesto blockquote{color:#23475b;border-color:#32748d}
+#manifesto .cta .button.solid{background:#174b68;color:#fff;border-color:#174b68}
+#manifesto .cta .button.solid:hover{background:#236a88}
+.home .header:not(.scrolled){color:#16384e;background:rgba(234,247,253,.92)}
+.home .header:not(.scrolled) .logo span{color:#486878}
+.home .header:not(.scrolled) .menu-toggle span{background:#16384e}
+.home .header:not(.scrolled) nav.open{background:#edf8ff;color:#16384e}

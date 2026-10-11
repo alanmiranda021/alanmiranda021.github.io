@@ -26,3 +26,30 @@
 .manifesto-close .eyebrow{color:#ff9d99}.manifesto-close h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(32px,4vw,56px);margin-bottom:34px}
 @media(max-width:760px){.manifesto-cover{padding:140px 7vw 0}.manifesto-cover h1{font-size:clamp(36px,9vw,64px)}.manifesto-deck{font-size:16px}.manifesto-reading{width:86%;padding-bottom:50px}.reading-intro{font-size:9px;margin-bottom:35px;line-height:1.6}.manifesto-body p{font-size:17px;line-height:1.85;margin-bottom:25px}.manifesto-body p.principle{font-size:22px;margin:35px 0;padding:25px 0 25px 20px}.landscape{width:120%;max-width:none;margin-left:-10%}.manifesto-recommendations{padding:60px 7vw}}
 @media(prefers-reduced-motion:reduce){.manifesto-cover .eyebrow:before{animation:none}}
+
+/* Tema de leitura claro com a fotografia fornecida pelo autor. */
+.manifesto-page{color-scheme:light;--text:#16384e;--muted:#466778;--line:#17435b30;background:#eaf6fb;color:var(--text)}
+.manifesto-page .header{color:#16384e;background:rgba(234,247,253,.96);border-bottom:1px solid var(--line)}
+.manifesto-page .logo span{color:#486878}
+.manifesto-page .menu-toggle span{background:#16384e}
+.manifesto-page nav.open{background:#edf8ff;color:#16384e}
+.manifesto-page a:focus-visible,.manifesto-page button:focus-visible{outline-color:#174b68}
+.manifesto-cover{padding-bottom:64px;background:linear-gradient(90deg,rgba(234,247,253,.96),rgba(234,247,253,.87) 55%,rgba(234,247,253,.72)),url('assets/natureza.jpg') center/cover no-repeat}
+.manifesto-cover:before{background:none}
+.manifesto-cover .eyebrow,.reading-intro{color:#286779}
+.manifesto-cover .eyebrow:before{background:#286779;box-shadow:none}
+.manifesto-cover h1{color:#16384e}
+.manifesto-deck{color:#294c60}
+.manifesto-byline{color:#466778}
+.manifesto-cover .landscape{display:none}
+.manifesto-body p,.manifesto-body p:last-child{color:#29485a}
+.manifesto-body strong{color:#16384e}
+.manifesto-body>p:first-child:first-letter{color:#286779}
+.manifesto-body p.principle{color:#16384e;border-left-color:#32748d}
+.manifesto-recommendations{background:#dceef6}
+.manifesto-recommendations .eyebrow,.manifesto-close .eyebrow{color:#286779}
+.recommended-links .text-link{border-color:#17435b50}
+.manifesto-close{background:#d2e9f1;color:#16384e}
+.manifesto-page footer{background:#d2e9f1;color:#16384e}
+.manifesto-page .button{border-color:#174b68;color:#174b68;background:transparent}
+.manifesto-page .button:hover{background:#174b68;color:white}
