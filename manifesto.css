@@ -1,37 +1,28 @@
-/* Opening notice */
-.home-with-manifesto .header{position:relative}
-.manifesto-notice{padding:48px 8vw 60px;border-bottom:1px solid #ef64632e;background:linear-gradient(115deg,#251013,#100d10 65%,#080a0c)}
-.manifesto-notice .notice-label{display:flex;align-items:center;gap:12px;color:#ff9290;font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:22px}
-.notice-light{width:8px;height:8px;border-radius:50%;background:#ff6565;box-shadow:0 0 14px #f6646470;animation:notice-pulse 2.8s ease-in-out infinite;flex:none}
-.manifesto-notice h2{font-size:clamp(28px,3.4vw,50px);line-height:1.16;max-width:1000px;letter-spacing:-.035em;margin-bottom:20px;color:#fff0eb;text-transform:none}
-.manifesto-notice .notice-intro{max-width:780px;font-size:15px;color:#cdbfbd;margin-bottom:20px}
-.manifesto-notice blockquote{margin:0 0 25px;max-width:800px;font-size:16px;line-height:1.7;color:#e3d7d1;font-family:Georgia,'Times New Roman',serif}
-.manifesto-notice .text-link{color:#ffaaa5;border-color:#f2878055}
-@keyframes notice-pulse{0%,100%{opacity:1;box-shadow:0 0 14px #f6646470}50%{opacity:.35;box-shadow:0 0 4px #f6646420}}
-/* Long-form manifesto */
-.manifesto-page{color-scheme:light;background:#f2efe6;color:#273c31;--text:#273c31;--muted:#647264;--line:#344a3326}
-.manifesto-page .header{position:relative;padding-top:30px;padding-bottom:30px;border-bottom:1px solid var(--line)}
-.manifesto-page .logo span{color:#6a7467}.manifesto-page nav a:after{background:#273c31}.manifesto-page a:focus-visible,.manifesto-page button:focus-visible{outline-color:#466a4c}
-.manifesto-cover{position:relative;padding:95px 8vw 0;overflow:hidden;text-align:center;background:radial-gradient(ellipse at 50% 60%,#e6e8d8,transparent 65%)}
-.manifesto-cover .eyebrow{color:#687961;margin-bottom:30px;font-size:10px}
-.manifesto-cover h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(40px,5.8vw,86px);line-height:1.09;letter-spacing:-.045em;max-width:1100px;margin:0 auto 30px;text-transform:none;text-wrap:balance}
-.manifesto-deck{font-size:17px;line-height:1.7;max-width:640px;margin:0 auto 30px;color:#65735f}
-.manifesto-byline{font-size:11px;letter-spacing:.07em;color:#67755f;margin-bottom:35px}
-.landscape{display:block;width:min(100%,1100px);height:auto;margin:0 auto;color:#738267}
-.reading-intro{display:flex;justify-content:space-between;gap:25px;padding:27px 0;border-bottom:1px solid var(--line);margin-bottom:55px;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:#68765f}
-.manifesto-reading{width:min(740px,84%);margin:0 auto;padding-bottom:90px}
-.manifesto-body p{font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.95;color:#384b3b;margin:0 0 30px}
-.manifesto-body>p:first-child:first-letter{float:left;font-size:76px;line-height:.85;padding:12px 13px 0 0;color:#5b734f}
-.manifesto-body p.principle{margin:55px 0;padding:32px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:26px;line-height:1.55;color:#304d34}
-.manifesto-body p.principle strong{font-weight:400}.manifesto-body strong{font-weight:600}.manifesto-body p:last-child{padding-top:25px;color:#526d46}
-.manifesto-close{text-align:center;border-top:1px solid var(--line);padding:65px 8vw 80px;background:#e7e9dc}
-.manifesto-close .eyebrow{color:#67755e}.manifesto-close h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(32px,4vw,52px);text-transform:none;margin-bottom:28px}.manifesto-close .button{border-color:#4b6247}.manifesto-close .button:hover{background:#304d34;color:#f2efe6}
-.manifesto-page footer{color:#62725e}.manifesto-page footer>a{color:#304d34}.manifesto-page .menu-toggle span{background:#304d34}
-@media(max-width:760px){.manifesto-notice{padding:28px 7vw 38px}.manifesto-notice .notice-label{font-size:9px;letter-spacing:.1em}.manifesto-notice .notice-intro{font-size:14px}.manifesto-notice blockquote{font-size:15px}.home-with-manifesto .hero-copy{margin-top:80px}.manifesto-page nav{background:#f2efe6;top:90px}.manifesto-cover{padding:65px 7vw 0}.manifesto-cover h1{font-size:clamp(36px,9vw,64px)}.manifesto-deck{font-size:15px}.manifesto-reading{width:86%;padding-bottom:50px}.reading-intro{font-size:9px;margin-bottom:35px;line-height:1.6}.manifesto-body p{font-size:17px;line-height:1.85;margin-bottom:25px}.manifesto-body p.principle{font-size:22px;margin:35px 0;padding:25px 0}.landscape{width:120%;max-width:none;margin-left:-10%}}
-@media(prefers-reduced-motion:reduce){.notice-light{animation:none}}
-.manifesto-recommendations{padding:65px 8vw 75px;border-top:1px solid var(--line);max-width:1100px;margin:0 auto}
-.manifesto-recommendations .eyebrow{color:#68765f}
-.manifesto-recommendations h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,4vw,48px);font-weight:400;line-height:1.2;letter-spacing:-.03em}
-.manifesto-recommendations>p:not(.eyebrow){max-width:680px;font-size:16px;line-height:1.8;color:#647264}
+/* Manifesto — leitura longa no mesmo design escuro do site, com acento de alerta */
+.manifesto-page{--text:#ece7e1;--muted:#a7a29d;--line:#ffffff1f;background:#06080a}
+.manifesto-page .logo span{color:#aeb6bc}
+.manifesto-cover{position:relative;padding:190px 8vw 0;overflow:hidden;text-align:center;isolation:isolate;background:radial-gradient(ellipse at 50% 78%,#3a1317 0,#160b0e 42%,#06080a 78%)}
+.manifesto-cover:before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(circle at 18% 22%,#ffffff40 0 1px,transparent 1.5px),radial-gradient(circle at 74% 14%,#ffffff40 0 1px,transparent 1.5px),radial-gradient(circle at 42% 38%,#ffffff30 0 1px,transparent 1.5px),radial-gradient(circle at 88% 44%,#ffffff30 0 1px,transparent 1.5px),radial-gradient(circle at 8% 52%,#ffffff30 0 1px,transparent 1.5px);background-size:420px 300px}
+.manifesto-cover .eyebrow{display:inline-flex;align-items:center;gap:12px;color:#ff9d99;margin-bottom:30px;font-size:11px}
+.manifesto-cover .eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:#ff5a55;box-shadow:0 0 12px #ff5a55;animation:alert-dot 1.6s ease-in-out infinite}
+.manifesto-cover h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(40px,5.8vw,86px);line-height:1.09;letter-spacing:-.04em;max-width:1100px;margin:0 auto 30px;text-transform:none;text-wrap:balance;color:#fff3ee}
+.manifesto-deck{font-size:18px;line-height:1.7;max-width:640px;margin:0 auto 28px;color:#cdbfbb}
+.manifesto-byline{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9a8f8b;margin-bottom:35px}
+.landscape{display:block;width:min(100%,1100px);height:auto;margin:0 auto}
+.reading-intro{display:flex;justify-content:space-between;gap:25px;padding:27px 0;border-bottom:1px solid var(--line);margin-bottom:55px;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:#ff9d99}
+.manifesto-reading{width:min(740px,84%);margin:0 auto;padding:30px 0 90px}
+.manifesto-body p{font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.95;color:#d8d2cb;margin:0 0 30px}
+.manifesto-body>p:first-child:first-letter{float:left;font-size:76px;line-height:.85;padding:12px 13px 0 0;color:#ff7a74}
+.manifesto-body p.principle{margin:55px 0;padding:32px 0 32px 28px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-left:2px solid #ff5a55;font-size:26px;line-height:1.55;color:#fff0eb}
+.manifesto-body p.principle strong{font-weight:400}.manifesto-body strong{font-weight:600;color:#fff}.manifesto-body p:last-child{padding-top:25px;color:#e8c9c4}
+.manifesto-recommendations{padding:80px 8vw;border-top:1px solid var(--line);background:#0b0e12}
+.manifesto-recommendations>*{max-width:1100px;margin-left:auto;margin-right:auto}
+.manifesto-recommendations .eyebrow{color:#9fc1d6}
+.manifesto-recommendations h2{font-size:clamp(30px,4vw,56px);text-transform:uppercase}
+.manifesto-recommendations>p:not(.eyebrow){max-width:680px;font-size:16px;line-height:1.8;color:var(--muted);margin-left:auto;margin-right:auto;width:100%}
 .recommended-links{display:flex;flex-wrap:wrap;gap:20px 35px;margin-top:25px}
-.recommended-links .text-link{font-size:13px;line-height:1.6;border-bottom:1px solid #344a3350;padding:8px 0}
+.recommended-links .text-link{font-size:13px;line-height:1.6;border-bottom:1px solid #ffffff50;padding:8px 0}
+.manifesto-close{text-align:center;border-top:1px solid var(--line);padding:90px 8vw 100px;background:radial-gradient(ellipse at 50% 100%,#2a0f12,transparent 70%),#06080a}
+.manifesto-close .eyebrow{color:#ff9d99}.manifesto-close h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(32px,4vw,56px);margin-bottom:34px}
+@media(max-width:760px){.manifesto-cover{padding:140px 7vw 0}.manifesto-cover h1{font-size:clamp(36px,9vw,64px)}.manifesto-deck{font-size:16px}.manifesto-reading{width:86%;padding-bottom:50px}.reading-intro{font-size:9px;margin-bottom:35px;line-height:1.6}.manifesto-body p{font-size:17px;line-height:1.85;margin-bottom:25px}.manifesto-body p.principle{font-size:22px;margin:35px 0;padding:25px 0 25px 20px}.landscape{width:120%;max-width:none;margin-left:-10%}.manifesto-recommendations{padding:60px 7vw}}
+@media(prefers-reduced-motion:reduce){.manifesto-cover .eyebrow:before{animation:none}}

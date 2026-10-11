@@ -6,7 +6,7 @@ Portfólio estático para GitHub Pages. Sem build, sem dependências: basta publ
 
 | Caminho | Conteúdo |
 |---|---|
-| `index.html` | Página inicial (manifesto, hero, projetos, livro) |
+| `index.html` | Home em painéis de tela cheia (`home.css`, `home.js`): hero, navio, IA, robótica, dados, livro e manifesto |
 | `projetos-navais.html` | Navio interativo, simulador, ML Learner, radar de notícias e contato |
 | `outros-projetos.html` | AEON, INCLUDE e Alpha App |
 | `sobre.html` | Formação, trajetória, competências e links |
@@ -17,7 +17,7 @@ Portfólio estático para GitHub Pages. Sem build, sem dependências: basta publ
 | `github-pages/` | Aplicativo ML Learner (Stlite/Pyodide) — veja `github-pages/LEIAME.md` |
 | `assets/` | Imagens, ilustrações SVG e arquivos da oficina (`assets/robo/`) |
 
-Estilos compartilhados: `minimal.css`, `pages.css`, `manifesto.css`, `minimal.js`. Páginas de projeto usam `alan-os`, `future-interface`, `omni-interface`, `project`, `project-modern`, `style` e `library-news` (CSS).
+Estilos compartilhados: `minimal.css`, `pages.css`, `manifesto.css`, `project-pages.css` e `minimal.js` (cabeçalho, menu e popup de alerta do manifesto, exibido uma vez por sessão).
 
 ## Visualizar localmente
 
