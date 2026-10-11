@@ -47,3 +47,5 @@ nav a[aria-current=page]:after{width:100%}
 .page-heading{position:relative;overflow:hidden;isolation:isolate}
 .page-heading:before{content:"";position:absolute;z-index:-2;inset:0;background:radial-gradient(ellipse at 82% 8%,#1c3446 0,#0b1822 38%,transparent 72%),linear-gradient(180deg,#04070a,#080a0c)}
 .page-heading:after{content:"";position:absolute;z-index:-1;width:120vw;height:120vw;left:38%;top:62%;border-radius:50%;border:1px solid #9fd4f038;background:radial-gradient(ellipse at 40% 0,#67849a22,transparent 50%);box-shadow:0 -20px 90px #7fc4ee14;pointer-events:none}
+
+.aeon-ship-map>img{width:100%;height:auto;border-radius:8px}.aeon-ship-map .point-propulsion{left:28%;top:70%}.aeon-ship-map .point-ml{left:72%;top:30%}
