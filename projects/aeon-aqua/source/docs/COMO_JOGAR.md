@@ -10,6 +10,12 @@ O HTML autossuficiente continua em `dist/index.html`. O `index.html` da raiz é 
 
 ## Missão
 
+No celular ou tablet, use o joystick esquerdo para avanço/recuo e movimento lateral. O joystick direito controla giro e profundidade. Segure CORTAR para acionar a ferramenta. Soltar ou cancelar um toque interrompe o comando; o veículo ainda desacelera conforme a física.
+
+Os botões Missão e Telemetria abrem os painéis, que começam recolhidos. Navio alterna a visão geral. As telas vertical e horizontal usam um layout próprio e resolução de renderização reduzida para aliviar a carga gráfica.
+
+No site publicado, os botões com as bandeiras do Brasil/PT e EUA/EN selecionam o idioma e salvam a preferência no navegador. A tradução não recarrega a página nem reinicia a missão. Conteúdo de fontes externas e títulos de obras mantêm o idioma de origem.
+
 O veículo começa próximo da hélice, apontado para o alvo marcado pelo círculo verde.
 A câmera de bordo aparece no canto inferior esquerdo da área 3D.
 

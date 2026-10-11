@@ -4,14 +4,25 @@ import { createSimulation } from './core/createSimulation';
 import { ROVControls } from './rov/ROVControls';
 import { createThrusterBars } from './ui/ThrusterBars';
 import { updateTelemetry } from './telemetry/updateTelemetry';
+import { createTouchControls } from './ui/TouchControls';
 const viewport=document.querySelector<HTMLDivElement>('#viewport');if(!viewport)throw new Error('Elemento #viewport não encontrado');
 function start() {
 const simulation=createSimulation(viewport!);const controls=new ROVControls(simulation.rov);const bars=createThrusterBars(document.querySelector('#thruster-bars'));
+const touch=createTouchControls(controls);
+const app=document.querySelector<HTMLElement>('#app')!;
+const missionPanel=document.querySelector<HTMLElement>('.left-panel')!,telemetryPanel=document.querySelector<HTMLElement>('.right-panel')!;
+missionPanel.id='mission-panel';telemetryPanel.id='telemetry-panel';
+document.querySelectorAll<HTMLButtonElement>('[data-panel-button]').forEach(button=>button.addEventListener('click',()=>{
+  app.dataset.panel=app.dataset.panel===button.dataset.panelButton?'':button.dataset.panelButton;
+  document.querySelectorAll<HTMLButtonElement>('[data-panel-button]').forEach(item=>item.setAttribute('aria-expanded',String(item.dataset.panelButton===app.dataset.panel)));
+}));
 const ui={depth:document.querySelector<HTMLElement>('#depth'),heading:document.querySelector<HTMLElement>('#heading'),power:document.querySelector<HTMLElement>('#power'),battery:document.querySelector<HTMLElement>('#battery'),coordinates:document.querySelector<HTMLElement>('#coordinates'),reset:document.querySelector<HTMLButtonElement>('#reset-button')};
 let t=updateTelemetry(simulation.rov,controls.getCommands(),0);
 let cargoView=false;
 const viewButton=document.querySelector<HTMLButtonElement>('#view-button');
-viewButton?.addEventListener('click',()=>{cargoView=!cargoView;simulation.setView(cargoView);viewButton.textContent=cargoView?'VOLTAR AO ROV':'VER CARGUEIRO';});
+const mobileView=document.querySelector<HTMLButtonElement>('#mobile-view-button');
+function toggleView(){cargoView=!cargoView;simulation.setView(cargoView);if(viewButton)viewButton.textContent=cargoView?'VOLTAR AO ROV':'VER CARGUEIRO';if(mobileView)mobileView.textContent=cargoView?'ROV':'Navio';}
+viewButton?.addEventListener('click',toggleView);mobileView?.addEventListener('click',toggleView);
 const loop=createLoop(dt=>{
   controls.update(); simulation.step(dt,controls.toolActive);
   t=updateTelemetry(simulation.rov,controls.getCommands(),dt);
@@ -33,8 +44,8 @@ const loop=createLoop(dt=>{
   const distance=document.querySelector<HTMLElement>('#target-distance');if(distance)distance.textContent=`ALVO ${simulation.targetDistance.toFixed(1)} m · ${simulation.rov.velocity.length().toFixed(2)} m/s${controls.toolActive?' · CORTADOR ATIVO':''}`;
   viewport!.dataset.missionStage=String(m.stage);
 });
-ui.reset?.addEventListener('click',()=>{cargoView=false;if(viewButton)viewButton.textContent='VER CARGUEIRO';simulation.reset();controls.clear();loop.reset();t=updateTelemetry(simulation.rov,controls.getCommands(),0);});
-window.addEventListener('beforeunload',()=>{loop.stop();controls.dispose();});
+ui.reset?.addEventListener('click',()=>{cargoView=false;if(viewButton)viewButton.textContent='VER CARGUEIRO';if(mobileView)mobileView.textContent='Navio';simulation.reset();touch.reset();controls.clear();loop.reset();t=updateTelemetry(simulation.rov,controls.getCommands(),0);});
+window.addEventListener('beforeunload',()=>{loop.stop();touch.dispose();controls.dispose();});
 simulation.renderer.domElement.addEventListener('webglcontextlost',event=>{
   event.preventDefault();loop.stop();showError('A conexão com a placa de vídeo foi interrompida. Recarregue a página para retomar.');
 });

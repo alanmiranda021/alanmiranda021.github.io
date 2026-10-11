@@ -52,6 +52,8 @@ for name in ['README.md', 'package.json', 'package-lock.json', 'tsconfig.json', 
 docs = source / 'docs'
 docs.mkdir(exist_ok=True)
 shutil.copy2(root / 'docs/COMO_JOGAR.md', docs / 'COMO_JOGAR.md')
+for name in ['i18n-extracted.json','i18n-translations.txt']:
+    if (root/'docs'/name).exists():shutil.copy2(root/'docs'/name,docs/name)
 shutil.copy2(root / 'docs/previews/cargo-ship.webp', site / 'assets/aeon-cargo.webp')
 shutil.copy2(root / 'docs/previews/aeon-preview.webp', site / 'assets/aeon-preview.webp')
 

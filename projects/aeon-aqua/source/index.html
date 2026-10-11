@@ -35,6 +35,16 @@
   </aside>
   <footer class="bottombar"><div><span class="status-dot"></span> VEÍCULO CONECTADO <span class="divider">|</span> DUAS CÂMERAS</div><div id="coordinates"></div><button id="reset-button" type="button">REINICIAR MISSÃO ↺</button></footer>
   <div id="rov-camera" aria-label="Câmera de bordo"><span>CÂMERA DO ROV · FRENTE</span></div>
+  <nav id="mobile-toolbar" aria-label="Painéis do simulador">
+    <button type="button" data-panel-button="mission" aria-controls="mission-panel" aria-expanded="false">Missão</button>
+    <button type="button" data-panel-button="telemetry" aria-controls="telemetry-panel" aria-expanded="false">Telemetria</button>
+    <button type="button" id="mobile-view-button">Navio</button>
+  </nav>
+  <div id="touch-controls" aria-label="Controles por toque">
+    <div class="stick-control"><div id="move-stick" class="virtual-stick" aria-label="Joystick de avanço e movimento lateral"><span class="stick-knob"></span></div><span class="stick-label">Mover</span></div>
+    <button id="touch-cutter" type="button" aria-pressed="false">CORTAR<small>Segure</small></button>
+    <div class="stick-control"><div id="depth-stick" class="virtual-stick" aria-label="Joystick de giro e profundidade"><span class="stick-knob"></span></div><span class="stick-label">Girar / profundidade</span></div>
+  </div>
   <div id="startup-error" role="alert" hidden></div>
   <div class="crosshair"><span></span><i></i></div><div class="center-note" id="target-distance"></div>
 </div>

@@ -61,7 +61,7 @@ export function createSimulation(container:HTMLElement):Simulation {
  const pip=document.querySelector<HTMLElement>('#rov-camera');
  let cargoView=false;const cargoFocus=new THREE.Vector3(21,2,-8);
  const toTarget=new THREE.Vector3(),forward=new THREE.Vector3();
- const resize=()=>{const w=Math.max(container.clientWidth,1),h=Math.max(container.clientHeight,1);camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);};new ResizeObserver(resize).observe(container);
+ const resize=()=>{const w=Math.max(container.clientWidth,1),h=Math.max(container.clientHeight,1);camera.aspect=w/h;camera.fov=w<h?65:55;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(window.devicePixelRatio,w<=900||matchMedia('(pointer:coarse)').matches?1.25:1.75));renderer.setSize(w,h);};new ResizeObserver(resize).observe(container);
  return {scene,camera,renderer,orbit,rov,mission,
  setView(cargo:boolean){cargoView=cargo;orbit.maxDistance=cargo?120:30;orbit.target.copy(cargo?cargoFocus:rov.group.position);camera.position.copy(cargo?new THREE.Vector3(12,30,70):rov.group.position.clone().add(new THREE.Vector3(-4,3,5)));},
  get targetDistance(){return rov.group.position.distanceTo(missionTarget);},
@@ -91,7 +91,7 @@ export function createSimulation(container:HTMLElement):Simulation {
    }
    orbit.target.lerp(cargoView?cargoFocus:rov.group.position,Math.min(dt*1.2,1));orbit.update();particles.rotation.y+=dt*.002;
    renderer.setScissorTest(false);renderer.setViewport(0,0,container.clientWidth,container.clientHeight);renderer.render(scene,camera);
-   if(pip){
+   if(pip && pip.offsetWidth>0){
      environment.update(time,-rov.group.position.y);
      const rect=pip.getBoundingClientRect(),canvas=renderer.domElement.getBoundingClientRect();
      onboard.aspect=rect.width/rect.height;onboard.updateProjectionMatrix();
