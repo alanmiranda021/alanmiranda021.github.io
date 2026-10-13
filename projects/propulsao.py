@@ -757,12 +757,15 @@ def validar(cfg):
     return ok
 
 
-def main():
+def main(argv=None):
+    """argv=None usa sys.argv; em Jupyter/Colab/IDE chame main([]) ou main(["backtest"])."""
     ap = argparse.ArgumentParser(description="Automacao de propulsao naval + backtest")
-    ap.add_argument("cmd", nargs="?", default="tudo", choices=["tudo", "validar", "curva", "backtest", "importar"])
+    ap.add_argument("cmd", nargs="?", default="tudo")
     ap.add_argument("arquivo", nargs="?", help="planilha .xls/.xlsx (para 'importar')")
     ap.add_argument("--planilha", help="usa o navio de uma planilha Holtrop 84 existente")
-    a = ap.parse_args()
+    a, _ignorados = ap.parse_known_args(argv)          # ignora argumentos extras de Jupyter/Colab/IDE (-f kernel.json)
+    if a.cmd not in ("tudo", "validar", "curva", "backtest", "importar"):
+        a.cmd, a.arquivo = "tudo", None                # em notebook, '-f kernel.json' nao e um comando
     cfg = copy.deepcopy(CONFIG)
     arq = a.planilha or (a.arquivo if a.cmd == "importar" else None)
     if arq:
@@ -774,7 +777,10 @@ def main():
             pprint.pprint(nv, sort_dicts=False)
             return
     if a.cmd == "validar":
-        sys.exit(0 if validar(cfg) else 1)
+        ok = validar(cfg)
+        if argv is None and sys.argv[0].endswith("propulsao.py"):
+            sys.exit(0 if ok else 1)
+        return ok
     elif a.cmd == "curva":
         print(curva_velocidades(cfg).to_string(index=False, float_format=lambda v: "%.2f" % v))
     elif a.cmd == "backtest":

@@ -2,12 +2,38 @@
 import copy
 import tempfile
 import unittest
+import sys
+from unittest.mock import patch
 from pathlib import Path
 
 import propulsao as p
 
 
 class PropulsionTests(unittest.TestCase):
+    def test_notebook_argv(self):
+        with patch.object(sys, 'argv', ['ipykernel_launcher.py', '-f', 'kernel.json']):
+            with patch.object(p, 'rodar_tudo') as run:
+                p.main()
+                run.assert_called_once()
+
+    def test_explicit_empty_argv_ignores_kernel(self):
+        with patch.object(sys, 'argv', ['ipykernel_launcher.py', '-f', 'kernel.json']):
+            with patch.object(p, 'rodar_tudo') as run:
+                p.main([])
+                run.assert_called_once()
+
+    def test_explicit_backtest_in_notebook(self):
+        with patch.object(sys, 'argv', ['ipykernel_launcher.py', '-f', 'kernel.json']):
+            with patch.object(p, 'backtest', wraps=p.backtest) as run:
+                p.main(['backtest'])
+                run.assert_called_once()
+
+    def test_validation_returns_without_exiting_notebook(self):
+        with patch.object(sys, 'argv', ['ipykernel_launcher.py']):
+            self.assertTrue(p.main(['validar']))
+        with patch.object(p, 'validar', return_value=False):
+            self.assertFalse(p.main(['validar']))
+
     def test_reference_values(self):
         self.assertTrue(p.validar(p.CONFIG))
 

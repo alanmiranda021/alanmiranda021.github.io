@@ -48,3 +48,14 @@ python -m unittest discover -s projects -p test_propulsao.py
 ```
 
 Resultados locais são gravados em `saida/`. O catálogo de motores é aproximado, o SFOC é simplificado e a interpolação de ondas para Fn entre 0,4 e 0,55 mantém a fórmula da planilha, ainda pendente de conferência. A validação compara valores de referência do material fornecido; a planilha original não está incluída. Importar uma planilha atualiza o navio, sem alterar a malha da busca. O modo com caixa altera a eficiência de transmissão e ainda não modela uma relação de redução.
+
+Em Jupyter, Colab ou VS Code interativo, com `propulsao.py` no caminho de importação:
+
+```python
+import propulsao
+propulsao.main(["backtest"])
+propulsao.main(["validar"])  # retorna True/False sem encerrar o notebook
+# propulsao.main([]) executa tudo e gera os arquivos em saida/
+```
+
+`main(argv=None)` aceita argumentos explícitos e tolera os argumentos adicionais do kernel. O CONFIG padrão é o Navio Holtrop a 25 nós (RT ≈ 1787 kN), que não encontra motor no catálogo aproximado; o ranking exibido nesse caso não atende à restrição de motor. O exemplo Aurora Spirit no material usa outro navio e não representa o CONFIG padrão.
