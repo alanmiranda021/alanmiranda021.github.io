@@ -39,6 +39,14 @@ async function main() {
   assert.ok(completed.result.rankingCsv.includes('BHP_kW'));
   assert.ok(completed.result.curveCsv.includes('V_nos'));
   assert.ok(completed.result.html.includes('<!doctype html>'));
+  assert.ok(completed.result.diagnosticCsv.includes('viol_total'));
+  const record=JSON.parse(completed.result.configJson);
+  assert.equal(record.catalogo.length,56);
+  assert.equal(record.perfil,'personalizado');
+  assert.equal(record.config.helice.diametro.max,8);
+  assert.equal(record.combinacoes_geradas,1);
+  assert.ok(completed.result.limits.some(warning=>warning.includes('limite de D')));
+  assert.ok(completed.result.curve.some(row=>row.status_envelope==='abaixo da faixa SFOC'&&row.FOC_t_h===null));
   const input=simulation.backtestInput(completed.result);
   const result=simulation.calculate(input);
   const row=completed.result.ranking[0];

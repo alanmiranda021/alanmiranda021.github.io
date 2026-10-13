@@ -24,7 +24,7 @@ def configurar_perfil(cfg, perfil):
     return result
 
 
-def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000):
+def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, diagnostico_destino=None):
     cfg = configurar_perfil(cfg, perfil)
     hl, nv, rs = cfg['helice'], cfg['navio'], cfg['restricoes']
     # Validate physical inputs and each step without allocating the entire grid.
@@ -68,19 +68,30 @@ def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000):
     top_n = int(cfg['backtest']['top'])
     accepted = fallback = None
     funnel, completed, resistance = {}, 0, None
-    def merge(previous, frame):
-        frame = frame.sort_values([objective, 'Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').head(top_n)
+    def merge(previous, frame, exploratory=False):
+        keys = (['viol_total'] if exploratory or cfg['restricoes']['motor'] == 'informativo' else []) + [objective, 'Z', 'D', 'Ae/Ao', 'P/D']
+        frame = frame.sort_values(keys, kind='stable').head(top_n)
         if previous is not None:
             frame = pd.concat([previous, frame], ignore_index=True)
-        return frame.sort_values([objective, 'Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').head(top_n).reset_index(drop=True)
+        return frame.sort_values(keys, kind='stable').head(top_n).reset_index(drop=True)
     if progresso:
         progresso(0, total)
+    if diagnostico_destino:
+        # One diagnostic row per hydrodynamically valid candidate, not just top N.
+        with open(diagnostico_destino, 'w', encoding='utf-8'):
+            pass
+    first_diagnostic = True
     for z, part, count in batches:
         local = copy.deepcopy(cfg)
         local['helice']['z'] = [z]
         local['helice']['diametro'].update(min=float(part[0]), max=float(part[-1]))
         g, f, steps, resistance = p.backtest(local, verbose=False)
-        accepted, fallback = merge(accepted, g), merge(fallback, f)
+        accepted, fallback = merge(accepted, g), merge(fallback, f, exploratory=True)
+        if diagnostico_destino:
+            with open(diagnostico_destino, 'a', encoding='utf-8', newline='') as handle:
+                diagnostic = p.diagnostico_csv(f)
+                handle.write(diagnostic if first_diagnostic else diagnostic.split('\n', 1)[1])
+                first_diagnostic = False
         for name, survivors in steps:
             funnel[name] = funnel.get(name, 0) + survivors
         completed += count

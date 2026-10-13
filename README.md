@@ -47,7 +47,7 @@ python projects/propulsao.py tudo --planilha "Navio.xlsx"
 python -m unittest discover -s projects -p test_propulsao.py
 ```
 
-Resultados locais são gravados em `saida/`. O catálogo de motores é aproximado, o SFOC é simplificado e a interpolação de ondas para Fn entre 0,4 e 0,55 mantém a fórmula da planilha, ainda pendente de conferência. A validação compara valores de referência do material fornecido; a planilha original não está incluída. Importar uma planilha atualiza o navio, sem alterar a malha da busca. O modo com caixa altera a eficiência de transmissão e ainda não modela uma relação de redução.
+Resultados locais são gravados em `saida/`. O CSV de motores usa variantes do programa oficial MAN de 2021, com layout simplificado; o catálogo interno aproximado é apenas reserva. O SFOC é simplificado e a interpolação de ondas para Fn entre 0,4 e 0,55 mantém a fórmula da planilha, ainda pendente de conferência. A validação compara valores de referência do material fornecido; a planilha original Holtrop não está incluída. Importar uma planilha atualiza o navio, sem alterar a malha da busca. O modo com caixa altera a eficiência de transmissão e ainda não modela uma relação de redução.
 
 Em Jupyter, Colab ou VS Code interativo, com `propulsao.py` no caminho de importação:
 
@@ -58,7 +58,7 @@ propulsao.main(["validar"])  # retorna True/False sem encerrar o notebook
 # propulsao.main([]) executa tudo e gera os arquivos em saida/
 ```
 
-`main(argv=None)` aceita argumentos explícitos e tolera os argumentos adicionais do kernel. O CONFIG padrão é o Navio Holtrop a 25 nós (RT ≈ 1787 kN), que não encontra motor no catálogo aproximado; o ranking exibido nesse caso não atende à restrição de motor. O exemplo Aurora Spirit no material usa outro navio e não representa o CONFIG padrão.
+`main(argv=None)` aceita argumentos explícitos e tolera os argumentos adicionais do kernel. O CONFIG padrão é o Navio Holtrop a 25 nós (RT ≈ 1787 kN), que não encontra motor no catálogo usado; o ranking exibido nesse caso não atende à restrição de motor. O exemplo Aurora Spirit no material usa outro navio e não representa o CONFIG padrão.
 
 ### Níveis de busca e teste da melhor hélice
 
@@ -75,3 +75,18 @@ node projects/test_propulsao_browser.cjs <caminho-do-pacote-playwright-core>
 ```
 
 O teste de navegador usa Edge em modo headless e requer o site servido em `http://127.0.0.1:8080` (ou outro endereço passado como segundo argumento).
+
+### Diagnóstico de motor e reprodutibilidade
+
+Cada candidato que passou pelas restrições hidrodinâmicas recebe `motor_proximo`, `viol_rpm`, `viol_kw` e `viol_total`. O cálculo segue a aba `Folga_motor` de `analise_propulsao.xlsx`: denominadores são RPM/MCR solicitados, e a violação total é o **máximo** das duas. A potência admissível é avaliada na rotação limitada ao layout do motor. O ranking exploratório é ordenado por menor violação, com o objetivo BHP/FOC como desempate. Zero indica atendimento ao layout simplificado.
+
+As saídas incluem `diagnostico_motor.csv` com todos os candidatos hidrodinamicamente válidos, `config_execucao.json` com CONFIG efetivo, data UTC, perfil, funil, catálogo usado e hashes, além do ranking, curva e relatório. No navegador, há downloads próprios para diagnóstico e registro. O relatório mostra as margens intermediárias e o fator de potência `1,15 × 1,05³ × 1,10 = 1,464395625` para as margens padrão. Os avisos de limite identificam o último ponto amostrado de D, P/D e AE/AO, considerando os limites por número de pás.
+
+`FOC_t_h` fica vazio fora da faixa de carga SFOC configurada (padrão 25–100%). `FOC_limitado_t_h` é uma estimativa separada com carga limitada para o SFOC; não aprova operação fora do envelope. Pontos acima de 100% são marcados “fora do envelope”. `consumo_confiavel` indica apenas a validade da faixa de carga para o modelo simplificado, não consumo validado pelo fabricante.
+
+```bash
+python projects/propulsao.py tudo --perfil detalhado
+python projects/propulsao.py tudo --config saida/config_execucao.json
+```
+
+A reprodução usa o catálogo incorporado ao registro, mesmo que o CSV instalado tenha mudado. Malhas grandes são executadas em lotes; `validar_config` informa o tamanho real e o limite por lote. Veja [fonte e limites do catálogo](projects/CATALOGO_MOTORES.md): o Project Guide procurado não estava disponível, portanto o CSV não é apresentado como catálogo atual de fabricante. A planilha de análise foi consultada e preservada, sem executar instruções ou alterar cenários nela.

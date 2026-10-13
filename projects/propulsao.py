@@ -20,7 +20,9 @@ import math
 import os
 import sys
 import html as html_utils
-from datetime import datetime
+import json
+import hashlib
+from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -78,7 +80,7 @@ CONFIG = {
         "motor": "estrito",                     # 'estrito' = exige caber no layout MAN B&W
     },                                          # 'informativo' = so informa o motor mais proximo
     "margens": {                                # Holtrop!M21:M23 / aba 'Margens'
-        "mar": 15.0, "rotacao": 5.0, "operacional": 10.0,   # %
+        "mar": 15.0, "rotacao": 5.0, "operacional": 10.0,   # %; rotacao entra na potencia por (1+rotacao/100)^3
         "expoente_rpm": 1.0 / 3.0,              # a planilha usa 1/3 (Holtrop) ou 0.33 (Margens)
         "acoplamento": "direto",                # 'direto' (0.97) | 'caixa' (0.93)  - Margens!F9:F10
         "eta_t": {"direto": 0.97, "caixa": 0.93},
@@ -88,6 +90,7 @@ CONFIG = {
         "carga_otima": 0.80,                    # fracao do MCR do ponto otimo
         "curvatura": 0.30,                      # SFOC = min * (1 + k * (carga - otima)^2)
         "arquivo_csv": "motores.csv",           # se existir, substitui o catalogo interno
+        "carga_min_sfoc": 0.25, "carga_max_sfoc": 1.0,  # faixa valida do modelo; fora dela consumo e apenas limitado
     },
     "compat_planilha": False,                   # False = formulas corrigidas (recomendado)
                                                 # True  = reproduz a planilha bit a bit, incluindo 3 pontos suspeitos:
@@ -399,9 +402,19 @@ def margens(bhp, rpm, mg):
 
 
 def carregar_motores(cfg):
+    recorded = cfg['motor'].get('catalogo_registrado')
     arq = cfg["motor"].get("arquivo_csv")
-    if arq and os.path.exists(arq):
-        df = pd.read_csv(arq)
+    if arq:
+        if not os.path.isfile(arq) and not os.path.isabs(arq):
+            arq = os.path.join(os.path.dirname(__file__), arq)
+    if recorded is not None or (arq and os.path.isfile(arq)):
+        df = pd.DataFrame(recorded) if recorded is not None else pd.read_csv(arq)
+        if df.empty or df['modelo'].duplicated().any():
+            raise ValueError('Catálogo vazio ou com modelos duplicados.')
+        for _, row in df.iterrows():
+            numbers = [float(row[k]) for k in ('n_min', 'n_max', 'p_max_kw', 'p_min_kw')]
+            if not all(math.isfinite(v) and v > 0 for v in numbers) or numbers[0] > numbers[1] or numbers[3] > numbers[2]:
+                raise ValueError('Limites inválidos no catálogo: %s' % row['modelo'])
         return [tuple(r) for r in df[["modelo", "n_min", "n_max", "p_max_kw", "p_min_kw"]].values]
     return MOTORES
 
@@ -419,7 +432,52 @@ def motores_que_cabem(p_kw, n_rpm, motores):
 
 def sfoc(carga, cfg):
     m = cfg["motor"]
+    carga = np.clip(carga, m.get('carga_min_sfoc', .25), m.get('carga_max_sfoc', 1.0))
     return m["sfoc_min"] * (1 + m["curvatura"] * (carga - m["carga_otima"]) ** 2)
+
+
+def diagnostico_motor(p_kw, n_rpm, motores):
+    """Distance to each layout, matching Folga_motor in analise_propulsao.xlsx.
+
+    Violations use requested RPM and MCR as denominators. Power bounds
+    are evaluated at RPM clipped to the motor layout, never extrapolated.
+    The closest motor minimizes max(viol_rpm, viol_kw); zero means it fits.
+    """
+    power, rpm = (v.ravel() for v in np.broadcast_arrays(_a(p_kw), _a(n_rpm)))
+    if np.any(~np.isfinite(power) | ~np.isfinite(rpm) | (power <= 0) | (rpm <= 0)):
+        raise ValueError('Diagnóstico exige MCR e RPM positivos e finitos.')
+    if not motores:
+        raise ValueError('O diagnóstico exige um catálogo de motores não vazio.')
+    best = np.full(power.shape, np.inf)
+    out = {key: np.empty(len(power), dtype=object if key == 'motor_proximo' else float)
+           for key in ('motor_proximo', 'viol_rpm', 'viol_kw', 'viol_total', 'motor_n_min', 'motor_n_max', 'rpm_layout', 'motor_p_min_kw', 'motor_p_max_kw')}
+    for name, n0, n1, pmax, pmin in motores:
+        layout_rpm = np.clip(rpm, n0, n1)
+        lower, upper = pmin * layout_rpm / n1, pmax * layout_rpm / n1
+        vr = np.maximum.reduce([np.zeros_like(rpm), (n0-rpm)/rpm, (rpm-n1)/rpm])
+        vp = np.maximum.reduce([np.zeros_like(power), (lower-power)/power, (power-upper)/power])
+        total = np.maximum(vr, vp)
+        mask = total < best
+        values = dict(motor_proximo=name, viol_rpm=vr, viol_kw=vp, viol_total=total,
+                      motor_n_min=n0, motor_n_max=n1, rpm_layout=layout_rpm,
+                      motor_p_min_kw=lower, motor_p_max_kw=upper)
+        for key, value in values.items():
+            out[key][mask] = value if np.isscalar(value) else value[mask]
+        best = np.minimum(best, total)
+    out['motivo_motor'] = np.select([(out['viol_rpm'] > 0) & (out['viol_kw'] > 0), out['viol_rpm'] > 0, out['viol_kw'] > 0],
+                                    ['rpm e potência', 'só rpm', 'só potência'], default='cabe')
+    return pd.DataFrame(out)
+
+
+def tamanho_malha(cfg):
+    hl = cfg['helice']
+    def count(span, minimum=None, maximum=None):
+        lo = span['min'] if minimum is None else minimum
+        hi = span['max'] if maximum is None else maximum
+        return max(0, math.floor((hi - lo + 1e-9) / span['passo']) + 1)
+    dmax = hl['diametro']['max'] or cfg['navio']['calado_popa'] / cfg['restricoes']['ta_sobre_d_min']
+    areas = sum(count(hl['ae_ao'], max(hl['ae_ao']['min'], AE_AO_POR_Z[z][0]), min(hl['ae_ao']['max'], AE_AO_POR_Z[z][1])) for z in hl['z'])
+    return count(hl['diametro'], maximum=dmax) * count(hl['p_d']) * areas
 
 
 # =============================================================================
@@ -479,7 +537,7 @@ def _faixa(d):
     return np.round(np.arange(d["min"], d["max"] + 1e-9, d["passo"]), 6)
 
 
-def validar_config(cfg):
+def validar_config(cfg, verbose=False, limite_malha=150000):
     """Reject invalid inputs and unbounded grids before allocating arrays."""
     nv, ag, hl, rs = (cfg[k] for k in ('navio', 'agua', 'helice', 'restricoes'))
     def positive(value, name):
@@ -505,8 +563,11 @@ def validar_config(cfg):
         if maximum < span['min']:
             raise ValueError('%s: máximo menor que mínimo.' % key)
         count *= math.floor((maximum - span['min']) / span['passo']) + 1
-    if count > 150000:
-        raise ValueError('Malha acima de 150.000 combinações. Aumente os passos da busca.')
+    count = tamanho_malha(cfg)
+    if verbose:
+        print('Tamanho da malha: %s combinações (limites da Série B incluídos).' % format(count, ','))
+    if limite_malha is not None and count > limite_malha:
+        raise ValueError('Malha de %s combinações; limite por lote: 150.000. Use propulsao_busca.backtest_perfil ou aumente os passos.' % format(count, ','))
     if rs['cavitacao_pct'] not in BURRILL or rs['motor'] not in ('estrito', 'informativo'):
         raise ValueError('Critério de cavitação ou modo de motor inválido.')
     positive(hl['rpm']['min'], 'rpm mínima')
@@ -517,10 +578,18 @@ def validar_config(cfg):
         raise ValueError('Objetivo deve ser bhp/foc e top deve estar entre 1 e 100.')
     for v in cfg['perfil_velocidades']:
         positive(v, 'Velocidade do perfil')
+    if not 0 < cfg['motor'].get('carga_min_sfoc', .25) < cfg['motor'].get('carga_max_sfoc', 1.0) <= 1:
+        raise ValueError('Faixa de carga SFOC deve satisfazer 0 < mínimo < máximo <= 1.')
+    for key in ('mar', 'rotacao', 'operacional'):
+        value = cfg['margens'][key]
+        if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+            raise ValueError('Margem %s deve ser finita e não negativa.' % key)
+    positive(cfg['margens']['expoente_rpm'], 'Expoente de rpm')
+    return count
 
 
 def backtest(cfg, verbose=True):
-    validar_config(cfg)
+    validar_config(cfg, verbose=verbose)
     nv, ag, hl, rs, mg = cfg["navio"], cfg["agua"], cfg["helice"], cfg["restricoes"], cfg["margens"]
     r = resistencia(nv, ag, nv["velocidade_nos"], cfg["compat_planilha"])
     Nh = nv["n_helices"]
@@ -579,6 +648,7 @@ def backtest(cfg, verbose=True):
         funil.append(("MCR <= potencia maxima do motor", len(g)))
 
     motores = carregar_motores(cfg)
+    g = pd.concat([g, diagnostico_motor(g['MCR_kW'].values, g['RPM_MCR'].values, motores)], axis=1)
     g["Motores"] = [", ".join(motores_que_cabem(p, n_, motores)[:3]) or "-" for p, n_ in zip(g["MCR_kW"], g["RPM_MCR"])]
     g["cabe_motor"] = g["Motores"] != "-"
     sem_motor = g.copy()
@@ -591,8 +661,8 @@ def backtest(cfg, verbose=True):
         df_["FOC_t_h"] = df_["SFOC"] * df_["BHP_kW"] * nv["n_motores"] / 1e6
         df_["FOC_MCR_t_h"] = df_["SFOC"] * df_["MCR_kW"] * nv["n_motores"] / 1e6     # como a aba 'Margens'
     chave = {"bhp": "BHP_kW", "foc": "FOC_t_h"}[cfg["backtest"]["objetivo"]]
-    g = g.sort_values(chave).reset_index(drop=True)
-    sem_motor = sem_motor.sort_values(chave).reset_index(drop=True)
+    g = g.sort_values(([chave] if rs['motor'] == 'estrito' else ['viol_total', chave]) + ['Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').reset_index(drop=True)
+    sem_motor = sem_motor.sort_values(['viol_total', chave, 'Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').reset_index(drop=True)
     if verbose:
         print("\nFUNIL DO BACKTEST")
         for nome, q in funil:
@@ -609,7 +679,7 @@ def curva_velocidades(cfg, helice=None, mcr_kw=None):
     out = []
     for v in cfg["perfil_velocidades"]:
         r = resistencia(nv, ag, v, cfg["compat_planilha"])
-        linha = {"V_nos": v, "Fn": r["Fn"], "Rt_kN": r["RT"], "EHP_kW": r["EHP_kW"]}
+        linha = {"V_nos": v, "Fn": r["Fn"], "Rt_kN": r["RT"], "EHP_kW": r["EHP_kW"], 'status_envelope': 'sem hélice selecionada', 'consumo_confiavel': False}
         if helice:
             D, z, ae, pd_ = helice
             w, t, er = (float(x) for x in coef_propulsivos(nv, r, D, ae, pd_, cfg["compat_planilha"]))
@@ -620,8 +690,16 @@ def curva_velocidades(cfg, helice=None, mcr_kw=None):
             if ok[0]:
                 p = avaliar_ponto(cfg, D, z, ae, pd_, float(rpm[0]), v)
                 carga = p["BHP_kW"] / mcr_kw if mcr_kw else cfg["motor"]["carga_otima"]
+                low, high = cfg['motor'].get('carga_min_sfoc', .25), cfg['motor'].get('carga_max_sfoc', 1.0)
+                valid = bool(mcr_kw and low <= carga <= high)
+                state = 'fora do envelope: carga > 100%' if carga > 1 else ('abaixo da faixa SFOC' if carga < low else ('acima da faixa SFOC' if carga > high else ('na faixa SFOC' if mcr_kw else 'sem MCR de referência')))
+                limited_foc = sfoc(carga, cfg) * p['BHP_kW'] * nv['n_motores'] / 1e6
                 linha.update({"rpm": float(rpm[0]), "J": p["J"], "eta0": p["eta0"], "BHP_kW": p["BHP_kW"],
-                              "carga": carga, "FOC_t_h": sfoc(carga, cfg) * p["BHP_kW"] * nv["n_motores"] / 1e6})
+                              "carga": carga, 'carga_sfoc': float(np.clip(carga, low, high)), 'SFOC_g_kWh': float(sfoc(carga, cfg)),
+                              'status_envelope': state, 'consumo_confiavel': valid, 'FOC_limitado_t_h': float(limited_foc),
+                              "FOC_t_h": float(limited_foc) if valid else np.nan})
+            else:
+                linha['status_envelope'] = 'fora do envelope: sem equilíbrio na faixa de rpm'
         out.append(linha)
     return pd.DataFrame(out)
 
@@ -649,6 +727,53 @@ def importar_planilha(caminho):
 # =============================================================================
 # 9) SAIDAS: console, CSV e relatorio HTML
 # =============================================================================
+def avisos_limites(cfg, row):
+    """Flag the last sampled value, including per-blade area limits."""
+    z = int(row['Z'])
+    hl = cfg['helice']
+    dmax = hl['diametro']['max'] or cfg['navio']['calado_popa'] / cfg['restricoes']['ta_sobre_d_min']
+    spans = [('D', hl['diametro'], hl['diametro']['min'], dmax),
+             ('P/D', hl['p_d'], hl['p_d']['min'], hl['p_d']['max']),
+             ('Ae/Ao', hl['ae_ao'], max(hl['ae_ao']['min'], AE_AO_POR_Z[z][0]), min(hl['ae_ao']['max'], AE_AO_POR_Z[z][1]))]
+    warnings = []
+    for column, span, lower, upper in spans:
+        last = lower + math.floor((upper - lower + 1e-9) / span['passo']) * span['passo']
+        if math.isclose(float(row[column]), last, abs_tol=1e-6):
+            warnings.append('no limite de %s (último ponto da malha: %.6g; teto: %.6g)' % (column, last, upper))
+    return warnings
+
+
+def registro_execucao(cfg, funil, perfil='personalizado'):
+    motors = carregar_motores(cfg)
+    catalog = [dict(zip(('modelo', 'n_min', 'n_max', 'p_max_kw', 'p_min_kw'), row)) for row in motors]
+    provenance = 'MOTORES interno aproximado (reserva)'
+    if cfg['motor'].get('catalogo_registrado') is not None:
+        catalog = copy.deepcopy(cfg['motor']['catalogo_registrado'])
+        provenance = 'Catálogo incorporado no registro da execução anterior'
+    else:
+        csv_path = cfg['motor'].get('arquivo_csv')
+        if csv_path and not os.path.isfile(csv_path) and not os.path.isabs(csv_path):
+            csv_path = os.path.join(os.path.dirname(__file__), csv_path)
+        if csv_path and os.path.isfile(csv_path):
+            provenance = 'CSV: ' + cfg['motor']['arquivo_csv']
+            catalog = json.loads(pd.read_csv(csv_path).to_json(orient='records'))
+    catalog_json = json.dumps(catalog, ensure_ascii=False, sort_keys=True, default=float)
+    with open(__file__, 'rb') as model_file:
+        model_hash = hashlib.sha256(model_file.read()).hexdigest()
+    return dict(data_utc=datetime.now(timezone.utc).isoformat(), perfil=perfil, config=copy.deepcopy(cfg),
+                combinacoes_geradas=funil[0][1] if funil else tamanho_malha(cfg),
+                funil=funil, catalogo=catalog, catalogo_origem=provenance, catalogo_sha256=hashlib.sha256(catalog_json.encode('utf-8')).hexdigest(),
+                criterio_violacao='viol_total = max(viol_rpm, viol_kw); denominadores: RPM e MCR solicitados; potência avaliada em rpm limitada ao layout',
+                modelo_sha256=model_hash)
+
+
+def diagnostico_csv(frame, caminho=None):
+    columns = ['Z', 'D', 'Ae/Ao', 'P/D', 'rpm', 'BHP_kW', 'MCR_kW', 'RPM_MCR', 'cabe_motor',
+               'motor_proximo', 'viol_rpm', 'viol_kw', 'viol_total', 'motivo_motor',
+               'motor_n_min', 'motor_n_max', 'rpm_layout', 'motor_p_min_kw', 'motor_p_max_kw']
+    return frame[columns].to_csv(caminho, index=False)
+
+
 def _svg_linha(x, ys, titulo, unid):
     W, H, m = 520, 220, 38
     if len(x) < 2:
@@ -667,17 +792,30 @@ def _svg_linha(x, ys, titulo, unid):
     return "".join(s)
 
 
-def relatorio_html(cfg, topo, funil, curva, caminho, aviso=""):
+def relatorio_html(cfg, topo, funil, curva, caminho, aviso="", registro=None):
     nv = cfg["navio"]
     tab = lambda d: d.to_html(index=False, border=0, float_format=lambda v: "%.3f" % v, classes="t")
     cards = ""
+    extra = ''
+    factors = margens(1.0, 1.0, cfg['margens'])
+    margin_rows = [('Mar', 1 + cfg['margens']['mar']/100), ('Rotação na potência: (1+r)³', (1 + cfg['margens']['rotacao']/100)**3),
+                   ('Operacional', 1 + cfg['margens']['operacional']/100), ('MCR/BHP total', factors['bhp3']), ('RPM_MCR/rpm total', factors['rpm3'])]
+    extra += '<h2>Margens de potência e rotação</h2><div class="w">%s</div>' % tab(pd.DataFrame(margin_rows, columns=['Fator', 'Valor']))
+    extra += '<p>As margens são empilhadas: (1+mar) × (1+rotação)³ × (1+operacional). A margem de rotação entra na potência pelo cubo.</p>'
     if len(topo):
         b = topo.iloc[0]
+        chain = margens(float(b['BHP_kW']), float(b['rpm']), cfg['margens'])
+        extra += '<div class="w">%s</div>' % tab(pd.DataFrame([chain]))
+        extra += '<p>%s</p>' % html_utils.escape('; '.join(avisos_limites(cfg, b)))
+        extra += '<p>Motor mais próximo: %s; violação RPM %.2f%%; potência %.2f%%; total %.2f%%. Zero significa que cabe no layout simplificado.</p>' % (html_utils.escape(str(b['motor_proximo'])), b['viol_rpm']*100, b['viol_kw']*100, b['viol_total']*100)
         for rot, val in [("Melhor helice", "Z=%d  P/D=%.2f  Ae/Ao=%.2f  D=%.1f m" % (b["Z"], b["P/D"], b["Ae/Ao"], b["D"])),
                          ("Rotacao", "%.1f rpm" % b["rpm"]), ("eta0 / etaD", "%.3f / %.3f" % (b["eta0"], b["etaD"])),
                          ("BHP servico", "%.0f kW" % b["BHP_kW"]), ("MCR (c/ margens)", "%.0f kW @ %.1f rpm" % (b["MCR_kW"], b["RPM_MCR"])),
                          ("FOC", "%.2f t/h" % b["FOC_t_h"])]:
             cards += '<div class="c"><small>%s</small><b>%s</b></div>' % (rot, val)
+    if registro is None:
+        registro = registro_execucao(cfg, funil)
+    extra += '<h2>Reprodutibilidade</h2><p>Perfil: %s · combinações: %s · data UTC: %s</p><details><summary>CONFIG efetivo e catálogo usados</summary><pre>%s</pre></details>' % (html_utils.escape(str(registro['perfil'])), registro['combinacoes_geradas'], registro['data_utc'], html_utils.escape(json.dumps(registro, ensure_ascii=False, indent=2, default=float)))
     ys = {"Rt [kN]": list(curva["Rt_kN"]), "EHP [kW]": list(curva["EHP_kW"])}
     html = """<!doctype html><html lang="pt-br"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Backtest de propulsao - %(nome)s</title><style>
@@ -694,44 +832,60 @@ table.t td{padding:5px 8px;text-align:right;border-top:1px solid var(--bd)}svg{w
 <h2>Melhor combinacao</h2><div class="g">%(cards)s</div>
 <h2>Funil de restricoes</h2><div class="w">%(funil)s</div>
 <h2>Top %(n)d</h2><div class="w">%(top)s</div>
-<h2>Rt x Vs</h2>%(svg)s<div class="w">%(curva)s</div></html>""" % dict(
+<h2>Rt x Vs</h2><p>FOC_t_h fica vazio fora da faixa válida de carga. FOC_limitado_t_h usa SFOC limitado e é apenas uma estimativa; não valida operação fora do envelope. consumo_confiavel indica apenas atendimento à faixa de carga do modelo simplificado, não aprovação do motor ou validação de consumo pelo fabricante.</p>%(svg)s<div class="w">%(curva)s</div>%(extra)s</html>""" % dict(
         nome=html_utils.escape(str(nv["nome"])), v=nv["velocidade_nos"], L=nv["lwl"], B=nv["boca"], T=nv["calado_popa"],
         dt=datetime.now().strftime("%d/%m/%Y %H:%M"), cards=cards, n=len(topo),
-        aviso=('<p class="c">%s</p>' % aviso) if aviso else "",
+        aviso=('<p class="c">%s</p>' % html_utils.escape(aviso)) if aviso else "", extra=extra,
         funil=tab(pd.DataFrame(funil, columns=["Etapa", "Sobreviventes"])), top=tab(topo), curva=tab(curva),
         svg=_svg_linha(list(curva["V_nos"]), ys, "Rt e EHP", ""))
     with open(caminho, "w", encoding="utf-8") as f:
         f.write(html)
 
 
-def rodar_tudo(cfg):
+def rodar_tudo(cfg, perfil='personalizado'):
     out = cfg["backtest"]["saida"]
     os.makedirs(out, exist_ok=True)
     pd.set_option("display.width", 220, "display.max_columns", 30)
     nv = cfg["navio"]
     print("=" * 78 + "\n  PROPULSAO - %s - %.1f nos\n" % (nv["nome"], nv["velocidade_nos"]) + "=" * 78)
-    g, sem_motor, funil, r = backtest(cfg)
+    batched = perfil != 'personalizado' or validar_config(cfg, limite_malha=None) > 150000
+    if batched:
+        import propulsao_busca as busca
+        g, sem_motor, funil, r, cfg = busca.backtest_perfil(cfg, perfil,
+            progresso=lambda done, total: print('Tamanho da malha: %s combinações, processadas em lotes.' % format(total, ',')) if done == 0 else None,
+            diagnostico_destino=os.path.join(out, 'diagnostico_motor.csv'))
+    else:
+        g, sem_motor, funil, r = backtest(cfg)
     print("\nRESISTENCIA (Holtrop 84): RT=%.1f kN | EHP=%.0f kW | Fn=%.3f | (1+k1)=%.3f | S=%.0f m2"
           % (r["RT"], r["EHP_kW"], r["Fn"], r["k1"], r["S"]))
     cols = ["Z", "P/D", "Ae/Ao", "D", "rpm", "J", "eta0", "etaD", "tau_c", "tau_max", "BHP_kW", "MCR_kW", "RPM_MCR",
-            "FOC_t_h", "Motores"]
+            "FOC_t_h", "Motores", 'motor_proximo', 'viol_rpm', 'viol_kw', 'viol_total']
     aviso = ""
     if len(g):
         topo = g.head(cfg["backtest"]["top"])
     else:
         topo = sem_motor.head(cfg["backtest"]["top"])
+    if topo.empty or not bool(topo.iloc[0]['cabe_motor']):
         aviso = ("Nenhuma combinacao coube no layout de motor do catalogo. Exibindo as melhores SEM a restricao de motor "
-                 "(ajuste motores.csv, margens, D maximo ou use restricoes.motor='informativo').")
+                 "ordenadas pela menor violação até o catálogo. Nenhuma delas está aprovada para motor.")
         print("\n>>> " + aviso)
     print("\nTOP %d\n" % len(topo))
     print(topo[cols].to_string(index=False, float_format=lambda v: "%.3f" % v) if len(topo) else "(vazio)")
     melhor = None if not len(topo) else (topo.iloc[0]["D"], int(topo.iloc[0]["Z"]), topo.iloc[0]["Ae/Ao"], topo.iloc[0]["P/D"])
     curva = curva_velocidades(cfg, melhor, float(topo.iloc[0]["MCR_kW"]) if len(topo) else None)
+    topo.to_csv(os.path.join(out, "ranking.csv"), index=False)
+    if not batched:
+        diagnostico_csv(sem_motor, os.path.join(out, 'diagnostico_motor.csv'))
+    registro = registro_execucao(cfg, funil, perfil)
+    with open(os.path.join(out, 'config_execucao.json'), 'w', encoding='utf-8') as f:
+        json.dump(registro, f, ensure_ascii=False, indent=2, default=float)
+    print('Fator total de potência das margens: %.9f; fator de rpm: %.9f' % (margens(1, 1, cfg['margens'])['bhp3'], margens(1, 1, cfg['margens'])['rpm3']))
     if len(topo):
-        topo.to_csv(os.path.join(out, "ranking.csv"), index=False)
+        for warning in avisos_limites(cfg, topo.iloc[0]):
+            print('AVISO:', warning)
     curva.to_csv(os.path.join(out, "curva_velocidades.csv"), index=False)
-    relatorio_html(cfg, topo, funil, curva, os.path.join(out, "relatorio.html"), aviso)
-    print("\nArquivos em '%s/': ranking.csv, curva_velocidades.csv, relatorio.html" % out)
+    relatorio_html(cfg, topo, funil, curva, os.path.join(out, "relatorio.html"), aviso, registro)
+    print("\nArquivos em '%s/': ranking.csv, diagnostico_motor.csv, config_execucao.json, curva_velocidades.csv, relatorio.html" % out)
 
 
 def validar(cfg):
@@ -763,10 +917,19 @@ def main(argv=None):
     ap.add_argument("cmd", nargs="?", default="tudo")
     ap.add_argument("arquivo", nargs="?", help="planilha .xls/.xlsx (para 'importar')")
     ap.add_argument("--planilha", help="usa o navio de uma planilha Holtrop 84 existente")
+    ap.add_argument('--config', help='CONFIG JSON ou registro config_execucao.json de uma execução anterior')
+    ap.add_argument('--perfil', choices=['personalizado', 'rapido', 'completo', 'detalhado'], default='personalizado')
     a, _ignorados = ap.parse_known_args(argv)          # ignora argumentos extras de Jupyter/Colab/IDE (-f kernel.json)
     if a.cmd not in ("tudo", "validar", "curva", "backtest", "importar"):
         a.cmd, a.arquivo = "tudo", None                # em notebook, '-f kernel.json' nao e um comando
     cfg = copy.deepcopy(CONFIG)
+    if a.config:
+        with open(a.config, encoding='utf-8') as config_file:
+            saved = json.load(config_file)
+        cfg = saved.get('config', saved)
+        if 'catalogo' in saved:
+            # Replay the exact recorded catalogue even if the installed CSV changed.
+            cfg['motor']['catalogo_registrado'] = saved['catalogo']
     arq = a.planilha or (a.arquivo if a.cmd == "importar" else None)
     if arq:
         nv, hel = importar_planilha(arq)
@@ -784,11 +947,18 @@ def main(argv=None):
     elif a.cmd == "curva":
         print(curva_velocidades(cfg).to_string(index=False, float_format=lambda v: "%.2f" % v))
     elif a.cmd == "backtest":
-        g, sm, _, _ = backtest(cfg)
-        cols = ["Z", "P/D", "Ae/Ao", "D", "rpm", "J", "eta0", "etaD", "BHP_kW", "MCR_kW", "RPM_MCR", "FOC_t_h", "Motores"]
+        if a.perfil == 'personalizado' and tamanho_malha(cfg) <= 150000:
+            g, sm, _, _ = backtest(cfg)
+        else:
+            import propulsao_busca as busca
+            g, sm, _, _, cfg = busca.backtest_perfil(cfg, a.perfil)
+        cols = ["Z", "P/D", "Ae/Ao", "D", "rpm", "J", "eta0", "etaD", "BHP_kW", "MCR_kW", "RPM_MCR", "FOC_t_h", "Motores", 'motor_proximo', 'viol_rpm', 'viol_kw', 'viol_total']
         print((g if len(g) else sm).head(cfg["backtest"]["top"])[cols].to_string(index=False, float_format=lambda v: "%.3f" % v))
     else:
-        rodar_tudo(cfg)
+        if a.perfil == 'personalizado':
+            rodar_tudo(cfg)
+        else:
+            rodar_tudo(cfg, a.perfil)
 
 
 if __name__ == "__main__":

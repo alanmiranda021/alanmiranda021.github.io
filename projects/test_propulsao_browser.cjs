@@ -9,7 +9,11 @@ async function main(){
     const errors=[];page.on('pageerror',error=>errors.push(error.message));
     await page.goto((process.argv[3]||'http://127.0.0.1:8080')+'/naval.html');
     await page.locator('#backtestLoad').click();
-    await page.waitForFunction(()=>!document.getElementById('backtestStart').disabled,{},{timeout:120000});
+    try {
+      await page.waitForFunction(()=>!document.getElementById('backtestStart').disabled,{},{timeout:120000});
+    } catch(error) {
+      throw new Error(`Initialization failed: ${await page.locator('#backtestStatus').textContent()}. ${error.message}`);
+    }
     await page.evaluate(()=>{
       const el=document.getElementById('backtestConfig'),cfg=JSON.parse(el.value);
       cfg.helice.z=[4];cfg.helice.diametro={min:8,max:8,passo:.1};
@@ -36,6 +40,13 @@ async function main(){
     const downloadPromise=page.waitForEvent('download');
     await page.locator('[data-backtest-download=html]').click();
     assert.equal((await downloadPromise).suggestedFilename(),'relatorio.html');
+    assert.match(await page.locator('#backtestSummary').textContent(),/Motor mais próximo/);
+    assert.match(await page.locator('#backtestMargins').textContent(),/1,?\.?464395625/);
+    for(const [key,name] of [['diagnosticCsv','diagnostico_motor.csv'],['configJson','config_execucao.json']]){
+      const pending=page.waitForEvent('download');
+      await page.locator(`[data-backtest-download=${key}]`).click();
+      assert.equal((await pending).suggestedFilename(),name);
+    }
     await page.locator('#resetButton').click();
     assert.equal(await page.locator('#simulationBacktest').isVisible(),false);
     assert.equal(await page.locator('#missionModel').textContent(),'R ∝ V²');

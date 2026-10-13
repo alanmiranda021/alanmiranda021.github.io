@@ -40,14 +40,15 @@
     const cfg=input.context.config,reference=input.context.reference;
     const bhp=value.power*(input.nHelices||1)/(input.etaR*input.etaT*(input.nMotors||1))/1000;
     const load=bhp/reference.MCR_kW;
-    const sfoc=cfg.motor.sfoc_min*(1+cfg.motor.curvatura*Math.pow(load-cfg.motor.carga_otima,2));
+    const low=cfg.motor.carga_min_sfoc??.25,high=cfg.motor.carga_max_sfoc??1;
+    const sfoc=cfg.motor.sfoc_min*(1+cfg.motor.curvatura*Math.pow(clamp(load,low,high)-cfg.motor.carga_otima,2));
     const coefficients={5:[.1082,.2675],10:[.1452,.3498],20:[.1852,.4577],30:[.2148,.5276]}[cfg.restricoes.cavitacao_pct];
     const h=cfg.navio.calado_popa-input.diameter/2;
     const q=.5*input.rho*(value.advance**2+(.7*Math.PI*value.n*input.diameter)**2);
     const sigma=(cfg.agua.p_atm-cfg.agua.p_vapor+input.rho*cfg.agua.g*h)/q;
     const ap=Math.PI*input.diameter**2/4*input.area*(1.067-.229*input.pd);
     const tau=value.thrust/(ap*q),tauMax=coefficients[0]*Math.log(sigma)+coefficients[1];
-    return {bhp,load,foc:sfoc*bhp*(input.nMotors||1)/1e6,tau,tauMax,sigma,cavitation:tau<=tauMax&&tauMax>0,mcr:reference.MCR_kW,motor:reference.Motores};
+    return {bhp,load,foc:sfoc*bhp*(input.nMotors||1)/1e6,validConsumption:load>=low&&load<=high,tau,tauMax,sigma,cavitation:tau<=tauMax&&tauMax>0,mcr:reference.MCR_kW,motor:reference.Motores};
   }
 
   function reynoldsCorrection(j,pd,area,blades,reynolds) {
@@ -276,9 +277,10 @@
         $('inspectionBhp').textContent=`${fmt(details.bhp,1)} kW`;
         $('inspectionMcr').textContent=`${fmt(details.mcr,1)} kW`;
         $('inspectionFoc').textContent=`${fmt(details.foc,3)} t/h · carga ${fmt(details.load*100,1)}%`;
-        if(details.load>1)$('inspectionFoc').textContent+=' · acima do MCR';
+        if(!details.validConsumption)$('inspectionFoc').textContent+=' · estimativa limitada';
+        if(details.load>1)$('inspectionFoc').textContent+=' · fora do envelope';
         $('inspectionCavitation').textContent=`${fmt(details.tau,4)} / ${fmt(details.tauMax,4)} · ${details.cavitation?'atende':'não atende'}`;
-        $('inspectionMotor').textContent=details.motor==='-'?'Sem motor compatível':details.motor;
+        $('inspectionMotor').textContent=details.motor==='-'?`Sem motor compatível; mais próximo: ${backtestContext.reference.motor_proximo} (violação ${(backtestContext.reference.viol_total*100).toFixed(2)}%)`:details.motor;
       }
       doc.querySelectorAll('[data-level]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.level===value.input.level)));
       updateGraphs(value);updateChallenge(value);

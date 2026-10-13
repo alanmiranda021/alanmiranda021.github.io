@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador didático da hélice Wageningen Série B com cálculo aberto e validação numérica.">
   <title>Simulador de propulsão — Alan Miranda</title>
         <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="minimal.css">
-<link rel="stylesheet" href="naval.css?v=search-1">
+<link rel="stylesheet" href="naval.css?v=diagnostic-1">
 <script src="minimal.js" defer></script>
 <link rel="stylesheet" href="./i18n.css"><script src="./i18n.js" defer></script></head>
 <body>
@@ -127,7 +127,7 @@
       <p class="eyebrow">PROJETO DE PROPULSÃO · AUTOMAÇÃO</p>
       <h2 id="automationTitle">Holtrop → Série B → Burrill → Motor</h2>
       <p>Configure o navio e procure a melhor combinação de hélice por potência ou consumo. O cálculo inclui equilíbrio de empuxo, margens e seleção de motor.</p>
-      <p>O catálogo MAN B&amp;W é aproximado e o SFOC usa um modelo simplificado. A interpolação de ondas entre Fn 0,4 e 0,55 segue a planilha e ainda requer conferência. BHP e MCR são por motor; FOC é o consumo total.</p>
+      <p>O catálogo CSV usa 56 variantes com cilindros definidos do programa oficial MAN de 2021; é histórico e mantém o layout simplificado P ∝ n. <a href="projects/CATALOGO_MOTORES.md">Fonte e limites do catálogo</a>. O SFOC usa um modelo simplificado, limitado à faixa de carga configurada (padrão: 25–100%). Consumo fora dessa faixa é identificado como estimativa limitada. BHP e MCR são por motor; FOC é o consumo total. A interpolação de ondas entre Fn 0,4 e 0,55 ainda requer conferência.</p>
       <div class="action-row"><button class="primary-button" id="backtestLoad" type="button">CARREGAR CONFIGURAÇÃO</button><a href="projects/propulsao.py" download>Baixar Python ↓</a><a href="projects/Automacao_Propulsao_Backtest.md">Consultar metodologia ↗</a></div>
       <div class="input-grid search-options">
         <label class="field" for="backtestProfile"><span>Tipo de backtest</span><select id="backtestProfile" aria-describedby="backtestProfileHint"><option value="rapido">Rápido</option><option value="completo" selected>Completo</option><option value="detalhado">Extremamente detalhado</option><option value="personalizado">Personalizado (passos do JSON)</option></select></label>
@@ -143,11 +143,13 @@
       <progress id="backtestProgress" max="1" value="0" aria-label="Progresso do backtest" hidden></progress>
       <div id="backtestResults" hidden>
         <p id="backtestSummary"></p>
+        <p id="backtestMargins"></p>
+        <p>Sem motor aprovado, o ranking prioriza a menor violação total. As colunas viol_rpm e viol_kw são frações fora dos limites em relação aos valores solicitados; viol_total é o máximo das duas, conforme a planilha de análise. A potência do motor é avaliada na rotação limitada ao seu layout.</p>
         <button class="primary-button" id="backtestApply" type="button" disabled>TESTAR MELHOR HÉLICE NA SIMULAÇÃO ↑</button>
         <h3>Funil de restrições</h3><div class="backtest-table" id="backtestFunnel"></div>
         <h3>Ranking de hélices</h3><div class="backtest-table" id="backtestRanking"></div>
         <h3>Perfil de velocidades</h3><div class="backtest-table" id="backtestCurve"></div>
-        <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
+        <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="diagnosticCsv">DIAGNÓSTICO MOTOR CSV ↓</button><button class="text-button" data-backtest-download="configJson">CONFIG + DATA JSON ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
       </div>
     </section>
     <section class="transparency"><span class="eyebrow">TRANSPARÊNCIA DO MODELO</span><p>A missão interativa usa resistência quadrática didática. A seção de automação usa Holtrop-Mennen 84, Série B com correção de Reynolds, Burrill e margens. O comando Python “validar” compara 12 grandezas com os valores de referência fornecidos no material.</p><span class="version">FONTE E LIMITES EXIBIDOS</span></section>
@@ -155,7 +157,7 @@
 
   <dialog class="equation-dialog" id="equationDialog"><form method="dialog"><button class="dialog-close" aria-label="Fechar explicação">×</button></form><span class="eyebrow">CADEIA DE CÁLCULO / CASO ATUAL</span><h2>Como chegamos a esse valor?</h2><p class="dialog-intro">Cada grandeza abaixo usa os valores atuais da simulação. Unidades em SI no cálculo.</p><ol id="equationSteps"></ol><p class="source-note">Polinômio Wageningen B-series · Correções de Reynolds para Rn &gt; 2×10⁶ · rugosidade kp = 30 µm.</p></dialog>
   <footer><a href="index.html">ALAN MIRANDA</a><span>Pesquisa · Engenharia · Sistemas</span><span class="foot-links"><a href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:alanmirandarj@gmail.com">Contato ↗</a></span></footer>
-  <script src="naval.js?v=search-1"></script>
-  <script src="naval-backtest.js?v=search-1"></script>
+  <script src="naval.js?v=diagnostic-1"></script>
+  <script src="naval-backtest.js?v=diagnostic-1"></script>
 </body>
 </html>
