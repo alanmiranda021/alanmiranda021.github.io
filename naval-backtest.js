@@ -25,7 +25,7 @@
   }
   function getWorker() {
     if (worker) return worker;
-    worker=new Worker('naval-backtest-worker.js?v=diagnostic-1');
+    worker=new Worker('naval-backtest-worker.js?v=diagnostic-2');
     worker.onerror=()=>{status.textContent='Falha ao carregar o cálculo. Verifique sua conexão e tente novamente.'; worker.terminate(); worker=null; busy(false);};
     worker.onmessage=({data})=>{
       if(data.type==='progress') {progress.value=data.total?data.completed/data.total:0; status.textContent=`Analisando ${data.completed.toLocaleString('pt-BR')} de ${data.total.toLocaleString('pt-BR')} combinações (${Math.round(progress.value*100)}%).`; return;}

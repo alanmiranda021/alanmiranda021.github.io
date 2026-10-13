@@ -4,6 +4,7 @@ import math
 
 import pandas as pd
 import propulsao as p
+WEB_API_VERSION = 2
 
 PERFIS = {
     'rapido': ('Rápido', 0.25, 0.10, 0.10),

@@ -1,5 +1,6 @@
 /* Python runs off the main thread so the simulator remains responsive. */
 let runtime;
+const MODEL_VERSION = 'diagnostic-2';
 async function initialize() {
   if (!runtime) runtime = (async () => {
     importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js');
@@ -8,14 +9,19 @@ async function initialize() {
     // Write into Python's working directory, which is on its import path.
     const moduleDirectory = py.runPython('import os\nos.getcwd()');
     for (const name of ['propulsao', 'propulsao_busca']) {
-      const response = await fetch(`projects/${name}.py`);
+      const response = await fetch(`projects/${name}.py?v=${MODEL_VERSION}`, {cache:'no-store'});
       if (!response.ok) throw new Error(`Não foi possível carregar ${name}.py.`);
       py.FS.writeFile(`${moduleDirectory}/${name}.py`, await response.text());
     }
-    const catalog = await fetch('projects/motores.csv');
+    const catalog = await fetch(`projects/motores.csv?v=${MODEL_VERSION}`, {cache:'no-store'});
     if (catalog.ok) py.FS.writeFile(`${moduleDirectory}/motores.csv`, await catalog.text());
     else if (catalog.status !== 404) throw new Error('Falha ao carregar o catálogo de motores.');
     py.runPython('import importlib\nimportlib.invalidate_caches()\nimport propulsao as p\nimport propulsao_busca as busca\nimport json, copy');
+    const compatible = py.runPython(`
+import inspect
+getattr(p, 'WEB_API_VERSION', None) == 2 and getattr(busca, 'WEB_API_VERSION', None) == 2 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters
+`);
+    if (!compatible) throw new Error('Os arquivos de cálculo estão em versões diferentes. Aguarde a atualização do site e recarregue a página com Ctrl+F5.');
     return py;
   })();
   return runtime;

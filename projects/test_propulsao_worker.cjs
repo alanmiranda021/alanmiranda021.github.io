@@ -15,7 +15,11 @@ async function main() {
   const context = vm.createContext({
     importScripts() {},
     loadPyodide: async () => py,
-    fetch: async url => ({ok:true, text:async () => fs.readFileSync(path.join(__dirname, path.basename(url)), 'utf8')}),
+    fetch: async (url, options) => {
+      assert.ok(url.includes('?v=diagnostic-2'));
+      assert.equal(options.cache,'no-store');
+      return {ok:true, text:async () => fs.readFileSync(path.join(__dirname, path.basename(url.split('?')[0])), 'utf8')};
+    },
     self:{postMessage:message => messages.push(message)},
     Uint8Array,
   });
@@ -72,6 +76,17 @@ async function main() {
   assert.ok(Math.abs(twinResult.margin/twinResult.resistance)<1e-8);
   assert.ok(Math.abs(simulation.operatingDetails(twinInput,twinResult).bhp/twin.result.ranking[0].BHP_kW-1)<1e-8);
   assert.ok(messages.some(message=>message.type==='progress'&&message.completed===message.total));
+  // A stale module must fail at initialization with a clear message, before
+  // the worker calls backtest_perfil with unsupported keyword arguments.
+  py.runPython('original_backtest = busca.backtest_perfil\nbusca.backtest_perfil = lambda cfg: None');
+  const staleMessages=[];
+  const staleContext=vm.createContext({importScripts:context.importScripts,loadPyodide:context.loadPyodide,fetch:context.fetch,self:{postMessage:message=>staleMessages.push(message)},Uint8Array});
+  vm.runInContext(fs.readFileSync(path.join(__dirname,'..','naval-backtest-worker.js'),'utf8'),staleContext);
+  await staleContext.self.onmessage({data:{action:'init'}});
+  assert.equal(staleMessages.at(-1).type,'error');
+  assert.match(staleMessages.at(-1).message,/versões diferentes/);
+  assert.ok(!staleMessages.at(-1).message.includes('Traceback'));
+  py.runPython('busca.backtest_perfil = original_backtest');
   console.log('PASS: worker initialization, progress, backtest, downloads and simulation parity (single/twin propellers) passed in Pyodide.');
 }
 main().catch(error => {console.error(error); process.exitCode = 1;});
