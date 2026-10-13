@@ -7,8 +7,10 @@ async function initialize() {
     await py.loadPackage(['numpy', 'pandas']);
     const response = await fetch('projects/propulsao.py');
     if (!response.ok) throw new Error('Não foi possível carregar o modelo Python.');
-    py.FS.writeFile('/propulsao.py', await response.text());
-    py.runPython('import propulsao as p\nimport json, copy');
+    // Write into Python's working directory, which is on its import path.
+    const moduleDirectory = py.runPython('import os\nos.getcwd()');
+    py.FS.writeFile(`${moduleDirectory}/propulsao.py`, await response.text());
+    py.runPython('import importlib\nimportlib.invalidate_caches()\nimport propulsao as p\nimport json, copy');
     return py;
   })();
   return runtime;
