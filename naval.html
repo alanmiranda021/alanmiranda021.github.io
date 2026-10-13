@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador didático da hélice Wageningen Série B com cálculo aberto e validação numérica.">
   <title>Simulador de propulsão — Alan Miranda</title>
         <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="minimal.css">
-<link rel="stylesheet" href="naval.css">
+<link rel="stylesheet" href="naval.css?v=search-1">
 <script src="minimal.js" defer></script>
 <link rel="stylesheet" href="./i18n.css"><script src="./i18n.js" defer></script></head>
 <body>
@@ -46,8 +46,25 @@
         <section class="metrics-grid" aria-label="Resultados principais" aria-live="polite">
           <article class="metric"><span>COEF. DE AVANÇO</span><b id="metricJ">0,593</b><small>J [—]</small></article>
           <article class="metric"><span>EFICIÊNCIA η₀</span><b id="metricEta">68,1%</b><small>águas abertas</small></article>
-          <article class="metric"><span>EMPuxo T</span><b id="metricThrust">179,0</b><small>kN</small></article>
-          <article class="metric"><span>POTÊNCIA P<sub>D</sub></span><b id="metricPower">1.298</b><small>kW entregues</small></article>
+          <article class="metric"><span>EMPUXO T</span><b id="metricThrust">179,0</b><small>kN por hélice</small></article>
+          <article class="metric"><span>POTÊNCIA P<sub>D</sub></span><b id="metricPower">1.298</b><small>kW entregues por hélice</small></article>
+        </section>
+
+        <section class="panel backtest-inspection" id="simulationBacktest" hidden aria-labelledby="inspectionTitle">
+          <p class="eyebrow">HÉLICE DO BACKTEST · PONTO CONFIGURADO</p>
+          <h2 id="inspectionTitle">Eficiência e operação</h2>
+          <p id="simulationSource" role="status"></p>
+          <dl class="inspection-grid">
+            <div><dt>Eficiência do casco ηH</dt><dd id="inspectionEtaH">—</dd></div>
+            <div><dt>Eficiência rotativa ηR</dt><dd id="inspectionEtaR">—</dd></div>
+            <div><dt>Eficiência propulsiva ηD</dt><dd id="inspectionEtaD">—</dd></div>
+            <div><dt>BHP por motor</dt><dd id="inspectionBhp">—</dd></div>
+            <div><dt>MCR do backtest por motor</dt><dd id="inspectionMcr">—</dd></div>
+            <div><dt>Consumo total estimado</dt><dd id="inspectionFoc">—</dd></div>
+            <div><dt>Burrill: τc / τmáx</dt><dd id="inspectionCavitation">—</dd></div>
+            <div><dt>Motor no ponto do backtest</dt><dd id="inspectionMotor">—</dd></div>
+          </dl>
+          <p>Ao editar os campos, η₀, ηD, potência, consumo e Burrill são recalculados. Os coeficientes w, t e ηR permanecem nos valores dos campos; a seleção de motor e o MCR são referências da busca. A resistência entre os pontos Holtrop é interpolada.</p>
         </section>
 
         <section class="charts-panel panel">
@@ -83,6 +100,10 @@
               <label class="field"><span>Densidade da água <i>ρ</i></span><span class="input-wrap"><input name="rho" type="number" min="990" max="1035" step="1" value="1025" required><small>kg/m³</small></span></label>
               <label class="field"><span>Deslocamento <i>Δ</i></span><span class="input-wrap"><input name="displacement" type="number" min="1" max="500000" step="1" value="10000" required><small>t</small></span><small class="range-hint">usado somente para a dinâmica visual</small></label>
               <label class="field"><span>Viscosidade cinemática <i>ν</i></span><span class="input-wrap"><input name="nu" type="number" min="0.0000008" max="0.0000018" step="0.00000001" value="0.0000011883" required><small>m²/s</small></span></label>
+              <label class="field"><span>Eficiência rotativa <i>ηR</i></span><span class="input-wrap"><input name="etaR" type="number" min="0.1" max="1.5" step="0.001" value="1" required><small>—</small></span></label>
+              <label class="field"><span>Número de hélices</span><span class="input-wrap"><select name="nHelices"><option selected>1</option><option>2</option></select></span></label>
+              <label class="field"><span>Número de motores</span><span class="input-wrap"><select name="nMotors"><option selected>1</option><option>2</option></select></span></label>
+              <label class="field"><span>Eficiência de transmissão <i>ηt</i></span><span class="input-wrap"><input name="etaT" type="number" min="0.1" max="1" step="0.001" value="0.97" required><small>—</small></span></label>
             </div>
             <p class="form-message" id="formMessage" role="alert"></p>
             <div class="action-row"><button class="primary-button" type="submit">ATUALIZAR SIMULAÇÃO <span>↗</span></button><button class="icon-button" id="exportJson" type="button" title="Exportar resultados como JSON" aria-label="Exportar resultados como JSON">JSON</button></div>
@@ -92,9 +113,9 @@
 
         <section class="panel mission-panel">
           <div class="eyebrow">DADOS FIXOS DA MISSÃO</div>
-          <div class="mission-row"><span>Resistência de referência</span><b>150,4 kN</b></div>
-          <div class="mission-row"><span>Velocidade de referência</span><b>12 kn</b></div>
-          <div class="mission-row"><span>Curva de resistência</span><b>R ∝ V²</b></div>
+          <div class="mission-row"><span>Resistência de referência</span><b id="missionResistance">150,4 kN</b></div>
+          <div class="mission-row"><span>Velocidade de referência</span><b id="missionSpeed">12 kn</b></div>
+          <div class="mission-row"><span>Curva de resistência</span><b id="missionModel">R ∝ V²</b></div>
           <button class="text-button" id="equationButton" type="button">COMO CHEGAMOS AOS RESULTADOS? <span>↗</span></button>
           <div class="mission-actions"><button class="text-button" id="exportCsv" type="button">EXPORTAR CURVAS CSV ↓</button><button class="text-button" id="challengeButton" type="button" aria-pressed="false">MODO DESAFIO <span>＋</span></button></div>
           <div class="challenge-result" id="challengeResult" hidden></div>
@@ -108,13 +129,21 @@
       <p>Configure o navio e procure a melhor combinação de hélice por potência ou consumo. O cálculo inclui equilíbrio de empuxo, margens e seleção de motor.</p>
       <p>O catálogo MAN B&amp;W é aproximado e o SFOC usa um modelo simplificado. A interpolação de ondas entre Fn 0,4 e 0,55 segue a planilha e ainda requer conferência. BHP e MCR são por motor; FOC é o consumo total.</p>
       <div class="action-row"><button class="primary-button" id="backtestLoad" type="button">CARREGAR CONFIGURAÇÃO</button><a href="projects/propulsao.py" download>Baixar Python ↓</a><a href="projects/Automacao_Propulsao_Backtest.md">Consultar metodologia ↗</a></div>
+      <div class="input-grid search-options">
+        <label class="field" for="backtestProfile"><span>Tipo de backtest</span><select id="backtestProfile" aria-describedby="backtestProfileHint"><option value="rapido">Rápido</option><option value="completo" selected>Completo</option><option value="detalhado">Extremamente detalhado</option><option value="personalizado">Personalizado (passos do JSON)</option></select></label>
+        <label class="field" for="backtestObjective"><span>Objetivo da busca</span><select id="backtestObjective"><option value="bhp">Menor potência BHP</option><option value="foc">Menor consumo FOC</option></select></label>
+      </div>
+      <p id="backtestProfileHint">Rápido: passos D / AE/AO / P/D de 0,25 m / 0,10 / 0,10. Completo: 0,10 m / 0,05 / 0,05. Extremamente detalhado: 0,05 m / 0,025 / 0,025. Todos usam as mesmas restrições físicas e os intervalos do JSON. A busca detalhada testa mais combinações e demora mais; o progresso aparece abaixo e pode ser cancelado.</p>
       <label class="field" for="backtestConfig">Configuração completa do navio e da busca (JSON)</label>
       <textarea id="backtestConfig" rows="16" spellcheck="false" aria-describedby="backtestStatus" placeholder="Clique em carregar configuração para começar."></textarea>
       <label class="field">Importar navio da planilha Holtrop (.xls / .xlsx)<input id="backtestFile" type="file" accept=".xls,.xlsx" disabled></label>
       <p>Os dados da planilha atualizam o navio; os intervalos da busca continuam editáveis acima. O primeiro carregamento requer internet. Os cálculos e arquivos ficam no navegador.</p>
       <div class="action-row"><button class="primary-button" id="backtestStart" type="button" disabled>EXECUTAR BACKTEST ↗</button><button class="icon-button" id="backtestCancel" type="button" hidden>CANCELAR</button></div>
       <p id="backtestStatus" role="status" aria-live="polite">Carregue a configuração e informe os dados do seu navio.</p>
+      <progress id="backtestProgress" max="1" value="0" aria-label="Progresso do backtest" hidden></progress>
       <div id="backtestResults" hidden>
+        <p id="backtestSummary"></p>
+        <button class="primary-button" id="backtestApply" type="button" disabled>TESTAR MELHOR HÉLICE NA SIMULAÇÃO ↑</button>
         <h3>Funil de restrições</h3><div class="backtest-table" id="backtestFunnel"></div>
         <h3>Ranking de hélices</h3><div class="backtest-table" id="backtestRanking"></div>
         <h3>Perfil de velocidades</h3><div class="backtest-table" id="backtestCurve"></div>
@@ -126,7 +155,7 @@
 
   <dialog class="equation-dialog" id="equationDialog"><form method="dialog"><button class="dialog-close" aria-label="Fechar explicação">×</button></form><span class="eyebrow">CADEIA DE CÁLCULO / CASO ATUAL</span><h2>Como chegamos a esse valor?</h2><p class="dialog-intro">Cada grandeza abaixo usa os valores atuais da simulação. Unidades em SI no cálculo.</p><ol id="equationSteps"></ol><p class="source-note">Polinômio Wageningen B-series · Correções de Reynolds para Rn &gt; 2×10⁶ · rugosidade kp = 30 µm.</p></dialog>
   <footer><a href="index.html">ALAN MIRANDA</a><span>Pesquisa · Engenharia · Sistemas</span><span class="foot-links"><a href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:alanmirandarj@gmail.com">Contato ↗</a></span></footer>
-  <script src="naval.js"></script>
-  <script src="naval-backtest.js"></script>
+  <script src="naval.js?v=search-1"></script>
+  <script src="naval-backtest.js?v=search-1"></script>
 </body>
 </html>

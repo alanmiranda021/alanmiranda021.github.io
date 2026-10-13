@@ -13,10 +13,42 @@
     [.00379368,0,0,0,0],[.00886523,2,0,0,0],[-.032241,1,1,0,0],[.00344778,0,2,0,0],[-.0408811,0,1,1,0],[-.108009,1,1,1,0],[-.0885381,2,1,1,0],[.188561,0,2,1,0],[-.00370871,1,0,0,1],[.00513696,0,1,0,1],[.0209449,1,1,0,1],[.00474319,2,1,0,1],[-.00723408,2,0,1,1],[.00438388,1,1,1,1],[-.0269403,0,2,1,1],[.0558082,3,0,1,0],[.0161886,0,3,1,0],[.00318086,1,3,1,0],[.015896,0,0,2,0],[.0471729,1,0,2,0],[.0196283,3,0,2,0],[-.0502782,0,1,2,0],[-.030055,3,1,2,0],[.0417122,2,2,2,0],[-.0397722,0,3,2,0],[-.00350024,0,6,2,0],[-.0106854,3,0,0,1],[.00110903,3,3,0,1],[-.000313912,0,6,0,1],[.0035985,3,0,1,1],[-.00142121,0,6,1,1],[-.00383637,1,0,2,1],[.0126803,0,2,2,1],[-.00318278,2,3,2,1],[.00334268,0,6,2,1],[-.00183491,1,1,0,2],[.000112451,3,2,0,2],[-.0000297228,3,6,0,2],[.000269551,1,0,1,2],[.00083265,2,0,1,2],[.00155334,0,2,1,2],[.000302683,0,6,1,2],[-.0001843,0,0,2,2],[-.000425399,0,3,2,2],[.0000869243,3,3,2,2],[-.0004659,0,6,2,2],[.0000554194,1,6,2,2]
   ];
   const AREA_LIMITS = {2:[.30,.38],3:[.35,.80],4:[.40,1],5:[.45,1.05],6:[.50,.80],7:[.55,.85]};
-  const DEFAULTS = { speed:12,rpm:100,diameter:5,blades:4,pd:.75,area:.74,wake:.20,deduction:.16,rho:1025,displacement:10000,nu:1.1883e-6,etaR:1,level:'C' };
+  const DEFAULTS = { speed:12,rpm:100,diameter:5,blades:4,pd:.75,area:.74,wake:.20,deduction:.16,rho:1025,displacement:10000,nu:1.1883e-6,etaR:1,etaT:.97,nHelices:1,nMotors:1,level:'C' };
   const KN_TO_MS = 1852 / 3600;
   const clamp = (value,min,max) => Math.min(max,Math.max(min,value));
   const poly = (terms,j,pd,area,blades) => terms.reduce((sum,[c,s,t,u,v]) => sum+c*Math.pow(j,s)*Math.pow(pd,t)*Math.pow(area,u)*Math.pow(blades,v),0);
+
+  function resistanceAt(input, speed) {
+    const curve=input.context?.resistanceCurve;
+    if(!curve?.length)return 150400*Math.pow(Math.max(speed,0)/12,2);
+    if(speed<=0)return 0;
+    for(let i=1;i<curve.length;i++) {
+      const a=curve[i-1],b=curve[i];
+      if(speed<=b.speed)return a.resistance+(b.resistance-a.resistance)*(speed-a.speed)/(b.speed-a.speed);
+    }
+    return NaN; // No extrapolation beyond the imported Holtrop curve.
+  }
+
+  function backtestInput(results) {
+    const row=results.ranking?.[0],cfg=results.config;
+    if(!row || !cfg || !results.resistanceCurve?.length)throw new Error('Resultado de backtest incompleto.');
+    return {speed:cfg.navio.velocidade_nos,rpm:row.rpm,diameter:row.D,blades:row.Z,pd:row['P/D'],area:row['Ae/Ao'],wake:row.w,deduction:row.t,rho:cfg.agua.rho,nu:cfg.agua.mu/cfg.agua.rho,displacement:cfg.navio.deslocamento*cfg.agua.rho/1000,etaR:row.etaR,etaT:cfg.margens.eta_t[cfg.margens.acoplamento],nHelices:cfg.navio.n_helices,nMotors:cfg.navio.n_motores,level:'C',context:{config:cfg,reference:row,resistanceCurve:results.resistanceCurve,warning:results.warning}};
+  }
+
+  function operatingDetails(input, value) {
+    if(!input.context)return null;
+    const cfg=input.context.config,reference=input.context.reference;
+    const bhp=value.power*(input.nHelices||1)/(input.etaR*input.etaT*(input.nMotors||1))/1000;
+    const load=bhp/reference.MCR_kW;
+    const sfoc=cfg.motor.sfoc_min*(1+cfg.motor.curvatura*Math.pow(load-cfg.motor.carga_otima,2));
+    const coefficients={5:[.1082,.2675],10:[.1452,.3498],20:[.1852,.4577],30:[.2148,.5276]}[cfg.restricoes.cavitacao_pct];
+    const h=cfg.navio.calado_popa-input.diameter/2;
+    const q=.5*input.rho*(value.advance**2+(.7*Math.PI*value.n*input.diameter)**2);
+    const sigma=(cfg.agua.p_atm-cfg.agua.p_vapor+input.rho*cfg.agua.g*h)/q;
+    const ap=Math.PI*input.diameter**2/4*input.area*(1.067-.229*input.pd);
+    const tau=value.thrust/(ap*q),tauMax=coefficients[0]*Math.log(sigma)+coefficients[1];
+    return {bhp,load,foc:sfoc*bhp*(input.nMotors||1)/1e6,tau,tauMax,sigma,cavitation:tau<=tauMax&&tauMax>0,mcr:reference.MCR_kW,motor:reference.Motores};
+  }
 
   function reynoldsCorrection(j,pd,area,blades,reynolds) {
     const L=Math.log10(reynolds)-.301, z=blades, a=area, p=pd;
@@ -51,6 +83,10 @@
     if(!(input.rho>0))errors.push('A densidade deve ser maior que zero.');
     if(!(input.nu>0))errors.push('A viscosidade cinemática deve ser maior que zero.');
     if(!(input.displacement>0))errors.push('O deslocamento deve ser maior que zero.');
+    if(!(input.etaR>0))errors.push('A eficiência rotativa deve ser positiva.');
+    if(input.etaT!==undefined&&(!(input.etaT>0)||input.etaT>1))errors.push('A eficiência de transmissão deve estar entre zero e 1.');
+    if(input.nHelices!==undefined&&![1,2].includes(input.nHelices))errors.push('Use uma ou duas hélices.');
+    if(input.nMotors!==undefined&&![1,2].includes(input.nMotors))errors.push('Use um ou dois motores.');
     if(input.wake<0||input.wake>=1)errors.push('O coeficiente de esteira deve ser maior ou igual a zero e menor que 1.');
     if(!Number.isInteger(input.blades)||input.blades<2||input.blades>7)errors.push('A Série B cobre de 2 a 7 pás.');
     if(errors.length)return {errors};
@@ -64,10 +100,11 @@
     const jZero=findJZero(input,level,reynolds,roughness);
     const {kt,kq,eta}=calculateAtJ(input,j,level,reynolds,roughness);
     const thrust=kt*input.rho*n*n*Math.pow(input.diameter,4), torque=kq*input.rho*n*n*Math.pow(input.diameter,5);
-    const power=2*Math.PI*n*torque, netThrust=thrust*(1-input.deduction);
-    const resistance=150400*Math.pow(input.speed/12,2), margin=netThrust-resistance;
+    const power=2*Math.PI*n*torque, netThrust=thrust*(input.nHelices||1)*(1-input.deduction);
+    const resistance=resistanceAt(input,input.speed), margin=netThrust-resistance;
     const etaH=(1-input.deduction)/(1-input.wake), etaD=eta*etaH*input.etaR;
     const warnings=[];
+    if(!Number.isFinite(resistance))warnings.push('Velocidade acima da curva Holtrop importada; refaça o backtest para esta condição.');
     if(input.speed<.1||input.speed>40)warnings.push('Velocidade fora da faixa recomendada (0,1–40 kn).');
     if(input.rpm<5||input.rpm>600)warnings.push('Rotação fora da faixa recomendada (5–600 rpm).');
     if(input.diameter<.1||input.diameter>12)warnings.push('Diâmetro fora da faixa recomendada (0,1–12 m).');
@@ -102,10 +139,10 @@
     const form=doc.getElementById('simForm');
     if(!form)return;
     const $=id=>doc.getElementById(id), inputs=Object.fromEntries([...form.elements].filter(el=>el.name).map(el=>[el.name,el]));
-    let currentInput={...DEFAULTS},result=null,challenge=false,timer=0;
+    let currentInput={...DEFAULTS},result=null,challenge=false,timer=0,backtestContext=null;
     const fmt=(value,digits=3)=>Number.isFinite(value)?new Intl.NumberFormat('pt-BR',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(value):'—';
     const fmtPower=value=>Number.isFinite(value)?new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(value):'—';
-    const readInput=()=>({speed:Number(inputs.speed.value),rpm:Number(inputs.rpm.value),diameter:Number(inputs.diameter.value),blades:Number(inputs.blades.value),pd:Number(inputs.pd.value),area:Number(inputs.area.value),wake:Number(inputs.wake.value),deduction:Number(inputs.deduction.value),rho:Number(inputs.rho.value),displacement:Number(inputs.displacement.value),nu:Number(inputs.nu.value),etaR:1,level:currentInput.level});
+    const readInput=()=>({speed:Number(inputs.speed.value),rpm:Number(inputs.rpm.value),diameter:Number(inputs.diameter.value),blades:Number(inputs.blades.value),pd:Number(inputs.pd.value),area:Number(inputs.area.value),wake:Number(inputs.wake.value),deduction:Number(inputs.deduction.value),rho:Number(inputs.rho.value),displacement:Number(inputs.displacement.value),nu:Number(inputs.nu.value),etaR:Number(inputs.etaR.value),etaT:Number(inputs.etaT.value),nHelices:Number(inputs.nHelices.value),nMotors:Number(inputs.nMotors.value),level:currentInput.level,context:backtestContext});
     const animateProp=rpm=>{const duration=clamp(60000/Math.max(rpm,1)*1.8,220,1600),blades=$('propellerBlades');if(blades){blades.style.animation=`propSpin ${duration}ms linear infinite`;blades.style.animationPlayState='running';}};
     let simFrame=0,simState={running:false,speed:0,last:0};
     function setShipMotion(speedKn){
@@ -127,8 +164,8 @@
       const coefficients=calculateAtJ(input,j,level,reynolds,roughness);
       const thrust=coefficients.kt*input.rho*n*n*Math.pow(input.diameter,4);
       const torque=coefficients.kq*input.rho*n*n*Math.pow(input.diameter,5);
-      const power=2*Math.PI*n*torque,resistance=150400*Math.pow(Math.max(speedKn,0)/12,2);
-      return {j,kt:coefficients.kt,kq:coefficients.kq,eta:coefficients.eta,thrust,torque,power,resistance,net:thrust*(1-input.deduction)-resistance};
+      const power=2*Math.PI*n*torque,resistance=resistanceAt(input,speedKn);
+      return {j,kt:coefficients.kt,kq:coefficients.kq,eta:coefficients.eta,thrust,torque,power,resistance,net:thrust*(input.nHelices||1)*(1-input.deduction)-resistance};
     }
     function stopSimulation(reason='SIMULAÇÃO PRONTA'){
       if(!simState.running)return;
@@ -226,14 +263,38 @@
       if(value.warnings.length){validity.className='validity warning';$('validityTitle').textContent=value.j>=value.jZero?'J ALÉM DO EMPUXO NULO':'EXTRAPOLAÇÃO / AVISO';$('validityText').textContent=`Modelo ${value.level} · Rn₀,₇₅R = ${value.reynolds.toExponential(2)} · ${value.warnings.length} aviso(s)`;}
       else{validity.className='validity';$('validityTitle').textContent='DENTRO DO DOMÍNIO';$('validityText').textContent=`Série B · Z = ${value.input.blades} · P/D = ${fmt(value.input.pd,2)} · Rn₀,₇₅R = ${value.reynolds.toExponential(2)}`;}
       $('modelCaption').textContent=`Modelo ${value.level} · ${value.level==='A'?'polinômio puro':value.level==='B'?'correção de Reynolds':'Reynolds + rugosidade de 30 µm'}.`;
+      $('simulationBacktest').hidden=!backtestContext;
+      $('missionResistance').textContent=backtestContext?`${fmt(resistanceAt(value.input,backtestContext.config.navio.velocidade_nos)/1000,1)} kN`:'150,4 kN';
+      $('missionSpeed').textContent=backtestContext?`${fmt(backtestContext.config.navio.velocidade_nos,1)} kn`:'12 kn';
+      $('missionModel').textContent=backtestContext?'Holtrop · interpolada':'R ∝ V²';
+      if(backtestContext) {
+        const details=operatingDetails(value.input,value);
+        $('simulationSource').textContent=`${backtestContext.config.navio.nome} · ${value.input.nHelices} hélice(s) · ${value.input.nMotors} motor(es). ${backtestContext.warning||''} ${backtestContext.config.compat_planilha?'Potência abaixo recalculada pela cadeia física; modo de compatibilidade da planilha pode diferir.':''}`;
+        $('inspectionEtaH').textContent=`${fmt(value.etaH*100,2)}%`;
+        $('inspectionEtaR').textContent=`${fmt(value.input.etaR*100,2)}%`;
+        $('inspectionEtaD').textContent=`${fmt(value.etaD*100,2)}%`;
+        $('inspectionBhp').textContent=`${fmt(details.bhp,1)} kW`;
+        $('inspectionMcr').textContent=`${fmt(details.mcr,1)} kW`;
+        $('inspectionFoc').textContent=`${fmt(details.foc,3)} t/h · carga ${fmt(details.load*100,1)}%`;
+        if(details.load>1)$('inspectionFoc').textContent+=' · acima do MCR';
+        $('inspectionCavitation').textContent=`${fmt(details.tau,4)} / ${fmt(details.tauMax,4)} · ${details.cavitation?'atende':'não atende'}`;
+        $('inspectionMotor').textContent=details.motor==='-'?'Sem motor compatível':details.motor;
+      }
       doc.querySelectorAll('[data-level]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.level===value.input.level)));
       updateGraphs(value);updateChallenge(value);
       $('equationSteps').innerHTML=value.steps.map(step=>`<li><b>${step.name}</b><br>${step.formula}<br>${step.substitution} = <b>${fmt(step.value,step.unit==='m/s'?3:step.unit==='%'?1:step.unit==='kN'||step.unit==='kN·m'?1:step.unit==='kW'?1:step.unit==='—'?5:4)} ${step.unit}</b></li>`).join('');
     }
     function schedule(){stopSimulation('PARÂMETROS ATUALIZADOS');clearTimeout(timer);timer=setTimeout(render,120);}
-    form.addEventListener('input',schedule);form.addEventListener('change',schedule);form.addEventListener('submit',event=>{event.preventDefault();stopSimulation();render();if(result&&!result.errors.length)runSimulation(result);});
+    form.addEventListener('input',schedule);form.addEventListener('change',schedule);form.addEventListener('submit',event=>{event.preventDefault();stopSimulation();render();if(result&&!result.errors.length&&Number.isFinite(result.resistance))runSimulation(result);});
     doc.querySelectorAll('[data-level]').forEach(button=>button.addEventListener('click',()=>{stopSimulation('MODELO ATUALIZADO');currentInput.level=button.dataset.level;render();}));
-    $('resetButton').addEventListener('click',()=>{stopSimulation();Object.entries(DEFAULTS).forEach(([key,value])=>{if(key!=='level'&&inputs[key])inputs[key].value=value;});currentInput.level=DEFAULTS.level;render();});
+    $('resetButton').addEventListener('click',()=>{stopSimulation();backtestContext=null;Object.entries(DEFAULTS).forEach(([key,value])=>{if(key!=='level'&&inputs[key])inputs[key].value=value;});currentInput.level=DEFAULTS.level;render();});
+    doc.addEventListener('naval:load-backtest',event=>{
+      stopSimulation('HÉLICE DO BACKTEST CARREGADA');clearTimeout(timer);
+      const imported=backtestInput(event.detail);backtestContext=imported.context;
+      Object.entries(imported).forEach(([key,value])=>{if(inputs[key])inputs[key].value=value;});
+      currentInput.level=imported.level;render();
+      $('liveTagText').innerHTML='<i></i> HÉLICE DO BACKTEST CARREGADA';
+    });
     $('equationButton').addEventListener('click',()=>$('equationDialog').showModal());
     $('challengeButton').addEventListener('click',event=>{challenge=!challenge;event.currentTarget.setAttribute('aria-pressed',String(challenge));event.currentTarget.innerHTML=challenge?'SAIR DO DESAFIO <span>−</span>':'MODO DESAFIO <span>＋</span>';render();});
     const save=(filename,type,content)=>{const link=doc.createElement('a');link.href=URL.createObjectURL(new Blob([content],{type}));link.download=filename;link.click();URL.revokeObjectURL(link.href);};
@@ -244,5 +305,5 @@
     render();
   }
 
-  return {calculate,poly,reynoldsCorrection,KT_TERMS,KQ_TERMS,DEFAULTS,mount};
+  return {calculate,resistanceAt,backtestInput,operatingDetails,poly,reynoldsCorrection,KT_TERMS,KQ_TERMS,DEFAULTS,mount};
 });

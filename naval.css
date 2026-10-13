@@ -22,3 +22,11 @@
 .backtest-table table { border-collapse:collapse; width:100%; font-size:13px; }
 .backtest-table th,.backtest-table td { padding:10px; border-bottom:1px solid #39434a; text-align:left; white-space:nowrap; }
 .automation-panel button:disabled { opacity:.45; cursor:wait; }
+.search-options select { width:100%; padding:12px; background:#080a0c; color:#e3e9ed; border:1px solid #39434a; border-radius:6px; font:inherit; }
+#backtestProgress { width:100%; height:18px; accent-color:#55d8d0; }
+.backtest-inspection { padding:24px; }
+.inspection-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.inspection-grid dt { color:#91aaa4; font-size:12px; }
+.inspection-grid dd { margin:6px 0 0; font-size:19px; overflow-wrap:anywhere; }
+.backtest-inspection p { line-height:1.6; }
+@media(max-width:600px) { .inspection-grid { grid-template-columns:1fr; } }

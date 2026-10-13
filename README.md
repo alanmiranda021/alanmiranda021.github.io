@@ -59,3 +59,19 @@ propulsao.main(["validar"])  # retorna True/False sem encerrar o notebook
 ```
 
 `main(argv=None)` aceita argumentos explícitos e tolera os argumentos adicionais do kernel. O CONFIG padrão é o Navio Holtrop a 25 nós (RT ≈ 1787 kN), que não encontra motor no catálogo aproximado; o ranking exibido nesse caso não atende à restrição de motor. O exemplo Aurora Spirit no material usa outro navio e não representa o CONFIG padrão.
+
+### Níveis de busca e teste da melhor hélice
+
+O seletor **Tipo de backtest** oferece Rápido (D / AE/AO / P/D: 0,25 m / 0,10 / 0,10), Completo (0,10 m / 0,05 / 0,05), Extremamente detalhado (0,05 m / 0,025 / 0,025) e Personalizado (passos do JSON). Os três perfis usam os mesmos limites e critérios físicos; muda a resolução da busca. A busca é processada em lotes com progresso, cancelamento e ranking global, até 2 milhões de combinações estimadas. Escolha separadamente o objetivo de menor BHP ou menor consumo.
+
+Ao terminar, **Testar melhor hélice na simulação** transfere a geometria, rpm, velocidade, w, t, ηR, água, motores e hélices. A resistência usa uma curva Holtrop interpolada com o ponto de serviço incluído exatamente. O painel exibe eficiência propulsiva, potência, consumo e Burrill; o MCR e a seleção de motor permanecem referências do backtest quando os campos são editados. A potência é recalculada a partir do torque e o consumo usa a carga sobre o MCR de referência. O botão de restaurar volta à missão didática. A melhor opção de um ranking sem motor continua identificada como exploratória.
+
+O Worker carrega `projects/propulsao.py` e `projects/propulsao_busca.py`. Testes adicionais:
+
+```bash
+python -m unittest discover -s projects -p "test_propulsao*.py"
+node projects/test_propulsao_worker.cjs <caminho-do-pacote-pyodide-0.29.2>
+node projects/test_propulsao_browser.cjs <caminho-do-pacote-playwright-core>
+```
+
+O teste de navegador usa Edge em modo headless e requer o site servido em `http://127.0.0.1:8080` (ou outro endereço passado como segundo argumento).
