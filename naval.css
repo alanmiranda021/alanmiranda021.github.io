@@ -13,3 +13,12 @@
 .scene-readout{z-index:8}
 .wake{z-index:2;will-change:transform}
 .wake-one,.wake-two{animation-duration:var(--water-speed,1.4s)}
+/* Automated propulsion workflow */
+.automation-panel { margin-top:32px; padding:28px; scroll-margin-top:100px; }
+.automation-panel p { line-height:1.7; }
+.automation-panel .action-row { flex-wrap:wrap; gap:16px; margin:20px 0; }
+#backtestConfig { width:100%; box-sizing:border-box; background:#080a0c; color:#e3e9ed; border:1px solid #39434a; border-radius:8px; padding:16px; font:14px/1.6 monospace; resize:vertical; margin:12px 0 20px; }
+.backtest-table { max-width:100%; overflow:auto; margin-bottom:24px; }
+.backtest-table table { border-collapse:collapse; width:100%; font-size:13px; }
+.backtest-table th,.backtest-table td { padding:10px; border-bottom:1px solid #39434a; text-align:left; white-space:nowrap; }
+.automation-panel button:disabled { opacity:.45; cursor:wait; }
