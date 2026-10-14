@@ -16,7 +16,7 @@ async function main() {
     importScripts() {},
     loadPyodide: async () => py,
     fetch: async (url, options) => {
-      assert.ok(url.includes('?v=calibration-3'));
+      assert.ok(url.includes('?v=exploration-4'));
       assert.equal(options.cache,'no-store');
       return {ok:true, text:async () => fs.readFileSync(path.join(__dirname, path.basename(url.split('?')[0])), 'utf8')};
     },
@@ -82,6 +82,11 @@ async function main() {
   assert.equal(calibration.result.calibrationState.iteracao,1);
   assert.equal(calibration.result.config.calibracao.motor,'8G90ME-C10.5');
   assert.ok(calibration.result.ranking.every(row=>row.motor_proximo==='8G90ME-C10.5'));
+  await context.self.onmessage({data:{action:'calibrate',config,motor:'',level:'infinita'}});
+  const general=messages.at(-1);
+  assert.equal(general.type,'result',general.message);
+  assert.equal(general.result.config.calibracao.motor,null);
+  assert.equal(JSON.parse(general.result.configJson).catalogo.length,56);
   // A stale module must fail at initialization with a clear message, before
   // the worker calls backtest_perfil with unsupported keyword arguments.
   py.runPython('original_backtest = busca.backtest_perfil\nbusca.backtest_perfil = lambda cfg: None');

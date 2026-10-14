@@ -135,7 +135,7 @@ from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
-WEB_API_VERSION = 3
+WEB_API_VERSION = 4
 
 # =============================================================================
 # 1) CONFIGURACAO  (so mexa aqui)  - origem de cada campo = celula da planilha

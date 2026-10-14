@@ -4,7 +4,7 @@ import math
 
 import pandas as pd
 import propulsao as p
-WEB_API_VERSION = 3
+WEB_API_VERSION = 4
 
 PERFIS = {
     'rapido': ('Rápido', 0.25, 0.10, 0.10),
@@ -101,66 +101,132 @@ def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, d
     return accepted, fallback, list(funnel.items()), resistance, cfg
 
 
-def calibrar_motor(cfg, motor, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None):
-    """One bounded round; the browser repeats infinite rounds until stopped.
-
-    Only propeller geometry is optimized. Ship, margins, RPM limits and
-    physical restrictions are preserved. Motor selection is a strict filter.
-    """
+def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None):
+    """All allowed blades: broad search, per-Z refinement and exhaustive tiles."""
+    import os
+    import tempfile
     if nivel not in ('rapido', 'completo', 'infinita'):
         raise ValueError('Nível de calibração inválido.')
     base = copy.deepcopy(cfg)
-    catalog = p.carregar_motores(base)
-    chosen = [row for row in catalog if row[0] == motor]
-    if not chosen:
-        raise ValueError('Motor selecionado não existe no catálogo da configuração.')
-    base['motor']['catalogo_registrado'] = [dict(zip(('modelo', 'n_min', 'n_max', 'p_max_kw', 'p_min_kw'), chosen[0]))]
+    if motor:
+        chosen = [row for row in p.carregar_motores(base) if row[0] == motor]
+        if not chosen:
+            raise ValueError('Motor selecionado não existe no catálogo da configuração.')
+        base['motor']['catalogo_registrado'] = [dict(zip(('modelo', 'n_min', 'n_max', 'p_max_kw', 'p_min_kw'), chosen[0]))]
     base['restricoes']['motor'] = 'estrito'
-    valid_z = [z for z in base['helice']['z'] if max(base['helice']['ae_ao']['min'], p.AE_AO_POR_Z[z][0]) <= min(base['helice']['ae_ao']['max'], p.AE_AO_POR_Z[z][1])]
+    valid_z = sorted(set(z for z in base['helice']['z'] if max(base['helice']['ae_ao']['min'], p.AE_AO_POR_Z[z][0]) <= min(base['helice']['ae_ao']['max'], p.AE_AO_POR_Z[z][1])))
     if not valid_z:
         raise ValueError('Nenhuma área de hélice válida para as pás selecionadas.')
     iteration = 0 if estado is None else estado['iteracao']
-    local = copy.deepcopy(base)
-    profile = 'completo' if nivel == 'completo' else 'rapido'
-    if iteration:
-        profile = 'personalizado'
-        previous = estado['ranking']
-        rng = p.np.random.default_rng(20261013 + iteration)
-        explore = not previous or iteration % 5 == 0
-        row = None if explore else previous[(iteration - 1) % min(5, len(previous))]
-        if row is not None:
-            local['helice']['z'] = [int(row['Z'])]
-        else:
-            local['helice']['z'] = [int(rng.choice(valid_z))]
-        for key, column, initial in [('diametro', 'D', .1), ('ae_ao', 'Ae/Ao', .05), ('p_d', 'P/D', .05)]:
+    cursor = 0 if estado is None else estado.get('cursor_global', 0)
+    resolution = 0 if estado is None else estado.get('resolucao_global', 0)
+    previous_by_z = {} if estado is None else estado.get('melhores_por_z', {})
+    grids = []
+    stage = 'varredura ampla'
+    tile_total = 1
+    if not iteration:
+        for z in valid_z:
+            grid = configurar_perfil(base, 'completo' if nivel == 'completo' else 'rapido')
+            grid['helice']['z'] = [z]
+            grids.append(grid)
+    elif nivel == 'infinita' and iteration % 2 == 0:
+        # Enumerate the entire next-resolution grid systematically, without
+        # constructing its Cartesian product. Each tile covers every valid Z.
+        stage = 'varredura global por blocos'
+        steps = dict(diametro=max(.0001, .1 / 2**min(resolution, 10)),
+                     ae_ao=max(.0001, .05 / 2**min(resolution, 10)),
+                     p_d=max(.0001, .05 / 2**min(resolution, 10)))
+        axes = {}
+        for key in ('diametro', 'p_d'):
             span = base['helice'][key]
-            lower = span['min']
-            upper = span['max'] if span['max'] is not None else base['navio']['calado_popa'] / base['restricoes']['ta_sobre_d_min']
-            if key == 'ae_ao':
-                z = local['helice']['z'][0]
-                lower, upper = max(lower, p.AE_AO_POR_Z[z][0]), min(upper, p.AE_AO_POR_Z[z][1])
-            center = float(rng.uniform(lower, upper)) if row is None else float(row[column])
-            step = max(0.0001, initial / 2 ** min(iteration, 10))
-            radius = step * 2
-            minimum, maximum = max(lower, center - radius), min(upper, center + radius)
-            # Preserve the incumbent as a sampled point, including at the upper bound.
+            maximum = span['max'] if span['max'] is not None else base['navio']['calado_popa']/base['restricoes']['ta_sobre_d_min']
+            axes[key] = p._faixa(dict(min=span['min'], max=maximum, passo=steps[key]))
+        area_axes = {z:p._faixa(dict(min=max(base['helice']['ae_ao']['min'], p.AE_AO_POR_Z[z][0]), max=min(base['helice']['ae_ao']['max'], p.AE_AO_POR_Z[z][1]), passo=steps['ae_ao'])) for z in valid_z}
+        width = 5
+        counts = [math.ceil(len(axes['diametro'])/width), math.ceil(len(axes['p_d'])/width), max(math.ceil(len(values)/width) for values in area_axes.values())]
+        tile_total = math.prod(counts)
+        d_index = cursor // (counts[1]*counts[2])
+        p_index = (cursor // counts[2]) % counts[1]
+        a_index = cursor % counts[2]
+        for z in valid_z:
+            selected = dict(diametro=axes['diametro'][d_index*width:(d_index+1)*width], p_d=axes['p_d'][p_index*width:(p_index+1)*width], ae_ao=area_axes[z][a_index*width:(a_index+1)*width])
+            if not len(selected['ae_ao']):
+                continue
+            local = copy.deepcopy(base)
+            local['helice']['z'] = [z]
+            for key, values in selected.items():
+                local['helice'][key] = dict(min=float(values[0]), max=float(values[-1]), passo=steps[key])
+            grids.append(local)
+    else:
+        stage = 'refinamento de todas as pás'
+        for z in valid_z:
+            rows = previous_by_z.get(str(z), [])
+            row = rows[(iteration-1) % len(rows)] if rows else None
+            local = configurar_perfil(base, 'rapido')
+            local['helice']['z'] = [z]
             if row is not None:
-                minimum = center - math.floor((center-minimum+1e-9)/step)*step
-            local['helice'][key] = dict(min=round(minimum, 6), max=round(maximum, 6), passo=step)
-    g, fallback, funnel, resistance, effective = backtest_perfil(local, profile, progresso, diagnostico_destino=diagnostico_destino)
-    candidates = pd.concat([g, fallback], ignore_index=True)
-    if estado is not None and estado['ranking']:
-        candidates = pd.concat([pd.DataFrame(estado['ranking']), candidates], ignore_index=True)
-    objective = {'bhp':'BHP_kW', 'foc':'FOC_t_h'}[base['backtest']['objetivo']]
-    candidates = candidates.drop_duplicates(['Z', 'D', 'Ae/Ao', 'P/D']).sort_values(['viol_total', objective, 'Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').head(base['backtest']['top']).reset_index(drop=True)
-    previous_total = 0 if estado is None else estado['avaliacoes']
-    state = dict(iteracao=iteration+1, avaliacoes=previous_total+funnel[0][1], ranking=json_records(candidates))
-    base['calibracao'] = dict(motor=motor, nivel=nivel, iteracao=state['iteracao'], avaliacoes=state['avaliacoes'],
-                             malha_rodada=effective['helice'], contagens='avaliações acumuladas podem repetir pontos; funil e diagnóstico CSV referem-se à última rodada')
+                for key, column, initial in [('diametro','D',.1), ('ae_ao','Ae/Ao',.05), ('p_d','P/D',.05)]:
+                    span = base['helice'][key]
+                    lower = span['min']
+                    upper = span['max'] if span['max'] is not None else base['navio']['calado_popa']/base['restricoes']['ta_sobre_d_min']
+                    if key == 'ae_ao':
+                        lower, upper = max(lower, p.AE_AO_POR_Z[z][0]), min(upper, p.AE_AO_POR_Z[z][1])
+                    center = float(row[column])
+                    step = max(.0001, initial / 2**min(iteration,10))
+                    minimum = center-math.floor((center-max(lower,center-2*step)+1e-9)/step)*step
+                    local['helice'][key] = dict(min=round(minimum,6), max=round(min(upper,center+2*step),6), passo=step)
+            grids.append(local)
+    objective = {'bhp':'BHP_kW','foc':'FOC_t_h'}[base['backtest']['objetivo']]
+    keys = ['viol_total',objective,'Z','D','Ae/Ao','P/D']
+    frames = []
+    if estado and estado['ranking']:
+        frames.append(pd.DataFrame(estado['ranking']))
+    for rows in previous_by_z.values():
+        if rows:
+            frames.append(pd.DataFrame(rows))
+    funnel = {}
+    completed = 0
+    total = sum(p.tamanho_malha(grid) for grid in grids)
+    if progresso:
+        progresso(0,total)
+    with tempfile.TemporaryDirectory() as temporary:
+        if diagnostico_destino:
+            with open(diagnostico_destino,'w',encoding='utf-8'):
+                pass
+        first = True
+        for grid in grids:
+            part = os.path.join(temporary,'parte.csv') if diagnostico_destino else None
+            callback = (lambda done,size: progresso(completed+done,total)) if progresso else None
+            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part)
+            frames.extend([g,f])
+            for name,count in steps:
+                funnel[name] = funnel.get(name,0)+count
+            completed += steps[0][1]
+            if diagnostico_destino:
+                with open(part,encoding='utf-8') as handle:
+                    content = handle.read()
+                with open(diagnostico_destino,'a',encoding='utf-8',newline='') as handle:
+                    handle.write(content if first else content.split('\n',1)[1])
+                first = False
+    candidates = pd.concat(frames,ignore_index=True).drop_duplicates(['Z','D','Ae/Ao','P/D']).sort_values(keys,kind='stable')
+    by_z = {str(z):json_records(candidates[candidates['Z']==z].head(5)) for z in valid_z}
+    candidates = candidates.head(base['backtest']['top']).reset_index(drop=True)
+    next_cursor,next_resolution = cursor,resolution
+    if stage == 'varredura global por blocos':
+        next_cursor = cursor+1
+        if next_cursor >= tile_total:
+            next_cursor,next_resolution = 0,resolution+1
+    state = dict(iteracao=iteration+1, avaliacoes=(estado['avaliacoes'] if estado else 0)+completed,
+                 ranking=json_records(candidates), melhores_por_z=by_z, cursor_global=next_cursor,resolucao_global=next_resolution)
+    base['calibracao'] = dict(motor=motor or None,nivel=nivel,iteracao=state['iteracao'],avaliacoes=state['avaliacoes'],
+        etapa=stage,pas_permitidas=valid_z,pas_avaliadas=sorted(set(z for grid in grids for z in grid['helice']['z'])),
+        bloco_global=cursor+1 if stage=='varredura global por blocos' else None,blocos_globais=tile_total if stage=='varredura global por blocos' else None,
+        resolucao_global=resolution,malhas_rodada=[grid['helice'] for grid in grids],
+        contagens='avaliações acumuladas podem repetir pontos; funil e diagnóstico CSV referem-se à última rodada')
     approved = candidates[candidates['cabe_motor']].reset_index(drop=True)
-    return approved, candidates, funnel, resistance, base, state
-
+    return approved,candidates,list(funnel.items()),resistance,base,state
 
 def json_records(frame):
-    import json
-    return json.loads(frame.to_json(orient='records', double_precision=15))
+    # Keep the original float values for transfer to the simulator; only
+    # replace missing values so the payload remains valid JSON.
+    return frame.astype(object).where(pd.notna(frame), None).to_dict(orient='records')

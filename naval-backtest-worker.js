@@ -1,6 +1,6 @@
 /* Python runs off the main thread so the simulator remains responsive. */
 let runtime;
-const MODEL_VERSION = 'calibration-3';
+const MODEL_VERSION = 'exploration-4';
 async function initialize() {
   if (!runtime) runtime = (async () => {
     importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js');
@@ -19,7 +19,7 @@ async function initialize() {
     py.runPython('import importlib\nimportlib.invalidate_caches()\nimport propulsao as p\nimport propulsao_busca as busca\nimport json, copy');
     const compatible = py.runPython(`
 import inspect
-getattr(p, 'WEB_API_VERSION', None) == 3 and getattr(busca, 'WEB_API_VERSION', None) == 3 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters and hasattr(busca, 'calibrar_motor')
+getattr(p, 'WEB_API_VERSION', None) == 4 and getattr(busca, 'WEB_API_VERSION', None) == 4 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters and hasattr(busca, 'calibrar_motor')
 `);
     if (!compatible) throw new Error('Os arquivos de cálculo estão em versões diferentes. Aguarde a atualização do site e recarregue a página com Ctrl+F5.');
     return py;
@@ -45,14 +45,15 @@ self.onmessage = async ({data}) => {
     }
     py.globals.set('config_json', JSON.stringify(data.config));
     py.globals.set('search_profile', data.profile || 'completo');
-    py.globals.set('calibration_motor', data.action === 'calibrate' ? data.motor : '');
+    py.globals.set('calibration_enabled', data.action === 'calibrate');
+    py.globals.set('calibration_motor', data.motor || '');
     py.globals.set('calibration_level', data.level || 'rapido');
     py.globals.set('calibration_state_json', JSON.stringify(data.state || null));
     py.globals.set('search_progress', (completed, total) => self.postMessage({type:'progress', completed, total}));
     const result = await py.runPythonAsync(`
 cfg = json.loads(config_json)
 calibration_state = None
-if calibration_motor:
+if calibration_enabled:
     g, fallback, funnel, resistance, cfg, calibration_state = busca.calibrar_motor(cfg, calibration_motor, calibration_level, json.loads(calibration_state_json), search_progress, '/diagnostico_motor.csv')
 else:
     g, fallback, funnel, resistance, cfg = busca.backtest_perfil(cfg, search_profile, search_progress, diagnostico_destino='/diagnostico_motor.csv')
@@ -61,7 +62,7 @@ warning = '' if len(top) and bool(top.iloc[0]['cabe_motor']) else ('Nenhuma comb
 best = None if top.empty else (float(top.iloc[0]['D']), int(top.iloc[0]['Z']), float(top.iloc[0]['Ae/Ao']), float(top.iloc[0]['P/D']))
 curve = p.curva_velocidades(cfg, best, float(top.iloc[0]['MCR_kW']) if best else None)
 record = p.registro_execucao(cfg, funnel, search_profile)
-if calibration_motor:
+if calibration_enabled:
     record['perfil'] = 'calibracao_' + calibration_level
     record['calibracao_estado'] = calibration_state
 p.relatorio_html(cfg, top, funnel, curve, '/relatorio.html', warning, record)
@@ -71,7 +72,7 @@ simulation_curve = [{'speed': 0.0, 'resistance': 0.0}]
 speeds = sorted(set([float(v) for v in p.np.linspace(0.5, max(40, cfg['navio']['velocidade_nos']), 100)] + [float(cfg['navio']['velocidade_nos'])]))
 for speed in speeds:
     simulation_curve.append(dict(speed=speed, resistance=float(p.resistencia(cfg['navio'], cfg['agua'], speed, cfg['compat_planilha'])['RT']) * 1000))
-json.dumps(dict(config=cfg, profile=search_profile, calibrationState=calibration_state, limits=limits, margins=margin_chain, marginFactors=p.margens(1, 1, cfg['margens']), resistanceCurve=simulation_curve, funnel=funnel, ranking=json.loads(top.to_json(orient='records')), curve=json.loads(curve.to_json(orient='records')), warning=warning, rankingCsv=top.to_csv(index=False), diagnosticCsv=open('/diagnostico_motor.csv', encoding='utf-8').read(), configJson=json.dumps(record, ensure_ascii=False, indent=2, default=float), curveCsv=curve.to_csv(index=False), html=open('/relatorio.html', encoding='utf-8').read()))
+json.dumps(dict(config=cfg, profile=search_profile, calibrationState=calibration_state, limits=limits, margins=margin_chain, marginFactors=p.margens(1, 1, cfg['margens']), resistanceCurve=simulation_curve, funnel=funnel, ranking=busca.json_records(top), curve=busca.json_records(curve), warning=warning, rankingCsv=top.to_csv(index=False), diagnosticCsv=open('/diagnostico_motor.csv', encoding='utf-8').read(), configJson=json.dumps(record, ensure_ascii=False, indent=2, default=float), curveCsv=curve.to_csv(index=False), html=open('/relatorio.html', encoding='utf-8').read()))
 `);
     self.postMessage({type:'result', result:JSON.parse(result)});
   } catch(error) {

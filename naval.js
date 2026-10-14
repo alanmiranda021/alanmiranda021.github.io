@@ -265,6 +265,7 @@
       else{validity.className='validity';$('validityTitle').textContent='DENTRO DO DOMÍNIO';$('validityText').textContent=`Série B · Z = ${value.input.blades} · P/D = ${fmt(value.input.pd,2)} · Rn₀,₇₅R = ${value.reynolds.toExponential(2)}`;}
       $('modelCaption').textContent=`Modelo ${value.level} · ${value.level==='A'?'polinômio puro':value.level==='B'?'correção de Reynolds':'Reynolds + rugosidade de 30 µm'}.`;
       $('simulationBacktest').hidden=!backtestContext;
+      $('shipTitle').textContent=backtestContext?backtestContext.config.navio.nome:'Navio porta-contêineres com hélice animada';
       $('missionResistance').textContent=backtestContext?`${fmt(resistanceAt(value.input,backtestContext.config.navio.velocidade_nos)/1000,1)} kN`:'150,4 kN';
       $('missionSpeed').textContent=backtestContext?`${fmt(backtestContext.config.navio.velocidade_nos,1)} kn`:'12 kn';
       $('missionModel').textContent=backtestContext?'Holtrop · interpolada':'R ∝ V²';
@@ -293,6 +294,7 @@
     doc.addEventListener('naval:load-backtest',event=>{
       stopSimulation('HÉLICE DO BACKTEST CARREGADA');clearTimeout(timer);
       const imported=backtestInput(event.detail);backtestContext=imported.context;
+      $('shipTitle').textContent=backtestContext.config.navio.nome;
       Object.entries(imported).forEach(([key,value])=>{if(inputs[key])inputs[key].value=value;});
       currentInput.level=imported.level;render();
       $('liveTagText').innerHTML='<i></i> HÉLICE DO BACKTEST CARREGADA';
