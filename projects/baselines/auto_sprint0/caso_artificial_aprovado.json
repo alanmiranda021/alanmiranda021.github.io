@@ -1,0 +1,225 @@
+{
+  "natureza": "fixture artificial, nao motor real",
+  "config": {
+    "navio": {
+      "nome": "Navio Holtrop",
+      "lpp": 200.0,
+      "lwl": 205.0,
+      "boca": 32.0,
+      "calado_proa": 10.0,
+      "calado_popa": 10.0,
+      "deslocamento": 37500.0,
+      "lcb_pr": 104.0,
+      "abt": 20.0,
+      "hb": 4.0,
+      "cm": 0.98,
+      "cwp": 0.75,
+      "at": 16.0,
+      "c_popa": 10,
+      "velocidade_nos": 25.0,
+      "n_motores": 1,
+      "n_helices": 1,
+      "apendices": {
+        "Leme a re de cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re de popa": [
+          0,
+          1.4
+        ],
+        "Lemes compensados bi-helice": [
+          0,
+          2.8
+        ],
+        "Pe-de-galinha": [
+          0,
+          3.0
+        ],
+        "Cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re do propulsor": [
+          67,
+          1.96
+        ],
+        "Bosso do eixo": [
+          0,
+          2.0
+        ],
+        "Eixo do propulsor": [
+          0,
+          3.0
+        ],
+        "Estabilizador": [
+          0,
+          2.8
+        ],
+        "Sonar-dome": [
+          0,
+          2.7
+        ],
+        "Bolina": [
+          0,
+          1.4
+        ]
+      }
+    },
+    "agua": {
+      "rho": 1025.0,
+      "mu": 0.00085,
+      "g": 9.805,
+      "p_atm": 101325.0,
+      "p_vapor": 2278.0
+    },
+    "helice": {
+      "z": [
+        4
+      ],
+      "ae_ao": {
+        "min": 0.7,
+        "max": 0.7,
+        "passo": 0.05
+      },
+      "p_d": {
+        "min": 0.85,
+        "max": 0.85,
+        "passo": 0.05
+      },
+      "diametro": {
+        "min": 8,
+        "max": 8,
+        "passo": 0.1
+      },
+      "rpm": {
+        "min": 40.0,
+        "max": 250.0
+      }
+    },
+    "restricoes": {
+      "eta0_min": 0.1,
+      "eta0_max": 0.9,
+      "j_min": 0.01,
+      "cavitacao_pct": 5,
+      "ta_sobre_d_min": 1.25,
+      "potencia_max_motor_kw": null,
+      "motor": "estrito"
+    },
+    "margens": {
+      "mar": 15.0,
+      "rotacao": 5.0,
+      "operacional": 10.0,
+      "expoente_rpm": 0.3333333333333333,
+      "acoplamento": "direto",
+      "eta_t": {
+        "direto": 0.97,
+        "caixa": 0.93
+      }
+    },
+    "motor": {
+      "sfoc_min": 165.0,
+      "carga_otima": 0.8,
+      "curvatura": 0.3,
+      "arquivo_csv": "motores.csv",
+      "carga_min_sfoc": 0.25,
+      "carga_max_sfoc": 1.0,
+      "catalogo_registrado": [
+        {
+          "modelo": "ARTIFICIAL_TESTE",
+          "n_min": 1,
+          "n_max": 1000,
+          "p_max_kw": 1000000.0,
+          "p_min_kw": 0.001
+        }
+      ]
+    },
+    "compat_planilha": false,
+    "backtest": {
+      "objetivo": "bhp",
+      "top": 15,
+      "saida": "saida"
+    },
+    "perfil_velocidades": [
+      5,
+      7,
+      10,
+      12,
+      15,
+      17,
+      20,
+      22,
+      25,
+      28,
+      30
+    ]
+  },
+  "funil": [
+    [
+      "Combinacoes geradas",
+      1
+    ],
+    [
+      "Empuxo disponivel = requerido (M12 = 0)",
+      1
+    ],
+    [
+      "J >= 0.01 e KT, KQ > 0",
+      1
+    ],
+    [
+      "0.1 <= eta0 <= 0.9",
+      1
+    ],
+    [
+      "Cavitacao Burrill <= 5% dorso",
+      1
+    ],
+    [
+      "Cabe no layout de um motor MAN B&W",
+      1
+    ]
+  ],
+  "resistencia": {
+    "RT": 1787.4331403028286,
+    "EHP_kW": 22988.376221116934
+  },
+  "melhor": {
+    "Z": 4,
+    "D": 8.0,
+    "Ae/Ao": 0.7,
+    "P/D": 0.85,
+    "w": 0.2568563099071078,
+    "t": 0.19773316643993316,
+    "etaR": 0.9888527366849179,
+    "Va": 9.557653569805808,
+    "rpm": 115.95876981227279,
+    "J": 0.6181714577482252,
+    "KTs": 0.14207656745216676,
+    "KQs": 0.019818697083245785,
+    "eta0": 0.705304146119456,
+    "etaH": 1.079558158476437,
+    "etaD": 0.752929131085084,
+    "tau_c": 0.11354016996623682,
+    "tau_max": 0.11717985587357319,
+    "sigma": 0.24925459256050153,
+    "BHP_kW": 31476.211970749755,
+    "MCR_kW": 46093.62710153857,
+    "RPM_MCR": 131.6809871524179,
+    "motor_proximo": "ARTIFICIAL_TESTE",
+    "viol_rpm": 0.0,
+    "viol_kw": 0.0,
+    "viol_total": 0.0,
+    "motor_n_min": 1.0,
+    "motor_n_max": 1000.0,
+    "rpm_layout": 131.6809871524179,
+    "motor_p_min_kw": 0.0001316809871524179,
+    "motor_p_max_kw": 131680.98715241792,
+    "motivo_motor": "cabe",
+    "Motores": "ARTIFICIAL_TESTE",
+    "cabe_motor": true,
+    "SFOC": 165.67904751634399,
+    "FOC_t_h": 5.214948818736364,
+    "FOC_MCR_t_h": 7.636748234756451
+  }
+}

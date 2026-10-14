@@ -69,6 +69,7 @@ async function main() {
   assert.equal(record.config.helice.diametro.max,8);
   assert.equal(record.combinacoes_geradas,1);
   assert.equal(record.fontes_sha256['naval.js'].bytes_sha256,require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(__dirname,'..','naval.js'))).digest('hex'));
+  assert.equal(record.fontes_sha256['projects/propulsao_busca.py'].bytes_sha256,require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(__dirname,'propulsao_busca.py'))).digest('hex'));
   assert.ok(completed.result.limits.some(warning=>warning.includes('limite de D')));
   assert.ok(completed.result.curve.some(row=>row.status_envelope==='abaixo da faixa SFOC'&&row.FOC_t_h===null));
   const input=simulation.backtestInput(completed.result);

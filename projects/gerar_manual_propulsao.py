@@ -25,6 +25,12 @@ FILES = [
     'projects/Relatorio_Entrega_P0.md',
     'naval-pdf.js', 'projects/test_propulsao_pas.py',
     'projects/validar_pdf_propulsao.py', 'projects/Relatorio_Comparacao_Pas_PDF.md',
+    'projects/propulsao_auto.py','projects/propulsao_auto_nucleo.py',
+    'projects/test_propulsao_auto.py','projects/Relatorio_Auto_Sprints_0_1.md',
+    'projects/baselines/auto_sprint0/propulsao_auto.py',
+    'projects/baselines/auto_sprint0/test_propulsao_auto.py',
+    'projects/baselines/auto_sprint0/manifesto.json',
+    'projects/baselines/auto_sprint0/caso_artificial_aprovado.json',
 ]
 
 

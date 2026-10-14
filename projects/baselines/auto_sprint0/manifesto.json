@@ -1,0 +1,214 @@
+{
+  "api": 4,
+  "config": {
+    "navio": {
+      "nome": "Navio Holtrop",
+      "lpp": 200.0,
+      "lwl": 205.0,
+      "boca": 32.0,
+      "calado_proa": 10.0,
+      "calado_popa": 10.0,
+      "deslocamento": 37500.0,
+      "lcb_pr": 104.0,
+      "abt": 20.0,
+      "hb": 4.0,
+      "cm": 0.98,
+      "cwp": 0.75,
+      "at": 16.0,
+      "c_popa": 10,
+      "velocidade_nos": 25.0,
+      "n_motores": 1,
+      "n_helices": 1,
+      "apendices": {
+        "Leme a re de cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re de popa": [
+          0,
+          1.4
+        ],
+        "Lemes compensados bi-helice": [
+          0,
+          2.8
+        ],
+        "Pe-de-galinha": [
+          0,
+          3.0
+        ],
+        "Cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re do propulsor": [
+          67,
+          1.96
+        ],
+        "Bosso do eixo": [
+          0,
+          2.0
+        ],
+        "Eixo do propulsor": [
+          0,
+          3.0
+        ],
+        "Estabilizador": [
+          0,
+          2.8
+        ],
+        "Sonar-dome": [
+          0,
+          2.7
+        ],
+        "Bolina": [
+          0,
+          1.4
+        ]
+      }
+    },
+    "agua": {
+      "rho": 1025.0,
+      "mu": 0.00085,
+      "g": 9.805,
+      "p_atm": 101325.0,
+      "p_vapor": 2278.0
+    },
+    "helice": {
+      "z": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "ae_ao": {
+        "min": 0.3,
+        "max": 1.05,
+        "passo": 0.05
+      },
+      "p_d": {
+        "min": 0.5,
+        "max": 1.4,
+        "passo": 0.05
+      },
+      "diametro": {
+        "min": 5.0,
+        "max": null,
+        "passo": 0.1
+      },
+      "rpm": {
+        "min": 40.0,
+        "max": 250.0
+      }
+    },
+    "restricoes": {
+      "eta0_min": 0.1,
+      "eta0_max": 0.9,
+      "j_min": 0.01,
+      "cavitacao_pct": 5,
+      "ta_sobre_d_min": 1.25,
+      "potencia_max_motor_kw": null,
+      "motor": "estrito"
+    },
+    "margens": {
+      "mar": 15.0,
+      "rotacao": 5.0,
+      "operacional": 10.0,
+      "expoente_rpm": 0.3333333333333333,
+      "acoplamento": "direto",
+      "eta_t": {
+        "direto": 0.97,
+        "caixa": 0.93
+      }
+    },
+    "motor": {
+      "sfoc_min": 165.0,
+      "carga_otima": 0.8,
+      "curvatura": 0.3,
+      "arquivo_csv": "motores.csv",
+      "carga_min_sfoc": 0.25,
+      "carga_max_sfoc": 1.0
+    },
+    "compat_planilha": false,
+    "backtest": {
+      "objetivo": "bhp",
+      "top": 15,
+      "saida": "saida"
+    },
+    "perfil_velocidades": [
+      5,
+      7,
+      10,
+      12,
+      15,
+      17,
+      20,
+      22,
+      25,
+      28,
+      30
+    ]
+  },
+  "hashes": {
+    "projects/propulsao.py": {
+      "bruto": "4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4",
+      "lf": "4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4"
+    },
+    "projects/propulsao_busca.py": {
+      "bruto": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c",
+      "lf": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c"
+    },
+    "projects/propulsao_auditoria.py": {
+      "bruto": "e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b",
+      "lf": "e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b"
+    },
+    "projects/motores.csv": {
+      "bruto": "1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e",
+      "lf": "0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8"
+    },
+    "naval.js": {
+      "bruto": "33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880",
+      "lf": "33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880"
+    },
+    "naval-backtest.js": {
+      "bruto": "330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612",
+      "lf": "330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612"
+    },
+    "naval-backtest-worker.js": {
+      "bruto": "0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e",
+      "lf": "0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e"
+    },
+    "projects/test_propulsao.py": {
+      "bruto": "8c13101932f70919707610fc50619144cf0bddd71b5314d57a3a768d533acb84",
+      "lf": "8c13101932f70919707610fc50619144cf0bddd71b5314d57a3a768d533acb84"
+    },
+    "projects/test_propulsao_auditoria.py": {
+      "bruto": "4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9",
+      "lf": "4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9"
+    },
+    "projects/test_propulsao_busca.py": {
+      "bruto": "76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26",
+      "lf": "76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26"
+    },
+    "projects/test_propulsao_calibracao.py": {
+      "bruto": "7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96",
+      "lf": "7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96"
+    },
+    "projects/test_propulsao_diagnostico.py": {
+      "bruto": "01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca",
+      "lf": "01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca"
+    },
+    "projects/test_propulsao_pas.py": {
+      "bruto": "c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a",
+      "lf": "c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a"
+    },
+    "projects/baselines/auto_sprint0/propulsao_auto.py": {
+      "bruto": "569b0978b58c08c65f212a5a829c34e110d00d4711c66c3798facfb5fa060803",
+      "lf": "569b0978b58c08c65f212a5a829c34e110d00d4711c66c3798facfb5fa060803"
+    },
+    "projects/baselines/auto_sprint0/test_propulsao_auto.py": {
+      "bruto": "9d4137e14b83edf75cee570c030ba821f386c30c3afccee31abca31dd7107d8c",
+      "lf": "9d4137e14b83edf75cee570c030ba821f386c30c3afccee31abca31dd7107d8c"
+    }
+  }
+}

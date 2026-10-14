@@ -178,6 +178,26 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
             grids.append(local)
     objective = {'bhp':'BHP_kW','foc':'FOC_t_h'}[base['backtest']['objetivo']]
     keys = ['viol_total',objective,'Z','D','Ae/Ao','P/D']
+    # Scientific reservoirs are independent of the presentation top and of
+    # the legacy beam used for refinement. Observe candidates before batching cuts.
+    reservoirs = copy.deepcopy(estado.get('reservatorios', {})) if estado else {}
+    def scientific_key(row, feasible):
+        return ([] if feasible else [row['viol_total']]) + [row[objective],row['BHP_kW'],row['Z'],row['D'],row['Ae/Ao'],row['P/D'],str(row.get('Motores',''))]
+    def observe(frame, status):
+        if auditoria:
+            auditoria(frame,status)
+        if status not in ('VIAVEL','RPM_MOTOR','POTENCIA_MOTOR','RPM_E_POTENCIA_MOTOR') or frame.empty:
+            return
+        for z,part in frame.groupby('Z'):
+            pool = reservoirs.setdefault(str(int(z)),dict(viaveis=[],diagnosticos=[]))
+            for feasible,name in ((True,'viaveis'),(False,'diagnosticos')):
+                eligible=part[(part['cabe_motor']==feasible) & p.np.isfinite(part[objective]) & p.np.isfinite(part['BHP_kW']) & p.np.isfinite(part['viol_total'])]
+                rows=pool[name]+json_records(eligible)
+                rows.sort(key=lambda row:scientific_key(row,feasible))
+                unique={}
+                for row in rows:
+                    unique.setdefault(tuple(row[key] for key in ('Z','D','Ae/Ao','P/D')),row)
+                pool[name]=list(unique.values())[:5]
     frames = []
     if estado and estado['ranking']:
         frames.append(pd.DataFrame(estado['ranking']))
@@ -197,7 +217,7 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
         for grid in grids:
             part = os.path.join(temporary,'parte.csv') if diagnostico_destino else None
             callback = (lambda done,size: progresso(completed+done,total)) if progresso else None
-            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part,auditoria=auditoria)
+            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part,auditoria=observe)
             frames.extend([g,f])
             for name,count in steps:
                 funnel[name] = funnel.get(name,0)+count
@@ -210,6 +230,7 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
                 first = False
     candidates = pd.concat(frames,ignore_index=True).drop_duplicates(['Z','D','Ae/Ao','P/D']).sort_values(keys,kind='stable')
     by_z = {str(z):json_records(candidates[candidates['Z']==z].head(5)) for z in valid_z}
+    approved = candidates[candidates['cabe_motor']].sort_values([objective,'Z','D','Ae/Ao','P/D'],kind='stable').head(base['backtest']['top']).reset_index(drop=True)
     candidates = candidates.head(base['backtest']['top']).reset_index(drop=True)
     next_cursor,next_resolution = cursor,resolution
     if stage == 'varredura global por blocos':
@@ -218,12 +239,17 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
             next_cursor,next_resolution = 0,resolution+1
     state = dict(iteracao=iteration+1, avaliacoes=(estado['avaliacoes'] if estado else 0)+completed,
                  ranking=json_records(candidates), melhores_por_z=by_z, cursor_global=next_cursor,resolucao_global=next_resolution)
+    state['reservatorios'] = reservoirs
+    state['reservatorios_schema_version'] = 1
+    feasible_rows=[row for pool in reservoirs.values() for row in pool['viaveis']]
+    diagnostic_rows=[row for pool in reservoirs.values() for row in pool['diagnosticos']]
+    state['melhor_viavel'] = min(feasible_rows,key=lambda row:scientific_key(row,True)) if feasible_rows else None
+    state['melhor_diagnostico'] = min(diagnostic_rows,key=lambda row:scientific_key(row,False)) if diagnostic_rows else None
     base['calibracao'] = dict(motor=motor or None,nivel=nivel,iteracao=state['iteracao'],avaliacoes=state['avaliacoes'],
         etapa=stage,pas_permitidas=valid_z,pas_avaliadas=sorted(set(z for grid in grids for z in grid['helice']['z'])),
         bloco_global=cursor+1 if stage=='varredura global por blocos' else None,blocos_globais=tile_total if stage=='varredura global por blocos' else None,
         resolucao_global=resolution,malhas_rodada=[grid['helice'] for grid in grids],
         contagens='avaliações acumuladas podem repetir pontos; funil e diagnóstico CSV referem-se à última rodada')
-    approved = candidates[candidates['cabe_motor']].reset_index(drop=True)
     return approved,candidates,list(funnel.items()),resistance,base,state
 
 def json_records(frame):

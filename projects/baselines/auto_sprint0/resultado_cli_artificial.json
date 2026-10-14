@@ -1,0 +1,1792 @@
+{
+  "status": "aprovado",
+  "melhor": {
+    "Z": 4,
+    "D": 8.0,
+    "Ae/Ao": 0.7,
+    "P/D": 0.85,
+    "w": 0.2568563099071078,
+    "t": 0.19773316643993316,
+    "etaR": 0.9888527366849179,
+    "Va": 9.557653569805808,
+    "rpm": 115.95876981227279,
+    "J": 0.6181714577482252,
+    "KTs": 0.14207656745216676,
+    "KQs": 0.019818697083245785,
+    "eta0": 0.705304146119456,
+    "etaH": 1.079558158476437,
+    "etaD": 0.752929131085084,
+    "tau_c": 0.11354016996623682,
+    "tau_max": 0.11717985587357319,
+    "sigma": 0.24925459256050153,
+    "BHP_kW": 31476.211970749755,
+    "MCR_kW": 46093.62710153857,
+    "RPM_MCR": 131.6809871524179,
+    "motor_proximo": "ARTIFICIAL_TESTE",
+    "viol_rpm": 0.0,
+    "viol_kw": 0.0,
+    "viol_total": 0.0,
+    "motor_n_min": 1.0,
+    "motor_n_max": 1000.0,
+    "rpm_layout": 131.6809871524179,
+    "motor_p_min_kw": 0.0001316809871524179,
+    "motor_p_max_kw": 131680.98715241792,
+    "motivo_motor": "cabe",
+    "Motores": "ARTIFICIAL_TESTE",
+    "cabe_motor": true,
+    "SFOC": 165.67904751634399,
+    "FOC_t_h": 5.214948818736364,
+    "FOC_MCR_t_h": 7.636748234756451
+  },
+  "melhor_viavel": {
+    "Z": 4,
+    "D": 8.0,
+    "Ae/Ao": 0.7,
+    "P/D": 0.85,
+    "w": 0.2568563099071078,
+    "t": 0.19773316643993316,
+    "etaR": 0.9888527366849179,
+    "Va": 9.557653569805808,
+    "rpm": 115.95876981227279,
+    "J": 0.6181714577482252,
+    "KTs": 0.14207656745216676,
+    "KQs": 0.019818697083245785,
+    "eta0": 0.705304146119456,
+    "etaH": 1.079558158476437,
+    "etaD": 0.752929131085084,
+    "tau_c": 0.11354016996623682,
+    "tau_max": 0.11717985587357319,
+    "sigma": 0.24925459256050153,
+    "BHP_kW": 31476.211970749755,
+    "MCR_kW": 46093.62710153857,
+    "RPM_MCR": 131.6809871524179,
+    "motor_proximo": "ARTIFICIAL_TESTE",
+    "viol_rpm": 0.0,
+    "viol_kw": 0.0,
+    "viol_total": 0.0,
+    "motor_n_min": 1.0,
+    "motor_n_max": 1000.0,
+    "rpm_layout": 131.6809871524179,
+    "motor_p_min_kw": 0.0001316809871524179,
+    "motor_p_max_kw": 131680.98715241792,
+    "motivo_motor": "cabe",
+    "Motores": "ARTIFICIAL_TESTE",
+    "cabe_motor": true,
+    "SFOC": 165.67904751634399,
+    "FOC_t_h": 5.214948818736364,
+    "FOC_MCR_t_h": 7.636748234756451
+  },
+  "melhor_diagnostico": null,
+  "historico": [
+    {
+      "rodada": 1,
+      "etapa": "varredura ampla",
+      "aprovados": 5,
+      "viol_total": 0.0,
+      "objetivo": 5.214948818736364,
+      "melhorou": true,
+      "melhoria_qualquer": true,
+      "best_so_far": {
+        "Z": 4,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 115.95876981227279,
+        "J": 0.6181714577482252,
+        "KTs": 0.14207656745216676,
+        "KQs": 0.019818697083245785,
+        "eta0": 0.705304146119456,
+        "etaH": 1.079558158476437,
+        "etaD": 0.752929131085084,
+        "tau_c": 0.11354016996623682,
+        "tau_max": 0.11717985587357319,
+        "sigma": 0.24925459256050153,
+        "BHP_kW": 31476.211970749755,
+        "MCR_kW": 46093.62710153857,
+        "RPM_MCR": 131.6809871524179,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 131.6809871524179,
+        "motor_p_min_kw": 0.0001316809871524179,
+        "motor_p_max_kw": 131680.98715241792,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.214948818736364,
+        "FOC_MCR_t_h": 7.636748234756451
+      },
+      "best_viavel": {
+        "Z": 4,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 115.95876981227279,
+        "J": 0.6181714577482252,
+        "KTs": 0.14207656745216676,
+        "KQs": 0.019818697083245785,
+        "eta0": 0.705304146119456,
+        "etaH": 1.079558158476437,
+        "etaD": 0.752929131085084,
+        "tau_c": 0.11354016996623682,
+        "tau_max": 0.11717985587357319,
+        "sigma": 0.24925459256050153,
+        "BHP_kW": 31476.211970749755,
+        "MCR_kW": 46093.62710153857,
+        "RPM_MCR": 131.6809871524179,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 131.6809871524179,
+        "motor_p_min_kw": 0.0001316809871524179,
+        "motor_p_max_kw": 131680.98715241792,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.214948818736364,
+        "FOC_MCR_t_h": 7.636748234756451
+      },
+      "best_diagnostico": null,
+      "avaliacoes": 5,
+      "cobertura_minima_concluida": true
+    }
+  ],
+  "funil": [
+    [
+      "Combinacoes geradas",
+      5
+    ],
+    [
+      "Empuxo disponivel = requerido (M12 = 0)",
+      5
+    ],
+    [
+      "J >= 0.01 e KT, KQ > 0",
+      5
+    ],
+    [
+      "0.1 <= eta0 <= 0.9",
+      5
+    ],
+    [
+      "Cavitacao Burrill <= 5% dorso",
+      5
+    ],
+    [
+      "Cabe no layout de um motor MAN B&W",
+      5
+    ]
+  ],
+  "parada_codigo": "orcamento",
+  "parada": "orcamento",
+  "config": {
+    "navio": {
+      "nome": "Navio Holtrop",
+      "lpp": 200.0,
+      "lwl": 205.0,
+      "boca": 32.0,
+      "calado_proa": 10.0,
+      "calado_popa": 10.0,
+      "deslocamento": 37500.0,
+      "lcb_pr": 104.0,
+      "abt": 20.0,
+      "hb": 4.0,
+      "cm": 0.98,
+      "cwp": 0.75,
+      "at": 16.0,
+      "c_popa": 10,
+      "velocidade_nos": 25.0,
+      "n_motores": 1,
+      "n_helices": 1,
+      "apendices": {
+        "Leme a re de cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re de popa": [
+          0,
+          1.4
+        ],
+        "Lemes compensados bi-helice": [
+          0,
+          2.8
+        ],
+        "Pe-de-galinha": [
+          0,
+          3.0
+        ],
+        "Cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re do propulsor": [
+          67,
+          1.96
+        ],
+        "Bosso do eixo": [
+          0,
+          2.0
+        ],
+        "Eixo do propulsor": [
+          0,
+          3.0
+        ],
+        "Estabilizador": [
+          0,
+          2.8
+        ],
+        "Sonar-dome": [
+          0,
+          2.7
+        ],
+        "Bolina": [
+          0,
+          1.4
+        ]
+      }
+    },
+    "agua": {
+      "rho": 1025.0,
+      "mu": 0.00085,
+      "g": 9.805,
+      "p_atm": 101325.0,
+      "p_vapor": 2278.0
+    },
+    "helice": {
+      "z": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "ae_ao": {
+        "min": 0.7,
+        "max": 0.7,
+        "passo": 0.05
+      },
+      "p_d": {
+        "min": 0.85,
+        "max": 0.85,
+        "passo": 0.05
+      },
+      "diametro": {
+        "min": 8,
+        "max": 8,
+        "passo": 0.1
+      },
+      "rpm": {
+        "min": 40.0,
+        "max": 250.0
+      }
+    },
+    "restricoes": {
+      "eta0_min": 0.1,
+      "eta0_max": 0.9,
+      "j_min": 0.01,
+      "cavitacao_pct": 5,
+      "ta_sobre_d_min": 1.25,
+      "potencia_max_motor_kw": null,
+      "motor": "estrito"
+    },
+    "margens": {
+      "mar": 15.0,
+      "rotacao": 5.0,
+      "operacional": 10.0,
+      "expoente_rpm": 0.3333333333333333,
+      "acoplamento": "direto",
+      "eta_t": {
+        "direto": 0.97,
+        "caixa": 0.93
+      }
+    },
+    "motor": {
+      "sfoc_min": 165.0,
+      "carga_otima": 0.8,
+      "curvatura": 0.3,
+      "arquivo_csv": "motores.csv",
+      "carga_min_sfoc": 0.25,
+      "carga_max_sfoc": 1.0,
+      "catalogo_registrado": [
+        {
+          "modelo": "ARTIFICIAL_TESTE",
+          "n_min": 1,
+          "n_max": 1000,
+          "p_max_kw": 1000000.0,
+          "p_min_kw": 0.001
+        }
+      ]
+    },
+    "compat_planilha": false,
+    "backtest": {
+      "objetivo": "foc",
+      "top": 15,
+      "saida": "saida"
+    },
+    "perfil_velocidades": [
+      5,
+      7,
+      10,
+      12,
+      15,
+      17,
+      20,
+      22,
+      25,
+      28,
+      30
+    ],
+    "calibracao": {
+      "motor": null,
+      "nivel": "rapido",
+      "iteracao": 1,
+      "avaliacoes": 5,
+      "etapa": "varredura ampla",
+      "pas_permitidas": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "pas_avaliadas": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "bloco_global": null,
+      "blocos_globais": null,
+      "resolucao_global": 0,
+      "malhas_rodada": [
+        {
+          "z": [
+            3
+          ],
+          "ae_ao": {
+            "min": 0.7,
+            "max": 0.7,
+            "passo": 0.1
+          },
+          "p_d": {
+            "min": 0.85,
+            "max": 0.85,
+            "passo": 0.1
+          },
+          "diametro": {
+            "min": 8,
+            "max": 8,
+            "passo": 0.25
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        },
+        {
+          "z": [
+            4
+          ],
+          "ae_ao": {
+            "min": 0.7,
+            "max": 0.7,
+            "passo": 0.1
+          },
+          "p_d": {
+            "min": 0.85,
+            "max": 0.85,
+            "passo": 0.1
+          },
+          "diametro": {
+            "min": 8,
+            "max": 8,
+            "passo": 0.25
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        },
+        {
+          "z": [
+            5
+          ],
+          "ae_ao": {
+            "min": 0.7,
+            "max": 0.7,
+            "passo": 0.1
+          },
+          "p_d": {
+            "min": 0.85,
+            "max": 0.85,
+            "passo": 0.1
+          },
+          "diametro": {
+            "min": 8,
+            "max": 8,
+            "passo": 0.25
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        },
+        {
+          "z": [
+            6
+          ],
+          "ae_ao": {
+            "min": 0.7,
+            "max": 0.7,
+            "passo": 0.1
+          },
+          "p_d": {
+            "min": 0.85,
+            "max": 0.85,
+            "passo": 0.1
+          },
+          "diametro": {
+            "min": 8,
+            "max": 8,
+            "passo": 0.25
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        },
+        {
+          "z": [
+            7
+          ],
+          "ae_ao": {
+            "min": 0.7,
+            "max": 0.7,
+            "passo": 0.1
+          },
+          "p_d": {
+            "min": 0.85,
+            "max": 0.85,
+            "passo": 0.1
+          },
+          "diametro": {
+            "min": 8,
+            "max": 8,
+            "passo": 0.25
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        }
+      ],
+      "contagens": "avaliações acumuladas podem repetir pontos; funil e diagnóstico CSV referem-se à última rodada"
+    }
+  },
+  "config_original": {
+    "navio": {
+      "nome": "Navio Holtrop",
+      "lpp": 200.0,
+      "lwl": 205.0,
+      "boca": 32.0,
+      "calado_proa": 10.0,
+      "calado_popa": 10.0,
+      "deslocamento": 37500.0,
+      "lcb_pr": 104.0,
+      "abt": 20.0,
+      "hb": 4.0,
+      "cm": 0.98,
+      "cwp": 0.75,
+      "at": 16.0,
+      "c_popa": 10,
+      "velocidade_nos": 25.0,
+      "n_motores": 1,
+      "n_helices": 1,
+      "apendices": {
+        "Leme a re de cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re de popa": [
+          0,
+          1.4
+        ],
+        "Lemes compensados bi-helice": [
+          0,
+          2.8
+        ],
+        "Pe-de-galinha": [
+          0,
+          3.0
+        ],
+        "Cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re do propulsor": [
+          67,
+          1.96
+        ],
+        "Bosso do eixo": [
+          0,
+          2.0
+        ],
+        "Eixo do propulsor": [
+          0,
+          3.0
+        ],
+        "Estabilizador": [
+          0,
+          2.8
+        ],
+        "Sonar-dome": [
+          0,
+          2.7
+        ],
+        "Bolina": [
+          0,
+          1.4
+        ]
+      }
+    },
+    "agua": {
+      "rho": 1025.0,
+      "mu": 0.00085,
+      "g": 9.805,
+      "p_atm": 101325.0,
+      "p_vapor": 2278.0
+    },
+    "helice": {
+      "z": [
+        4
+      ],
+      "ae_ao": {
+        "min": 0.7,
+        "max": 0.7,
+        "passo": 0.05
+      },
+      "p_d": {
+        "min": 0.85,
+        "max": 0.85,
+        "passo": 0.05
+      },
+      "diametro": {
+        "min": 8,
+        "max": 8,
+        "passo": 0.1
+      },
+      "rpm": {
+        "min": 40.0,
+        "max": 250.0
+      }
+    },
+    "restricoes": {
+      "eta0_min": 0.1,
+      "eta0_max": 0.9,
+      "j_min": 0.01,
+      "cavitacao_pct": 5,
+      "ta_sobre_d_min": 1.25,
+      "potencia_max_motor_kw": null,
+      "motor": "estrito"
+    },
+    "margens": {
+      "mar": 15.0,
+      "rotacao": 5.0,
+      "operacional": 10.0,
+      "expoente_rpm": 0.3333333333333333,
+      "acoplamento": "direto",
+      "eta_t": {
+        "direto": 0.97,
+        "caixa": 0.93
+      }
+    },
+    "motor": {
+      "sfoc_min": 165.0,
+      "carga_otima": 0.8,
+      "curvatura": 0.3,
+      "arquivo_csv": "motores.csv",
+      "carga_min_sfoc": 0.25,
+      "carga_max_sfoc": 1.0,
+      "catalogo_registrado": [
+        {
+          "modelo": "ARTIFICIAL_TESTE",
+          "n_min": 1,
+          "n_max": 1000,
+          "p_max_kw": 1000000.0,
+          "p_min_kw": 0.001
+        }
+      ]
+    },
+    "compat_planilha": false,
+    "backtest": {
+      "objetivo": "bhp",
+      "top": 15,
+      "saida": "saida"
+    },
+    "perfil_velocidades": [
+      5,
+      7,
+      10,
+      12,
+      15,
+      17,
+      20,
+      22,
+      25,
+      28,
+      30
+    ]
+  },
+  "config_efetiva": {
+    "navio": {
+      "nome": "Navio Holtrop",
+      "lpp": 200.0,
+      "lwl": 205.0,
+      "boca": 32.0,
+      "calado_proa": 10.0,
+      "calado_popa": 10.0,
+      "deslocamento": 37500.0,
+      "lcb_pr": 104.0,
+      "abt": 20.0,
+      "hb": 4.0,
+      "cm": 0.98,
+      "cwp": 0.75,
+      "at": 16.0,
+      "c_popa": 10,
+      "velocidade_nos": 25.0,
+      "n_motores": 1,
+      "n_helices": 1,
+      "apendices": {
+        "Leme a re de cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re de popa": [
+          0,
+          1.4
+        ],
+        "Lemes compensados bi-helice": [
+          0,
+          2.8
+        ],
+        "Pe-de-galinha": [
+          0,
+          3.0
+        ],
+        "Cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re do propulsor": [
+          67,
+          1.96
+        ],
+        "Bosso do eixo": [
+          0,
+          2.0
+        ],
+        "Eixo do propulsor": [
+          0,
+          3.0
+        ],
+        "Estabilizador": [
+          0,
+          2.8
+        ],
+        "Sonar-dome": [
+          0,
+          2.7
+        ],
+        "Bolina": [
+          0,
+          1.4
+        ]
+      }
+    },
+    "agua": {
+      "rho": 1025.0,
+      "mu": 0.00085,
+      "g": 9.805,
+      "p_atm": 101325.0,
+      "p_vapor": 2278.0
+    },
+    "helice": {
+      "z": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "ae_ao": {
+        "min": 0.7,
+        "max": 0.7,
+        "passo": 0.05
+      },
+      "p_d": {
+        "min": 0.85,
+        "max": 0.85,
+        "passo": 0.05
+      },
+      "diametro": {
+        "min": 8,
+        "max": 8,
+        "passo": 0.1
+      },
+      "rpm": {
+        "min": 40.0,
+        "max": 250.0
+      }
+    },
+    "restricoes": {
+      "eta0_min": 0.1,
+      "eta0_max": 0.9,
+      "j_min": 0.01,
+      "cavitacao_pct": 5,
+      "ta_sobre_d_min": 1.25,
+      "potencia_max_motor_kw": null,
+      "motor": "estrito"
+    },
+    "margens": {
+      "mar": 15.0,
+      "rotacao": 5.0,
+      "operacional": 10.0,
+      "expoente_rpm": 0.3333333333333333,
+      "acoplamento": "direto",
+      "eta_t": {
+        "direto": 0.97,
+        "caixa": 0.93
+      }
+    },
+    "motor": {
+      "sfoc_min": 165.0,
+      "carga_otima": 0.8,
+      "curvatura": 0.3,
+      "arquivo_csv": "motores.csv",
+      "carga_min_sfoc": 0.25,
+      "carga_max_sfoc": 1.0,
+      "catalogo_registrado": [
+        {
+          "modelo": "ARTIFICIAL_TESTE",
+          "n_min": 1,
+          "n_max": 1000,
+          "p_max_kw": 1000000.0,
+          "p_min_kw": 0.001
+        }
+      ]
+    },
+    "compat_planilha": false,
+    "backtest": {
+      "objetivo": "foc",
+      "top": 15,
+      "saida": "saida"
+    },
+    "perfil_velocidades": [
+      5,
+      7,
+      10,
+      12,
+      15,
+      17,
+      20,
+      22,
+      25,
+      28,
+      30
+    ]
+  },
+  "estado": {
+    "iteracao": 1,
+    "avaliacoes": 5,
+    "ranking": [
+      {
+        "Z": 4,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 115.95876981227279,
+        "J": 0.6181714577482252,
+        "KTs": 0.14207656745216676,
+        "KQs": 0.019818697083245785,
+        "eta0": 0.705304146119456,
+        "etaH": 1.079558158476437,
+        "etaD": 0.752929131085084,
+        "tau_c": 0.11354016996623682,
+        "tau_max": 0.11717985587357319,
+        "sigma": 0.24925459256050153,
+        "BHP_kW": 31476.211970749755,
+        "MCR_kW": 46093.62710153857,
+        "RPM_MCR": 131.6809871524179,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 131.6809871524179,
+        "motor_p_min_kw": 0.0001316809871524179,
+        "motor_p_max_kw": 131680.98715241792,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.214948818736364,
+        "FOC_MCR_t_h": 7.636748234756451
+      },
+      {
+        "Z": 3,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 118.74021215781359,
+        "J": 0.6036910366832839,
+        "KTs": 0.13549835216048287,
+        "KQs": 0.018679142709938343,
+        "eta0": 0.6969665462057262,
+        "etaH": 1.079558158476437,
+        "etaD": 0.7440285427461116,
+        "tau_c": 0.10865160042414262,
+        "tau_max": 0.11241794595461091,
+        "sigma": 0.23852272198306002,
+        "BHP_kW": 31852.75237091754,
+        "MCR_kW": 46645.031216180025,
+        "RPM_MCR": 134.8395500999319,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 134.8395500999319,
+        "motor_p_min_kw": 0.0001348395500999319,
+        "motor_p_max_kw": 134839.5500999319,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.277333673587586,
+        "FOC_MCR_t_h": 7.728104343266839
+      },
+      {
+        "Z": 5,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 114.08542996698066,
+        "J": 0.6283221424005707,
+        "KTs": 0.1467808126170791,
+        "KQs": 0.021083885895071708,
+        "eta0": 0.6961793336808888,
+        "etaH": 1.079558158476437,
+        "etaD": 0.7431881744517153,
+        "tau_c": 0.11701582659665563,
+        "tau_max": 0.12044235648098295,
+        "sigma": 0.256884697197062,
+        "BHP_kW": 31888.77022494425,
+        "MCR_kW": 46697.77560403863,
+        "RPM_MCR": 129.55365137178325,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 129.55365137178325,
+        "motor_p_min_kw": 0.00012955365137178325,
+        "motor_p_max_kw": 129553.65137178324,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.283301077336313,
+        "FOC_MCR_t_h": 7.736842983209085
+      },
+      {
+        "Z": 6,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 113.01257782109745,
+        "J": 0.6342869365126695,
+        "KTs": 0.14958088284371232,
+        "KQs": 0.022455957647521535,
+        "eta0": 0.672435154810851,
+        "etaH": 1.079558158476437,
+        "etaD": 0.7178406927116625,
+        "tau_c": 0.1190766427354342,
+        "tau_max": 0.12233132795283042,
+        "sigma": 0.2614088042788649,
+        "BHP_kW": 33014.78610729293,
+        "MCR_kW": 48346.70833583055,
+        "RPM_MCR": 128.33533705310603,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 128.33533705310603,
+        "motor_p_min_kw": 0.00012833533705310603,
+        "motor_p_max_kw": 128335.33705310602,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.469858316212119,
+        "FOC_MCR_t_h": 8.010036587630895
+      },
+      {
+        "Z": 7,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 112.64516189581637,
+        "J": 0.6363557969745866,
+        "KTs": 0.15055825331830688,
+        "KQs": 0.02393349583822936,
+        "eta0": 0.6371160792477902,
+        "etaH": 1.079558158476437,
+        "etaD": 0.6801367304980053,
+        "tau_c": 0.11979458054346452,
+        "tau_max": 0.12298172948440439,
+        "sigma": 0.2629848922473574,
+        "BHP_kW": 34844.98905335335,
+        "MCR_kW": 51026.84952290354,
+        "RPM_MCR": 127.91810520583083,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 127.91810520583083,
+        "motor_p_min_kw": 0.00012791810520583084,
+        "motor_p_max_kw": 127918.10520583083,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.773084597077015,
+        "FOC_MCR_t_h": 8.45407982671447
+      }
+    ],
+    "melhores_por_z": {
+      "3": [
+        {
+          "Z": 3,
+          "D": 8.0,
+          "Ae/Ao": 0.7,
+          "P/D": 0.85,
+          "w": 0.2568563099071078,
+          "t": 0.19773316643993316,
+          "etaR": 0.9888527366849179,
+          "Va": 9.557653569805808,
+          "rpm": 118.74021215781359,
+          "J": 0.6036910366832839,
+          "KTs": 0.13549835216048287,
+          "KQs": 0.018679142709938343,
+          "eta0": 0.6969665462057262,
+          "etaH": 1.079558158476437,
+          "etaD": 0.7440285427461116,
+          "tau_c": 0.10865160042414262,
+          "tau_max": 0.11241794595461091,
+          "sigma": 0.23852272198306002,
+          "BHP_kW": 31852.75237091754,
+          "MCR_kW": 46645.031216180025,
+          "RPM_MCR": 134.8395500999319,
+          "motor_proximo": "ARTIFICIAL_TESTE",
+          "viol_rpm": 0.0,
+          "viol_kw": 0.0,
+          "viol_total": 0.0,
+          "motor_n_min": 1.0,
+          "motor_n_max": 1000.0,
+          "rpm_layout": 134.8395500999319,
+          "motor_p_min_kw": 0.0001348395500999319,
+          "motor_p_max_kw": 134839.5500999319,
+          "motivo_motor": "cabe",
+          "Motores": "ARTIFICIAL_TESTE",
+          "cabe_motor": true,
+          "SFOC": 165.67904751634399,
+          "FOC_t_h": 5.277333673587586,
+          "FOC_MCR_t_h": 7.728104343266839
+        }
+      ],
+      "4": [
+        {
+          "Z": 4,
+          "D": 8.0,
+          "Ae/Ao": 0.7,
+          "P/D": 0.85,
+          "w": 0.2568563099071078,
+          "t": 0.19773316643993316,
+          "etaR": 0.9888527366849179,
+          "Va": 9.557653569805808,
+          "rpm": 115.95876981227279,
+          "J": 0.6181714577482252,
+          "KTs": 0.14207656745216676,
+          "KQs": 0.019818697083245785,
+          "eta0": 0.705304146119456,
+          "etaH": 1.079558158476437,
+          "etaD": 0.752929131085084,
+          "tau_c": 0.11354016996623682,
+          "tau_max": 0.11717985587357319,
+          "sigma": 0.24925459256050153,
+          "BHP_kW": 31476.211970749755,
+          "MCR_kW": 46093.62710153857,
+          "RPM_MCR": 131.6809871524179,
+          "motor_proximo": "ARTIFICIAL_TESTE",
+          "viol_rpm": 0.0,
+          "viol_kw": 0.0,
+          "viol_total": 0.0,
+          "motor_n_min": 1.0,
+          "motor_n_max": 1000.0,
+          "rpm_layout": 131.6809871524179,
+          "motor_p_min_kw": 0.0001316809871524179,
+          "motor_p_max_kw": 131680.98715241792,
+          "motivo_motor": "cabe",
+          "Motores": "ARTIFICIAL_TESTE",
+          "cabe_motor": true,
+          "SFOC": 165.67904751634399,
+          "FOC_t_h": 5.214948818736364,
+          "FOC_MCR_t_h": 7.636748234756451
+        }
+      ],
+      "5": [
+        {
+          "Z": 5,
+          "D": 8.0,
+          "Ae/Ao": 0.7,
+          "P/D": 0.85,
+          "w": 0.2568563099071078,
+          "t": 0.19773316643993316,
+          "etaR": 0.9888527366849179,
+          "Va": 9.557653569805808,
+          "rpm": 114.08542996698066,
+          "J": 0.6283221424005707,
+          "KTs": 0.1467808126170791,
+          "KQs": 0.021083885895071708,
+          "eta0": 0.6961793336808888,
+          "etaH": 1.079558158476437,
+          "etaD": 0.7431881744517153,
+          "tau_c": 0.11701582659665563,
+          "tau_max": 0.12044235648098295,
+          "sigma": 0.256884697197062,
+          "BHP_kW": 31888.77022494425,
+          "MCR_kW": 46697.77560403863,
+          "RPM_MCR": 129.55365137178325,
+          "motor_proximo": "ARTIFICIAL_TESTE",
+          "viol_rpm": 0.0,
+          "viol_kw": 0.0,
+          "viol_total": 0.0,
+          "motor_n_min": 1.0,
+          "motor_n_max": 1000.0,
+          "rpm_layout": 129.55365137178325,
+          "motor_p_min_kw": 0.00012955365137178325,
+          "motor_p_max_kw": 129553.65137178324,
+          "motivo_motor": "cabe",
+          "Motores": "ARTIFICIAL_TESTE",
+          "cabe_motor": true,
+          "SFOC": 165.67904751634399,
+          "FOC_t_h": 5.283301077336313,
+          "FOC_MCR_t_h": 7.736842983209085
+        }
+      ],
+      "6": [
+        {
+          "Z": 6,
+          "D": 8.0,
+          "Ae/Ao": 0.7,
+          "P/D": 0.85,
+          "w": 0.2568563099071078,
+          "t": 0.19773316643993316,
+          "etaR": 0.9888527366849179,
+          "Va": 9.557653569805808,
+          "rpm": 113.01257782109745,
+          "J": 0.6342869365126695,
+          "KTs": 0.14958088284371232,
+          "KQs": 0.022455957647521535,
+          "eta0": 0.672435154810851,
+          "etaH": 1.079558158476437,
+          "etaD": 0.7178406927116625,
+          "tau_c": 0.1190766427354342,
+          "tau_max": 0.12233132795283042,
+          "sigma": 0.2614088042788649,
+          "BHP_kW": 33014.78610729293,
+          "MCR_kW": 48346.70833583055,
+          "RPM_MCR": 128.33533705310603,
+          "motor_proximo": "ARTIFICIAL_TESTE",
+          "viol_rpm": 0.0,
+          "viol_kw": 0.0,
+          "viol_total": 0.0,
+          "motor_n_min": 1.0,
+          "motor_n_max": 1000.0,
+          "rpm_layout": 128.33533705310603,
+          "motor_p_min_kw": 0.00012833533705310603,
+          "motor_p_max_kw": 128335.33705310602,
+          "motivo_motor": "cabe",
+          "Motores": "ARTIFICIAL_TESTE",
+          "cabe_motor": true,
+          "SFOC": 165.67904751634399,
+          "FOC_t_h": 5.469858316212119,
+          "FOC_MCR_t_h": 8.010036587630895
+        }
+      ],
+      "7": [
+        {
+          "Z": 7,
+          "D": 8.0,
+          "Ae/Ao": 0.7,
+          "P/D": 0.85,
+          "w": 0.2568563099071078,
+          "t": 0.19773316643993316,
+          "etaR": 0.9888527366849179,
+          "Va": 9.557653569805808,
+          "rpm": 112.64516189581637,
+          "J": 0.6363557969745866,
+          "KTs": 0.15055825331830688,
+          "KQs": 0.02393349583822936,
+          "eta0": 0.6371160792477902,
+          "etaH": 1.079558158476437,
+          "etaD": 0.6801367304980053,
+          "tau_c": 0.11979458054346452,
+          "tau_max": 0.12298172948440439,
+          "sigma": 0.2629848922473574,
+          "BHP_kW": 34844.98905335335,
+          "MCR_kW": 51026.84952290354,
+          "RPM_MCR": 127.91810520583083,
+          "motor_proximo": "ARTIFICIAL_TESTE",
+          "viol_rpm": 0.0,
+          "viol_kw": 0.0,
+          "viol_total": 0.0,
+          "motor_n_min": 1.0,
+          "motor_n_max": 1000.0,
+          "rpm_layout": 127.91810520583083,
+          "motor_p_min_kw": 0.00012791810520583084,
+          "motor_p_max_kw": 127918.10520583083,
+          "motivo_motor": "cabe",
+          "Motores": "ARTIFICIAL_TESTE",
+          "cabe_motor": true,
+          "SFOC": 165.67904751634399,
+          "FOC_t_h": 5.773084597077015,
+          "FOC_MCR_t_h": 8.45407982671447
+        }
+      ]
+    },
+    "cursor_global": 0,
+    "resolucao_global": 0,
+    "reservatorios": {
+      "3": {
+        "viaveis": [
+          {
+            "Z": 3,
+            "D": 8.0,
+            "Ae/Ao": 0.7,
+            "P/D": 0.85,
+            "w": 0.2568563099071078,
+            "t": 0.19773316643993316,
+            "etaR": 0.9888527366849179,
+            "Va": 9.557653569805808,
+            "rpm": 118.74021215781359,
+            "J": 0.6036910366832839,
+            "KTs": 0.13549835216048287,
+            "KQs": 0.018679142709938343,
+            "eta0": 0.6969665462057262,
+            "etaH": 1.079558158476437,
+            "etaD": 0.7440285427461116,
+            "tau_c": 0.10865160042414262,
+            "tau_max": 0.11241794595461091,
+            "sigma": 0.23852272198306002,
+            "BHP_kW": 31852.75237091754,
+            "MCR_kW": 46645.031216180025,
+            "RPM_MCR": 134.8395500999319,
+            "motor_proximo": "ARTIFICIAL_TESTE",
+            "viol_rpm": 0.0,
+            "viol_kw": 0.0,
+            "viol_total": 0.0,
+            "motor_n_min": 1.0,
+            "motor_n_max": 1000.0,
+            "rpm_layout": 134.8395500999319,
+            "motor_p_min_kw": 0.0001348395500999319,
+            "motor_p_max_kw": 134839.5500999319,
+            "motivo_motor": "cabe",
+            "Motores": "ARTIFICIAL_TESTE",
+            "cabe_motor": true,
+            "SFOC": 165.67904751634399,
+            "FOC_t_h": 5.277333673587586,
+            "FOC_MCR_t_h": 7.728104343266839
+          }
+        ],
+        "diagnosticos": []
+      },
+      "4": {
+        "viaveis": [
+          {
+            "Z": 4,
+            "D": 8.0,
+            "Ae/Ao": 0.7,
+            "P/D": 0.85,
+            "w": 0.2568563099071078,
+            "t": 0.19773316643993316,
+            "etaR": 0.9888527366849179,
+            "Va": 9.557653569805808,
+            "rpm": 115.95876981227279,
+            "J": 0.6181714577482252,
+            "KTs": 0.14207656745216676,
+            "KQs": 0.019818697083245785,
+            "eta0": 0.705304146119456,
+            "etaH": 1.079558158476437,
+            "etaD": 0.752929131085084,
+            "tau_c": 0.11354016996623682,
+            "tau_max": 0.11717985587357319,
+            "sigma": 0.24925459256050153,
+            "BHP_kW": 31476.211970749755,
+            "MCR_kW": 46093.62710153857,
+            "RPM_MCR": 131.6809871524179,
+            "motor_proximo": "ARTIFICIAL_TESTE",
+            "viol_rpm": 0.0,
+            "viol_kw": 0.0,
+            "viol_total": 0.0,
+            "motor_n_min": 1.0,
+            "motor_n_max": 1000.0,
+            "rpm_layout": 131.6809871524179,
+            "motor_p_min_kw": 0.0001316809871524179,
+            "motor_p_max_kw": 131680.98715241792,
+            "motivo_motor": "cabe",
+            "Motores": "ARTIFICIAL_TESTE",
+            "cabe_motor": true,
+            "SFOC": 165.67904751634399,
+            "FOC_t_h": 5.214948818736364,
+            "FOC_MCR_t_h": 7.636748234756451
+          }
+        ],
+        "diagnosticos": []
+      },
+      "5": {
+        "viaveis": [
+          {
+            "Z": 5,
+            "D": 8.0,
+            "Ae/Ao": 0.7,
+            "P/D": 0.85,
+            "w": 0.2568563099071078,
+            "t": 0.19773316643993316,
+            "etaR": 0.9888527366849179,
+            "Va": 9.557653569805808,
+            "rpm": 114.08542996698066,
+            "J": 0.6283221424005707,
+            "KTs": 0.1467808126170791,
+            "KQs": 0.021083885895071708,
+            "eta0": 0.6961793336808888,
+            "etaH": 1.079558158476437,
+            "etaD": 0.7431881744517153,
+            "tau_c": 0.11701582659665563,
+            "tau_max": 0.12044235648098295,
+            "sigma": 0.256884697197062,
+            "BHP_kW": 31888.77022494425,
+            "MCR_kW": 46697.77560403863,
+            "RPM_MCR": 129.55365137178325,
+            "motor_proximo": "ARTIFICIAL_TESTE",
+            "viol_rpm": 0.0,
+            "viol_kw": 0.0,
+            "viol_total": 0.0,
+            "motor_n_min": 1.0,
+            "motor_n_max": 1000.0,
+            "rpm_layout": 129.55365137178325,
+            "motor_p_min_kw": 0.00012955365137178325,
+            "motor_p_max_kw": 129553.65137178324,
+            "motivo_motor": "cabe",
+            "Motores": "ARTIFICIAL_TESTE",
+            "cabe_motor": true,
+            "SFOC": 165.67904751634399,
+            "FOC_t_h": 5.283301077336313,
+            "FOC_MCR_t_h": 7.736842983209085
+          }
+        ],
+        "diagnosticos": []
+      },
+      "6": {
+        "viaveis": [
+          {
+            "Z": 6,
+            "D": 8.0,
+            "Ae/Ao": 0.7,
+            "P/D": 0.85,
+            "w": 0.2568563099071078,
+            "t": 0.19773316643993316,
+            "etaR": 0.9888527366849179,
+            "Va": 9.557653569805808,
+            "rpm": 113.01257782109745,
+            "J": 0.6342869365126695,
+            "KTs": 0.14958088284371232,
+            "KQs": 0.022455957647521535,
+            "eta0": 0.672435154810851,
+            "etaH": 1.079558158476437,
+            "etaD": 0.7178406927116625,
+            "tau_c": 0.1190766427354342,
+            "tau_max": 0.12233132795283042,
+            "sigma": 0.2614088042788649,
+            "BHP_kW": 33014.78610729293,
+            "MCR_kW": 48346.70833583055,
+            "RPM_MCR": 128.33533705310603,
+            "motor_proximo": "ARTIFICIAL_TESTE",
+            "viol_rpm": 0.0,
+            "viol_kw": 0.0,
+            "viol_total": 0.0,
+            "motor_n_min": 1.0,
+            "motor_n_max": 1000.0,
+            "rpm_layout": 128.33533705310603,
+            "motor_p_min_kw": 0.00012833533705310603,
+            "motor_p_max_kw": 128335.33705310602,
+            "motivo_motor": "cabe",
+            "Motores": "ARTIFICIAL_TESTE",
+            "cabe_motor": true,
+            "SFOC": 165.67904751634399,
+            "FOC_t_h": 5.469858316212119,
+            "FOC_MCR_t_h": 8.010036587630895
+          }
+        ],
+        "diagnosticos": []
+      },
+      "7": {
+        "viaveis": [
+          {
+            "Z": 7,
+            "D": 8.0,
+            "Ae/Ao": 0.7,
+            "P/D": 0.85,
+            "w": 0.2568563099071078,
+            "t": 0.19773316643993316,
+            "etaR": 0.9888527366849179,
+            "Va": 9.557653569805808,
+            "rpm": 112.64516189581637,
+            "J": 0.6363557969745866,
+            "KTs": 0.15055825331830688,
+            "KQs": 0.02393349583822936,
+            "eta0": 0.6371160792477902,
+            "etaH": 1.079558158476437,
+            "etaD": 0.6801367304980053,
+            "tau_c": 0.11979458054346452,
+            "tau_max": 0.12298172948440439,
+            "sigma": 0.2629848922473574,
+            "BHP_kW": 34844.98905335335,
+            "MCR_kW": 51026.84952290354,
+            "RPM_MCR": 127.91810520583083,
+            "motor_proximo": "ARTIFICIAL_TESTE",
+            "viol_rpm": 0.0,
+            "viol_kw": 0.0,
+            "viol_total": 0.0,
+            "motor_n_min": 1.0,
+            "motor_n_max": 1000.0,
+            "rpm_layout": 127.91810520583083,
+            "motor_p_min_kw": 0.00012791810520583084,
+            "motor_p_max_kw": 127918.10520583083,
+            "motivo_motor": "cabe",
+            "Motores": "ARTIFICIAL_TESTE",
+            "cabe_motor": true,
+            "SFOC": 165.67904751634399,
+            "FOC_t_h": 5.773084597077015,
+            "FOC_MCR_t_h": 8.45407982671447
+          }
+        ],
+        "diagnosticos": []
+      }
+    },
+    "reservatorios_schema_version": 1,
+    "melhor_viavel": {
+      "Z": 4,
+      "D": 8.0,
+      "Ae/Ao": 0.7,
+      "P/D": 0.85,
+      "w": 0.2568563099071078,
+      "t": 0.19773316643993316,
+      "etaR": 0.9888527366849179,
+      "Va": 9.557653569805808,
+      "rpm": 115.95876981227279,
+      "J": 0.6181714577482252,
+      "KTs": 0.14207656745216676,
+      "KQs": 0.019818697083245785,
+      "eta0": 0.705304146119456,
+      "etaH": 1.079558158476437,
+      "etaD": 0.752929131085084,
+      "tau_c": 0.11354016996623682,
+      "tau_max": 0.11717985587357319,
+      "sigma": 0.24925459256050153,
+      "BHP_kW": 31476.211970749755,
+      "MCR_kW": 46093.62710153857,
+      "RPM_MCR": 131.6809871524179,
+      "motor_proximo": "ARTIFICIAL_TESTE",
+      "viol_rpm": 0.0,
+      "viol_kw": 0.0,
+      "viol_total": 0.0,
+      "motor_n_min": 1.0,
+      "motor_n_max": 1000.0,
+      "rpm_layout": 131.6809871524179,
+      "motor_p_min_kw": 0.0001316809871524179,
+      "motor_p_max_kw": 131680.98715241792,
+      "motivo_motor": "cabe",
+      "Motores": "ARTIFICIAL_TESTE",
+      "cabe_motor": true,
+      "SFOC": 165.67904751634399,
+      "FOC_t_h": 5.214948818736364,
+      "FOC_MCR_t_h": 7.636748234756451
+    },
+    "melhor_diagnostico": null
+  },
+  "ajustes": [],
+  "por_z": {
+    "2": {
+      "admissivel": false,
+      "motivo": "interseção AE/AO vazia",
+      "melhor_viavel": null,
+      "melhor_diagnostico": null
+    },
+    "3": {
+      "admissivel": true,
+      "motivo": null,
+      "melhor_viavel": {
+        "Z": 3,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 118.74021215781359,
+        "J": 0.6036910366832839,
+        "KTs": 0.13549835216048287,
+        "KQs": 0.018679142709938343,
+        "eta0": 0.6969665462057262,
+        "etaH": 1.079558158476437,
+        "etaD": 0.7440285427461116,
+        "tau_c": 0.10865160042414262,
+        "tau_max": 0.11241794595461091,
+        "sigma": 0.23852272198306002,
+        "BHP_kW": 31852.75237091754,
+        "MCR_kW": 46645.031216180025,
+        "RPM_MCR": 134.8395500999319,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 134.8395500999319,
+        "motor_p_min_kw": 0.0001348395500999319,
+        "motor_p_max_kw": 134839.5500999319,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.277333673587586,
+        "FOC_MCR_t_h": 7.728104343266839
+      },
+      "melhor_diagnostico": null
+    },
+    "4": {
+      "admissivel": true,
+      "motivo": null,
+      "melhor_viavel": {
+        "Z": 4,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 115.95876981227279,
+        "J": 0.6181714577482252,
+        "KTs": 0.14207656745216676,
+        "KQs": 0.019818697083245785,
+        "eta0": 0.705304146119456,
+        "etaH": 1.079558158476437,
+        "etaD": 0.752929131085084,
+        "tau_c": 0.11354016996623682,
+        "tau_max": 0.11717985587357319,
+        "sigma": 0.24925459256050153,
+        "BHP_kW": 31476.211970749755,
+        "MCR_kW": 46093.62710153857,
+        "RPM_MCR": 131.6809871524179,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 131.6809871524179,
+        "motor_p_min_kw": 0.0001316809871524179,
+        "motor_p_max_kw": 131680.98715241792,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.214948818736364,
+        "FOC_MCR_t_h": 7.636748234756451
+      },
+      "melhor_diagnostico": null
+    },
+    "5": {
+      "admissivel": true,
+      "motivo": null,
+      "melhor_viavel": {
+        "Z": 5,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 114.08542996698066,
+        "J": 0.6283221424005707,
+        "KTs": 0.1467808126170791,
+        "KQs": 0.021083885895071708,
+        "eta0": 0.6961793336808888,
+        "etaH": 1.079558158476437,
+        "etaD": 0.7431881744517153,
+        "tau_c": 0.11701582659665563,
+        "tau_max": 0.12044235648098295,
+        "sigma": 0.256884697197062,
+        "BHP_kW": 31888.77022494425,
+        "MCR_kW": 46697.77560403863,
+        "RPM_MCR": 129.55365137178325,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 129.55365137178325,
+        "motor_p_min_kw": 0.00012955365137178325,
+        "motor_p_max_kw": 129553.65137178324,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.283301077336313,
+        "FOC_MCR_t_h": 7.736842983209085
+      },
+      "melhor_diagnostico": null
+    },
+    "6": {
+      "admissivel": true,
+      "motivo": null,
+      "melhor_viavel": {
+        "Z": 6,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 113.01257782109745,
+        "J": 0.6342869365126695,
+        "KTs": 0.14958088284371232,
+        "KQs": 0.022455957647521535,
+        "eta0": 0.672435154810851,
+        "etaH": 1.079558158476437,
+        "etaD": 0.7178406927116625,
+        "tau_c": 0.1190766427354342,
+        "tau_max": 0.12233132795283042,
+        "sigma": 0.2614088042788649,
+        "BHP_kW": 33014.78610729293,
+        "MCR_kW": 48346.70833583055,
+        "RPM_MCR": 128.33533705310603,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 128.33533705310603,
+        "motor_p_min_kw": 0.00012833533705310603,
+        "motor_p_max_kw": 128335.33705310602,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.469858316212119,
+        "FOC_MCR_t_h": 8.010036587630895
+      },
+      "melhor_diagnostico": null
+    },
+    "7": {
+      "admissivel": true,
+      "motivo": null,
+      "melhor_viavel": {
+        "Z": 7,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 112.64516189581637,
+        "J": 0.6363557969745866,
+        "KTs": 0.15055825331830688,
+        "KQs": 0.02393349583822936,
+        "eta0": 0.6371160792477902,
+        "etaH": 1.079558158476437,
+        "etaD": 0.6801367304980053,
+        "tau_c": 0.11979458054346452,
+        "tau_max": 0.12298172948440439,
+        "sigma": 0.2629848922473574,
+        "BHP_kW": 34844.98905335335,
+        "MCR_kW": 51026.84952290354,
+        "RPM_MCR": 127.91810520583083,
+        "motor_proximo": "ARTIFICIAL_TESTE",
+        "viol_rpm": 0.0,
+        "viol_kw": 0.0,
+        "viol_total": 0.0,
+        "motor_n_min": 1.0,
+        "motor_n_max": 1000.0,
+        "rpm_layout": 127.91810520583083,
+        "motor_p_min_kw": 0.00012791810520583084,
+        "motor_p_max_kw": 127918.10520583083,
+        "motivo_motor": "cabe",
+        "Motores": "ARTIFICIAL_TESTE",
+        "cabe_motor": true,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.773084597077015,
+        "FOC_MCR_t_h": 8.45407982671447
+      },
+      "melhor_diagnostico": null
+    }
+  },
+  "objetivo": "FOC_t_h",
+  "modo": "auto_foc_rapido",
+  "config_hash": "11cac21b351c9ecc81b1e0a5b3f285418d5bf61898a92d81b4ca1505b25b9ff4",
+  "fontes_sha256": {
+    "projects/propulsao.py": {
+      "bytes_sha256": "4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4",
+      "lf_sha256": "4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4"
+    },
+    "projects/propulsao_busca.py": {
+      "bytes_sha256": "cf1524c190096b6d9560db351fea5146e26b421f8cb44b0162a5ddca29735db9",
+      "lf_sha256": "cf1524c190096b6d9560db351fea5146e26b421f8cb44b0162a5ddca29735db9"
+    },
+    "projects/propulsao_auditoria.py": {
+      "bytes_sha256": "889e7dc79b861a55b9e023c46ba178f7fde5591d2301e0781f0c7dbd8d394f98",
+      "lf_sha256": "889e7dc79b861a55b9e023c46ba178f7fde5591d2301e0781f0c7dbd8d394f98"
+    },
+    "projects/motores.csv": {
+      "bytes_sha256": "1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e",
+      "lf_sha256": "0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8"
+    },
+    "projects/propulsao_auto.py": {
+      "bytes_sha256": "b5260e5c794dc04f344e7c34c51c176815b00300ce1951e8c6f3321db062e50b",
+      "lf_sha256": "b5260e5c794dc04f344e7c34c51c176815b00300ce1951e8c6f3321db062e50b"
+    },
+    "projects/propulsao_auto_nucleo.py": {
+      "bytes_sha256": "14a680da884904066e8d66609f1621f15def94959d104b5ae00d8ffa0adb5159",
+      "lf_sha256": "14a680da884904066e8d66609f1621f15def94959d104b5ae00d8ffa0adb5159"
+    },
+    "naval.js": {
+      "bytes_sha256": "33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880",
+      "lf_sha256": "33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880"
+    },
+    "naval-pdf.js": {
+      "bytes_sha256": "08fb595af70c69f6e602f05e7262178505b3c6d1538141d1ce84c536cc3baca8",
+      "lf_sha256": "08fb595af70c69f6e602f05e7262178505b3c6d1538141d1ce84c536cc3baca8"
+    },
+    "naval-backtest.js": {
+      "bytes_sha256": "330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612",
+      "lf_sha256": "330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612"
+    },
+    "naval-backtest-worker.js": {
+      "bytes_sha256": "0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e",
+      "lf_sha256": "0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e"
+    },
+    "naval.html": {
+      "bytes_sha256": "bea6b0c2e7dbfb155377e7894bd64b701b4a929a5efba884ad0341c456add855",
+      "lf_sha256": "bea6b0c2e7dbfb155377e7894bd64b701b4a929a5efba884ad0341c456add855"
+    },
+    "naval.css": {
+      "bytes_sha256": "5252c2d033732c3612f7c1638aea0cde3170c4df3a2052d8195b7f9bb4ad574c",
+      "lf_sha256": "5252c2d033732c3612f7c1638aea0cde3170c4df3a2052d8195b7f9bb4ad574c"
+    }
+  },
+  "versoes": {
+    "api": 4,
+    "sprint": 1
+  },
+  "catalogo_escopo": "todo catálogo da configuração",
+  "catalogo": [
+    {
+      "modelo": "ARTIFICIAL_TESTE",
+      "n_min": 1,
+      "n_max": 1000,
+      "p_max_kw": 1000000.0,
+      "p_min_kw": 0.001
+    }
+  ],
+  "alteracoes_modo": {
+    "objetivo_original": "bhp",
+    "objetivo_efetivo": "foc",
+    "pas_originais": [
+      4
+    ],
+    "pas_efetivas": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "modo_motor_original": "estrito",
+    "modo_motor_efetivo": "estrito"
+  },
+  "sfoc_origem": "Modelo genérico configurado; não representa economia específica de fabricante.",
+  "cobertura": {
+    "tipo": "malha_ampla_rapido",
+    "cobertura_minima_concluida": true,
+    "global_discreta_concluida": false,
+    "pontos_previstos_ampla": 5,
+    "avaliacoes_totais": 5,
+    "avaliacoes_unicas": null,
+    "cache_hits": null
+  }
+}
