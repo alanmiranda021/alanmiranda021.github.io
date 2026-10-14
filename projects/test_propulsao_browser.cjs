@@ -52,6 +52,14 @@ async function main(){
       await page.locator(`[data-backtest-download=${key}]`).click();
       assert.equal((await pending).suggestedFilename(),name);
     }
+    assert.equal(await page.locator('#backtestBladeSummary tbody tr').count(),6);
+    for(const [selector,name] of [['#exportPdf','curvas_helice_simulacao.pdf'],['#backtestSelectedPdf','curvas_helice_backtest.pdf'],['#backtestComparisonPdf','comparativo_por_pas.pdf']]){
+      const pending=page.waitForEvent('download');await page.locator(selector).click();
+      const download=await pending;assert.equal(download.suggestedFilename(),name);
+      const target=require('node:path').join(require('node:os').tmpdir(),name);
+      await download.saveAs(target);
+      assert.equal(require('node:fs').readFileSync(target).subarray(0,8).toString(),'%PDF-1.7');
+    }
     await page.locator('#resetButton').click();
     assert.equal(await page.locator('#simulationBacktest').isVisible(),false);
     assert.equal(await page.locator('#missionModel').textContent(),'R ∝ V²');
@@ -99,6 +107,15 @@ async function main(){
     assert.equal(generalTransfer.motor,null);
     assert.equal(generalTransfer.blades,generalTransfer.row.Z);
     assert.equal(generalTransfer.rpm,generalTransfer.row.rpm);
+    await page.evaluate(()=>{const el=document.getElementById('backtestConfig'),cfg=JSON.parse(el.value);cfg.helice.ae_ao={min:.9,max:1.05,passo:.05};cfg.helice.p_d={min:1.2,max:1.4,passo:.05};cfg.backtest.top=1;el.value=JSON.stringify(cfg);});
+    await page.selectOption('#backtestProfile','rapido');await page.locator('#backtestStart').click();
+    await page.waitForFunction(()=>!document.getElementById('backtestStart').disabled,{},{timeout:120000});
+    await page.locator('#backtestApply').click();
+    const alternative=await page.evaluate(()=>{const r=window.lastImportedBacktest;return r.bladeSummary.find(category=>category.ranking.length&&category.Z!==r.ranking[0].Z);});
+    assert.ok(alternative,'Independent ranking lost a blade category absent from global top 1');
+    await page.selectOption('#backtestBladeFilter',String(alternative.Z));await page.locator('#backtestApply').click();
+    assert.equal(await page.locator('select[name=blades]').inputValue(),String(alternative.Z));
+    assert.equal(Number(await page.locator('input[name=rpm]').inputValue()),alternative.melhor.rpm);
     await page.setViewportSize({width:390,height:844});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
     assert.deepEqual(errors,[]);

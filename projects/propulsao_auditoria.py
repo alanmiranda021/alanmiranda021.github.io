@@ -29,17 +29,30 @@ class AuditoriaFunil:
     As contagens são chamadas avaliadas nesta rodada, não geometrias únicas.
     Valores inexistentes em etapas anteriores ficam vazios, nunca zero.
     """
-    def __init__(self, caminho, rodada=1):
+    def __init__(self, caminho, rodada=1, config=None):
         self.handle = open(caminho, 'w', encoding='utf-8', newline='')
         self.writer = csv.DictWriter(self.handle, fieldnames=COLUNAS)
         self.writer.writeheader()
         self.rodada = rodada
         self.contagens = Counter()
         self.inicio = time.perf_counter()
+        self.config = config
+        self.por_z = {}
 
     def registrar(self, frame, status):
         self.contagens[status] += len(frame)
         motor = status in ('VIAVEL', 'RPM_MOTOR', 'POTENCIA_MOTOR', 'RPM_E_POTENCIA_MOTOR')
+        for z, group in frame.groupby('Z', sort=True):
+            category = self.por_z.setdefault(str(int(z)), dict(contagens=Counter(), ranking=[], representante=None))
+            category['contagens'][status] += len(group)
+            if status != 'VIAVEL' and category['representante'] is None and len(group):
+                category['representante'] = {key: seguro(value) for key,value in group.iloc[0].to_dict().items()}
+                category['representante']['status_rejeicao'] = status
+            if motor and self.config:
+                objective = {'bhp':'BHP_kW','foc':'FOC_t_h'}[self.config['backtest']['objetivo']]
+                candidates = category['ranking'] + [{key: seguro(value) for key,value in row.items()} for row in group.to_dict(orient='records')]
+                candidates.sort(key=lambda row:(row['viol_total'],row[objective],row['Z'],row['D'],row['Ae/Ao'],row['P/D']))
+                category['ranking'] = candidates[:self.config['backtest']['top']]
         for row in frame.to_dict(orient='records'):
             result = {key: seguro(row.get(key)) for key in COLUNAS}
             result.update(rodada=self.rodada, status=status, analisado_motor=motor,
@@ -59,6 +72,43 @@ class AuditoriaFunil:
                     funil_rodada=funil, contexto=contexto or {},
                     objetivo=cfg['backtest']['objetivo'], melhor=melhor,
                     nota='Contagens da rodada; avaliações podem repetir geometrias entre rodadas. Sem cache ou contagem de únicos nesta entrega.')
+
+    def resumo_pas(self, cfg, anteriores=None):
+        """Rankings independentes e contagens reais; nunca modifica a busca."""
+        import propulsao as p
+        previous = {str(row['Z']):row for row in (anteriores or [])}
+        objective = {'bhp':'BHP_kW','foc':'FOC_t_h'}[cfg['backtest']['objetivo']]
+        result = []
+        for z in range(2,8):
+            key = str(z)
+            category = self.por_z.get(key,{})
+            counts = dict(category.get('contagens',{}))
+            old = previous.get(key,{})
+            accumulated = Counter(old.get('contagens_acumuladas',{})) + Counter(counts)
+            candidates = old.get('ranking',[]) + category.get('ranking',[])
+            candidates.sort(key=lambda row:(row['viol_total'],row[objective],row['Z'],row['D'],row['Ae/Ao'],row['P/D']))
+            unique = {}
+            for candidate in candidates:
+                unique.setdefault(tuple(candidate[field] for field in ('Z','D','Ae/Ao','P/D')),candidate)
+            ranking = list(unique.values())[:cfg['backtest']['top']]
+            lo,hi=p.AE_AO_POR_Z[z]
+            lower,upper=max(lo,cfg['helice']['ae_ao']['min']),min(hi,cfg['helice']['ae_ao']['max'])
+            generated=sum(counts.values())
+            motors=sum(counts.get(status,0) for status in ('VIAVEL','RPM_MOTOR','POTENCIA_MOTOR','RPM_E_POTENCIA_MOTOR'))
+            status=('EXCLUIDA_CONFIG' if z not in cfg['helice']['z'] else
+                    'EXCLUIDA_DOMINIO_AE_AO' if lower>upper else
+                    'NAO_AVALIADA_NESTA_RODADA' if not generated else
+                    'COM_MOTOR_COMPATIVEL' if counts.get('VIAVEL',0) else
+                    'SEM_MOTOR_COMPATIVEL' if motors else 'SEM_SOLUCAO_HIDRODINAMICA')
+            result.append(dict(Z=z,status=status,area_min=lower,area_max=upper,
+                geradas_rodada=generated,avaliadas_rodada=generated,
+                rejeitadas_antes_motor=generated-motors,analisadas_motor=motors,
+                aprovadas_motor=counts.get('VIAVEL',0),rejeitadas_motor=motors-counts.get('VIAVEL',0),
+                contagens_rodada=counts,contagens_acumuladas=dict(accumulated),
+                avaliacoes_acumuladas=sum(accumulated.values()),ranking=ranking,
+                melhor=ranking[0] if ranking else None,
+                representante_rejeitado=category.get('representante') or old.get('representante_rejeitado')))
+        return result
 
 
 def diagnosticar_viabilidade(candidato, config):
@@ -97,7 +147,7 @@ def hashes_fontes(extra=None):
     root = Path(__file__).resolve().parent.parent
     names = ['projects/propulsao.py', 'projects/propulsao_busca.py',
              'projects/propulsao_auditoria.py', 'projects/motores.csv',
-             'naval.js', 'naval-backtest.js', 'naval-backtest-worker.js', 'naval.html', 'naval.css']
+             'naval.js', 'naval-pdf.js', 'naval-backtest.js', 'naval-backtest-worker.js', 'naval.html', 'naval.css']
     result = {}
     for name in names:
         path = root/name

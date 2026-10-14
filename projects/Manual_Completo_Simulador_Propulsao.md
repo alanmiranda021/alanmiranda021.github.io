@@ -1,6 +1,6 @@
 # Manual completo do simulador de propulsão naval
 
-**Edição:** 13 de outubro de 2026, atualização P0. **Contrato do navegador:** `WEB_API_VERSION = 4`. **Versão dos recursos de busca:** `exploration-4-p0`.
+**Edição:** 13 de outubro de 2026, atualização de comparação por pás e PDF. **Contrato do navegador:** `WEB_API_VERSION = 4`. **Versão dos recursos de busca:** `exploration-4-pas-pdf`.
 
 Este documento reúne manual de operação, referência matemática, descrição da implementação, contratos de dados, procedimentos de reprodução e transcrição integral dos arquivos do sistema. A descrição foi conferida contra a implementação local. Os anexos são cópias dos arquivos, sem omissão de coeficientes, funções ou testes; apenas as terminações de linha são normalizadas para LF.
 
@@ -948,6 +948,18 @@ Os registros incorporam hashes brutos e LF de Python, catálogo e recursos da in
 
 Foram aprovados 33 testes Python, além dos testes reais de Worker/Pyodide e navegador/Playwright. A referência detalhada permanece com zero motores aprovados e RPM MCR 90,27403028244929 frente ao máximo de 84 rpm. O [relatório da entrega P0](Relatorio_Entrega_P0.md) contém a tabela antes/depois, comandos, hashes e pendências. Os arquivos novos, baselines e testes também estão transcritos integralmente abaixo.
 
+## 28.2. Comparação por pás e PDF científico
+
+O painel agora apresenta Z=2 a 7 mesmo quando uma categoria é excluída. Os dados reais do callback geram contagens por Z e etapa. As situações diferenciam exclusão pela configuração, exclusão pela interseção de AE/AO, categoria não avaliada no bloco atual, ausência de solução hidrodinâmica, ausência de motor e aprovação nos filtros legados. Contagens da rodada e contagens acumuladas são separadas; as acumuladas podem repetir geometrias.
+
+O observador mantém rankings independentes de até `backtest.top` candidatos por Z, além do ranking global original. Um candidato ausente do corte global pode ser escolhido no filtro por pás, carregado na simulação e exportado. A calibração conserva o algoritmo e seu estado original; o Worker recebe `bladeState` separado e retorna `bladeSummary`/`propellerCurves`. A conclusão e a parada automática continuam carregando o melhor global. Uma categoria sem candidato hidrodinâmico mostra diagnóstico, sem fabricar curva ou solução.
+
+`naval-pdf.js` gera PDFs A4 com gráficos vetoriais K_T, 10 K_Q e eta_0 em função de J, marcador operacional, detalhes, configuração e anexo UTF-8 `dados_propulsao.json` com todos os valores numéricos. Há exportação da configuração atual da simulação, da hélice selecionada no backtest e do comparativo com o melhor preservado de cada Z. O PDF usa fonte padrão com transliteração de textos; o anexo mantém strings e precisão originais.
+
+Os PDFs de backtest chamam a Série B Python existente, com RPM/D fixos e Va=J·n·D, recalculando Reynolds em cada amostra. Os PDFs da simulação seguem o CSV JavaScript, fixando Reynolds/rugosidade do ponto. São métodos explicitados nos relatórios: não houve unificação das correções ou modificação de equações. As curvas de coeficientes não representam validação do envelope/cavitação em cada velocidade. Comparar melhores geometrias por Z também não isola apenas o efeito do número de pás, pois D, área, passo e RPM podem diferir.
+
+Foram aprovados 36 testes Python, testes reais de Worker/Pyodide e Edge/Playwright, incluindo escolha de uma categoria ausente do top global 1 e transferência exata para a simulação. Os PDFs foram lidos por pypdf, verificando anexo, operadores vetoriais e igualdade de KT/KQ no J operacional. O [relatório desta atualização](Relatorio_Comparacao_Pas_PDF.md) documenta uso, contratos, situações, métodos e comandos. O pypdf é opcional para validar relatórios; não é dependência do navegador ou do cálculo.
+
 <!-- ANEXOS_GERADOS_PROPULSAO -->
 
 ## 29. Manifesto das transcrições integrais
@@ -956,12 +968,12 @@ Os hashes brutos identificam os bytes lidos. Os hashes LF identificam o texto in
 
 | Arquivo | Bytes originais | Linhas | LF final | SHA-256 bruto | SHA-256 LF |
 |---|---:|---:|---|---|---|
-| `naval.html` | 27996 | 173 | sim | `496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663` | `496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663` |
-| `naval.css` | 17008 | 33 | sim | `4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b` | `4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b` |
-| `naval.js` | 32267 | 313 | sim | `1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062` | `1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062` |
-| `naval-backtest.js` | 11476 | 76 | sim | `914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb` | `914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb` |
-| `naval-backtest-worker.js` | 8067 | 103 | sim | `70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e` | `70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e` |
-| `projects/propulsao.py` | 57639 | 1004 | sim | `f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032` | `f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032` |
+| `naval.html` | 29215 | 181 | sim | `bea6b0c2e7dbfb155377e7894bd64b701b4a929a5efba884ad0341c456add855` | `bea6b0c2e7dbfb155377e7894bd64b701b4a929a5efba884ad0341c456add855` |
+| `naval.css` | 17237 | 34 | sim | `5252c2d033732c3612f7c1638aea0cde3170c4df3a2052d8195b7f9bb4ad574c` | `5252c2d033732c3612f7c1638aea0cde3170c4df3a2052d8195b7f9bb4ad574c` |
+| `naval.js` | 33656 | 321 | sim | `33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880` | `33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880` |
+| `naval-backtest.js` | 15294 | 93 | sim | `330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612` | `330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612` |
+| `naval-backtest-worker.js` | 9575 | 119 | sim | `0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e` | `0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e` |
+| `projects/propulsao.py` | 57753 | 1006 | sim | `4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4` | `4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4` |
 | `projects/propulsao_busca.py` | 12820 | 232 | sim | `c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c` | `c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c` |
 | `projects/motores.csv` | 8297 | 57 | sim | `1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e` | `0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8` |
 | `projects/requirements-propulsao.txt` | 48 | 4 | sim | `6aabe26fb66dc06fccf7c796f6ab35655cbbeb96ad5d03fd682d45240bb28e7a` | `6aabe26fb66dc06fccf7c796f6ab35655cbbeb96ad5d03fd682d45240bb28e7a` |
@@ -973,18 +985,22 @@ Os hashes brutos identificam os bytes lidos. Os hashes LF identificam o texto in
 | `projects/test_propulsao_busca.py` | 2123 | 54 | sim | `76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26` | `76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26` |
 | `projects/test_propulsao_diagnostico.py` | 6493 | 126 | sim | `01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca` | `01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca` |
 | `projects/test_propulsao_calibracao.py` | 4432 | 86 | sim | `7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96` | `7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96` |
-| `projects/test_propulsao_worker.cjs` | 7177 | 116 | sim | `5bbc2b27f769b9a44e9a1e64392d7518f8e03695333e895ad1f707c4c0ea60dc` | `5bbc2b27f769b9a44e9a1e64392d7518f8e03695333e895ad1f707c4c0ea60dc` |
-| `projects/test_propulsao_browser.cjs` | 7905 | 108 | sim | `9a2b562d69269e9ace2eb79842db2db858c26b5ea1131740430945f19dbad854` | `9a2b562d69269e9ace2eb79842db2db858c26b5ea1131740430945f19dbad854` |
-| `projects/gerar_manual_propulsao.py` | 7386 | 131 | sim | `c8f74840f9f7ce9c2c958c43b6ed743bf741432b484e5a53de628e74b3640528` | `c8f74840f9f7ce9c2c958c43b6ed743bf741432b484e5a53de628e74b3640528` |
-| `projects/propulsao_auditoria.py` | 6385 | 122 | sim | `1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41` | `1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41` |
-| `projects/test_propulsao_auditoria.py` | 7371 | 141 | sim | `16e92639f954e5ecd41f3817644fee2bf51f116a58f46eb8d206c2111820e793` | `16e92639f954e5ecd41f3817644fee2bf51f116a58f46eb8d206c2111820e793` |
+| `projects/test_propulsao_worker.cjs` | 8244 | 130 | sim | `75f9bcb567fd6d96160e3ff17224e7337f49994bd2c6ad37b0d35381ea554bac` | `75f9bcb567fd6d96160e3ff17224e7337f49994bd2c6ad37b0d35381ea554bac` |
+| `projects/test_propulsao_browser.cjs` | 9666 | 125 | sim | `9dfdbf858a236d09f5140c6ea770bfe9c8e9ed4e705df9f09b936500e35d80df` | `9dfdbf858a236d09f5140c6ea770bfe9c8e9ed4e705df9f09b936500e35d80df` |
+| `projects/gerar_manual_propulsao.py` | 7525 | 133 | sim | `82104779dc43e3f0149c6689438883baff42e227408eda14d4004592feb8cfc8` | `82104779dc43e3f0149c6689438883baff42e227408eda14d4004592feb8cfc8` |
+| `projects/propulsao_auditoria.py` | 9858 | 172 | sim | `e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b` | `e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b` |
+| `projects/test_propulsao_auditoria.py` | 7439 | 142 | sim | `4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9` | `4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9` |
 | `projects/registrar_baseline_p0.py` | 2359 | 52 | sim | `92cb1c90a741aa9f97918860e64dac2053073ea31aacb3e5291d6b5a5439363f` | `92cb1c90a741aa9f97918860e64dac2053073ea31aacb3e5291d6b5a5439363f` |
 | `projects/comparar_baseline_p0.py` | 9439 | 73 | sim | `fcfc9e356d6cc420817fbd5abb76a14bdfcb50fa97e43dd4f0f480812638d7f5` | `fcfc9e356d6cc420817fbd5abb76a14bdfcb50fa97e43dd4f0f480812638d7f5` |
 | `projects/baselines/p0_antes.json` | 12622 | 480 | não | `7964877364f188a710b0eae7e79341f853d62fb0163dbf59e88e5690c9a6cc8d` | `969626310b3232e2cb267efdd1b1eaf999e293706c5916b3c300680db9d73b05` |
 | `projects/baselines/p0_depois.json` | 12622 | 480 | não | `4282514cffc92de653761745538e46c651834b5d8aa2a811e470317b43643413` | `785fa42ebce01b95f898c155b384a50ff98b59a09b320880c7eaa16c569c63fe` |
 | `projects/baselines/p0_auditoria_referencia.json` | 4135 | 124 | não | `12e006c28454b7633f3b2bccb55563dfb8dab431e71b3daef3cff9b3a25bde20` | `a781646265cd5b65af1a0564802b60edf88f168e9c376ceed41fa201b7a1f9e1` |
 | `projects/Relatorio_Entrega_P0.md` | 9000 | 118 | sim | `1b888a88a2b8ad07705f02b39e3cde24b465bb899828bc757f0720039dee64c6` | `1b888a88a2b8ad07705f02b39e3cde24b465bb899828bc757f0720039dee64c6` |
-| `publicado/naval.html` | 28077 | 174 | sim | `d2fc29220778f0bd88bc3298f3201dad3d4f9c8ef169ecb3130ff80e6d2f0473` | `d2fc29220778f0bd88bc3298f3201dad3d4f9c8ef169ecb3130ff80e6d2f0473` |
+| `naval-pdf.js` | 7944 | 107 | sim | `08fb595af70c69f6e602f05e7262178505b3c6d1538141d1ce84c536cc3baca8` | `08fb595af70c69f6e602f05e7262178505b3c6d1538141d1ce84c536cc3baca8` |
+| `projects/test_propulsao_pas.py` | 3057 | 60 | sim | `c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a` | `c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a` |
+| `projects/validar_pdf_propulsao.py` | 1822 | 42 | sim | `f116778d0debe7e97f8575afab4e7c2a4646ccaa49579bbfca29334f84bedec5` | `f116778d0debe7e97f8575afab4e7c2a4646ccaa49579bbfca29334f84bedec5` |
+| `projects/Relatorio_Comparacao_Pas_PDF.md` | 7784 | 76 | sim | `a7b867b825ac9b2adccf39e470d1928e9b8223e248e237023ef82b76858db8e9` | `a7b867b825ac9b2adccf39e470d1928e9b8223e248e237023ef82b76858db8e9` |
+| `publicado/naval.html` | 29296 | 182 | sim | `409f69afe0dee13cac438880044756d9876d85e6863da2f17af8eb63bf2d86a7` | `409f69afe0dee13cac438880044756d9876d85e6863da2f17af8eb63bf2d86a7` |
 | `publicado/i18n.css` | 1979 | 18 | sim | `ac0d20d1de3b7b4392ee23f6969a300b28f8a5796911da221b77d92c374fc61f` | `eabff46eb30329533a9a9cd4c4f9f4a5531e0d6e6ae783026b46c470d4b4c213` |
 | `publicado/i18n.js` | 7298 | 115 | sim | `a2573808fd22645a81111312f003293a2fa988352130e62d391419acdf77bb29` | `4681989337471f729c930e57a9db7a47f5147657503d437d507df8cfae2dd0ed` |
 
@@ -1105,11 +1121,15 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 
 | Linha | Assinatura |
 |---:|---|
-| 19 | `busy(value)` |
-| 21 | `table(rows)` |
-| 31 | `getWorker()` |
-| 68 | `configuration()` |
-| 71 | `loadResult()` |
+| 21 | `selectedRow()` |
+| 22 | `renderRanking()` |
+| 32 | `curveEntry(row)` |
+| 33 | `reportBase()` |
+| 37 | `busy(value)` |
+| 39 | `table(rows)` |
+| 49 | `getWorker()` |
+| 85 | `configuration()` |
+| 88 | `loadResult(row=selectedRow()` |
 
 ### `naval-backtest-worker.js`
 
@@ -1152,8 +1172,8 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 | 804 | `_svg_linha(x, ys, titulo, unid)` |
 | 822 | `relatorio_html(cfg, topo, funil, curva, caminho, aviso='', registro=None)` |
 | 872 | `rodar_tudo(cfg, perfil='personalizado')` |
-| 930 | `validar(cfg)` |
-| 953 | `main(argv=None)` |
+| 932 | `validar(cfg)` |
+| 955 | `main(argv=None)` |
 
 ### `projects/propulsao_busca.py`
 
@@ -1241,24 +1261,25 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 
 | Linha | Assinatura |
 |---:|---|
-| 29 | `digest(value)` |
-| 33 | `normalized(path)` |
-| 37 | `cell(value)` |
-| 41 | `config_leaves(node, prefix='CONFIG')` |
-| 49 | `generate(published=None)` |
-| 107 | `verify(compare_sources=False)` |
+| 31 | `digest(value)` |
+| 35 | `normalized(path)` |
+| 39 | `cell(value)` |
+| 43 | `config_leaves(node, prefix='CONFIG')` |
+| 51 | `generate(published=None)` |
+| 109 | `verify(compare_sources=False)` |
 
 ### `projects/propulsao_auditoria.py`
 
 | Linha | Assinatura |
 |---:|---|
 | 18 | `seguro(value)` |
-| 32 | `__init__(self, caminho, rodada=1)` |
-| 40 | `registrar(self, frame, status)` |
-| 49 | `finalizar(self, cfg, funil, melhor=None, contexto=None)` |
-| 64 | `diagnosticar_viabilidade(candidato, config)` |
-| 96 | `hashes_fontes(extra=None)` |
-| 112 | `historico_csv(historico)` |
+| 32 | `__init__(self, caminho, rodada=1, config=None)` |
+| 42 | `registrar(self, frame, status)` |
+| 62 | `finalizar(self, cfg, funil, melhor=None, contexto=None)` |
+| 76 | `resumo_pas(self, cfg, anteriores=None)` |
+| 114 | `diagnosticar_viabilidade(candidato, config)` |
+| 146 | `hashes_fontes(extra=None)` |
+| 162 | `historico_csv(historico)` |
 
 ### `projects/test_propulsao_auditoria.py`
 
@@ -1273,8 +1294,8 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 | 70 | `test_compatible_and_only_power_incompatible_catalog(self)` |
 | 80 | `test_batched_trace_conservation_and_calibration_unchanged(self)` |
 | 98 | `test_frozen_reference_point_and_hashes(self)` |
-| 111 | `test_reference_geometry_stays_incompatible_by_rpm(self)` |
-| 129 | `test_limit_input_and_last_sample_are_distinct(self)` |
+| 112 | `test_reference_geometry_stays_incompatible_by_rpm(self)` |
+| 130 | `test_limit_input_and_last_sample_are_distinct(self)` |
 
 ### `projects/registrar_baseline_p0.py`
 
@@ -1287,6 +1308,32 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 | Linha | Assinatura |
 |---:|---|
 | 10 | `comparar()` |
+
+### `naval-pdf.js`
+
+| Linha | Assinatura |
+|---:|---|
+| 7 | `text(value,x,y,size=10)` |
+| 8 | `graph(samples,field,label,point,y)` |
+| 32 | `pagesFor(report)` |
+| 80 | `build(report)` |
+| 102 | `download(report,name)` |
+
+### `projects/test_propulsao_pas.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 12 | `config(self)` |
+| 19 | `execute(self, cfg, previous=None)` |
+| 26 | `test_real_counts_and_independent_rankings_even_when_global_excludes_z(self)` |
+| 42 | `test_missing_config_and_no_solution_remain_visible(self)` |
+| 52 | `test_preserved_rankings_and_accumulated_calls_do_not_change_round_counts(self)` |
+
+### `projects/validar_pdf_propulsao.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 8 | `validar(path)` |
 
 ### `publicado/i18n.js`
 
@@ -1308,7 +1355,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
 
 ### 32.1. `naval.html`
 
-<!-- SOURCE naval.html SHA256_LF 496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663 FINAL_LF 1 -->
+<!-- SOURCE naval.html SHA256_LF bea6b0c2e7dbfb155377e7894bd64b701b4a929a5efba884ad0341c456add855 FINAL_LF 1 -->
 ````html
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -1319,7 +1366,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
   <meta name="description" content="Simulador didático da hélice Wageningen Série B com cálculo aberto e validação numérica.">
   <title>Simulador de propulsão — Alan Miranda</title>
         <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="minimal.css">
-<link rel="stylesheet" href="naval.css?v=exploration-4">
+<link rel="stylesheet" href="naval.css?v=exploration-4-pas-pdf">
 <script src="minimal.js" defer></script>
 </head>
 <body>
@@ -1429,7 +1476,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
           <div class="mission-row"><span>Velocidade de referência</span><b id="missionSpeed">12 kn</b></div>
           <div class="mission-row"><span>Curva de resistência</span><b id="missionModel">R ∝ V²</b></div>
           <button class="text-button" id="equationButton" type="button">COMO CHEGAMOS AOS RESULTADOS? <span>↗</span></button>
-          <div class="mission-actions"><button class="text-button" id="exportCsv" type="button">EXPORTAR CURVAS CSV ↓</button><button class="text-button" id="challengeButton" type="button" aria-pressed="false">MODO DESAFIO <span>＋</span></button></div>
+          <div class="mission-actions"><button class="text-button" id="exportCsv" type="button">EXPORTAR CURVAS CSV ↓</button><button class="text-button" id="exportPdf" type="button">EXPORTAR CURVAS PDF ↓</button><button class="text-button" id="challengeButton" type="button" aria-pressed="false">MODO DESAFIO <span>＋</span></button></div>
           <div class="challenge-result" id="challengeResult" hidden></div>
         </section>
       </aside>
@@ -1468,7 +1515,14 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
         <p>Sem motor aprovado, o ranking prioriza a menor violação total. As colunas viol_rpm e viol_kw são frações fora dos limites em relação aos valores solicitados; viol_total é o máximo das duas, conforme a planilha de análise. A potência do motor é avaliada na rotação limitada ao seu layout.</p>
         <button class="primary-button" id="backtestApply" type="button" disabled>TESTAR MELHOR HÉLICE NA SIMULAÇÃO ↑</button>
         <h3>Funil de restrições</h3><div class="backtest-table" id="backtestFunnel"></div>
-        <h3>Ranking de hélices</h3><div class="backtest-table" id="backtestRanking"></div>
+        <h3>Exploração por número de pás</h3>
+        <p>Contagens da última rodada concluída. Os rankings por pás preservam alternativas durante a execução; avaliações acumuladas podem repetir geometrias. Uma categoria excluída não foi avaliada.</p>
+        <div class="backtest-table" id="backtestBladeSummary"></div>
+        <h3>Ranking de hélices</h3>
+        <label for="backtestBladeFilter">Visualizar ranking</label><select id="backtestBladeFilter"><option value="global">Ranking global</option value="2">2 pás</option><option value="3">3 pás</option><option value="4">4 pás</option><option value="5">5 pás</option><option value="6">6 pás</option><option value="7">7 pás</option></select>
+        <label for="backtestCandidate">Hélice para carregar e exportar</label><select id="backtestCandidate"></select>
+        <div class="backtest-table" id="backtestRanking"></div>
+        <div class="action-row"><button class="text-button" id="backtestSelectedPdf">EXPORTAR CURVAS DA HÉLICE PDF ↓</button><button class="text-button" id="backtestComparisonPdf">RELATÓRIO COMPARATIVO POR PÁS PDF ↓</button></div>
         <h3>Perfil de velocidades</h3><div class="backtest-table" id="backtestCurve"></div>
         <p id="backtestDiagnostic" role="status"></p>
         <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="diagnosticCsv">DIAGNÓSTICO MOTOR CSV ↓</button><button class="text-button" data-backtest-download="rejectionCsv">RESTRIÇÕES DA RODADA CSV ↓</button><button class="text-button" data-backtest-download="historyCsv">HISTÓRICO CSV ↓</button><button class="text-button" data-backtest-download="historyJson">HISTÓRICO JSON ↓</button><button class="text-button" data-backtest-download="configJson">CONFIG + DATA JSON ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
@@ -1479,8 +1533,9 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
 
   <dialog class="equation-dialog" id="equationDialog"><form method="dialog"><button class="dialog-close" aria-label="Fechar explicação">×</button></form><span class="eyebrow">CADEIA DE CÁLCULO / CASO ATUAL</span><h2>Como chegamos a esse valor?</h2><p class="dialog-intro">Cada grandeza abaixo usa os valores atuais da simulação. Unidades em SI no cálculo.</p><ol id="equationSteps"></ol><p class="source-note">Polinômio Wageningen B-series · Correções de Reynolds para Rn &gt; 2×10⁶ · rugosidade kp = 30 µm.</p></dialog>
   <footer><a href="index.html">ALAN MIRANDA</a><span>Pesquisa · Engenharia · Sistemas</span><span class="foot-links"><a href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:alanmirandarj@gmail.com">Contato ↗</a></span></footer>
-  <script src="naval.js?v=exploration-4"></script>
-  <script src="naval-backtest.js?v=exploration-4-p0"></script>
+  <script src="naval-pdf.js?v=exploration-4-pas-pdf"></script>
+  <script src="naval.js?v=exploration-4-pas-pdf"></script>
+  <script src="naval-backtest.js?v=exploration-4-pas-pdf"></script>
 </body>
 </html>
 ````
@@ -1488,7 +1543,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
 
 ### 32.2. `naval.css`
 
-<!-- SOURCE naval.css SHA256_LF 4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b FINAL_LF 1 -->
+<!-- SOURCE naval.css SHA256_LF 5252c2d033732c3612f7c1638aea0cde3170c4df3a2052d8195b7f9bb4ad574c FINAL_LF 1 -->
 ````css
 .primary-button{scroll-margin-top:88px}
 :root{color-scheme:dark;--sea:#080a0c;--deep:#0b1318;--surface:#0d1217;--surface2:#111a21;--line:#ffffff24;--text:#f5f5f3;--muted:#a5a9ad;--cyan:#9fd4f0;--foam:#cfe6f2;--orange:#f0a26b;--lime:#61ffc4;--red:#ff7a74;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--head:Arial,Helvetica,sans-serif}
@@ -1523,12 +1578,13 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
 .inspection-grid dd { margin:6px 0 0; font-size:19px; overflow-wrap:anywhere; }
 .backtest-inspection p { line-height:1.6; }
 @media(max-width:600px) { .inspection-grid { grid-template-columns:1fr; } }
+:is(#backtestBladeFilter, #backtestCandidate){display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;margin:8px 0 18px;padding:12px;background:#080a0c;color:#e3e9ed;border:1px solid #39434a;border-radius:6px;}
 ````
 <!-- END_SOURCE naval.css -->
 
 ### 32.3. `naval.js`
 
-<!-- SOURCE naval.js SHA256_LF 1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062 FINAL_LF 1 -->
+<!-- SOURCE naval.js SHA256_LF 33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880 FINAL_LF 1 -->
 ````javascript
 (function (root, factory) {
   const engine = factory();
@@ -1837,6 +1893,14 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
     async function coefficientHash(){const bytes=new TextEncoder().encode(JSON.stringify([KT_TERMS,KQ_TERMS]));if(window.crypto&&window.crypto.subtle){const digest=await window.crypto.subtle.digest('SHA-256',bytes);return `sha256:${[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('')}`;}let hash=2166136261;for(const byte of bytes)hash=Math.imul(hash^byte,16777619);return `fnv1a32:${(hash>>>0).toString(16).padStart(8,'0')}`;}
     $('exportJson').addEventListener('click',async()=>{if(!result||result.errors.length)return;save('naval-mission-01.json','application/json',JSON.stringify({method:'series-b',model_version:'0.1.0',model_level:result.level,coefficient_hash:await coefficientHash(),coefficient_source:'Oosterveld & van Oossanen (1975), coefficients transcribed from validated spreadsheet',timestamp:new Date().toISOString(),inputs:result.input,results:{advance_velocity_ms:result.advance,rev_per_s:result.n,advance_coefficient:result.j,reynolds_075r:result.reynolds,kt:result.kt,kq:result.kq,thrust_n:result.thrust,torque_nm:result.torque,delivered_power_kw:result.power/1000,open_water_efficiency:result.eta,net_thrust_n:result.netThrust,resistance_n:result.resistance,thrust_margin_n:result.margin,j_zero_thrust:result.jZero,warnings:result.warnings}},null,2));});
     $('exportCsv').addEventListener('click',()=>{if(!result||result.errors.length)return;const rows=['J,KT,10KQ,eta0'];const count=200;for(let index=0;index<=count;index++){const j=result.jZero*index/count,c=calculateAtJ(result.input,j,result.level,result.reynolds,result.roughness);rows.push([j,c.kt,c.kq*10,c.kt>0&&c.kq>0&&c.eta<=1?c.eta:''].join(','));}save('naval-series-b-curves.csv','text/csv;charset=utf-8',rows.join('\n'));});
+    $('exportPdf')?.addEventListener('click',()=>{
+      if(!result||result.errors.length)return;
+      const curve=[];
+      for(let i=0;i<=200;i++){const j=result.jZero*i/200,c=calculateAtJ(result.input,j,result.level,result.reynolds,result.roughness);curve.push({J:j,KT:c.kt,KQ:c.kq,eta0:c.kt>0&&c.kq>0&&c.eta<=1?c.eta:null});}
+      const details=operatingDetails(result.input,result);
+      const row={Z:result.input.blades,D:result.input.diameter,'P/D':result.input.pd,'Ae/Ao':result.input.area,rpm:result.input.rpm,J:result.j,KTs:result.kt,KQs:result.kq,eta0:result.eta,BHP_kW:details?.bhp,MCR_kW:details?.mcr,FOC_t_h:details?.validConsumption?details.foc:null,motor_proximo:result.input.context?.reference.motor_proximo,cabe_motor:null};
+      window.NavalPDF.download({title:'Curvas da configuração atual da simulação',timestamp:new Date().toISOString(),config:result.input,notes:['Curvas calculadas pelo modelo JavaScript da configuração atual, com Reynolds e rugosidade do ponto fixados, como no CSV existente.','Edição manual não constitui nova aprovação do catálogo. Compatibilidade de motor não revalidada neste PDF.',...(result.warnings||[])],entries:[{title:'Hélice selecionada na simulação',row,curve,diagnostic:details,method:`Série B JavaScript, nível ${result.level}; Reynolds fixado em ${result.reynolds}.`}]},'curvas_helice_simulacao.pdf');
+    });
     let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>result&&!result.errors.length&&updateGraphs(result),150);});
     render();
   }
@@ -1848,7 +1912,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
 
 ### 32.4. `naval-backtest.js`
 
-<!-- SOURCE naval-backtest.js SHA256_LF 914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb FINAL_LF 1 -->
+<!-- SOURCE naval-backtest.js SHA256_LF 330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612 FINAL_LF 1 -->
 ````javascript
 (() => {
   const editor = document.getElementById('backtestConfig');
@@ -1867,6 +1931,24 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
   const motor=document.getElementById('calibrationMotor');
   const level=document.getElementById('calibrationLevel');
   const blades=document.getElementById('searchBlades');
+  const bladeFilter=document.getElementById('backtestBladeFilter');
+  const candidateSelect=document.getElementById('backtestCandidate');
+  let visibleRows=[];
+  const selectedRow=()=>visibleRows[Number(candidateSelect.value)]||null;
+  function renderRanking(){
+    if(!results)return;
+    visibleRows=bladeFilter.value==='global'?results.ranking:(results.bladeSummary.find(category=>category.Z===Number(bladeFilter.value))?.ranking||[]);
+    const columns=['Z','P/D','Ae/Ao','D','rpm','eta0','BHP_kW','MCR_kW','RPM_MCR','FOC_t_h','cabe_motor','motor_proximo','viol_rpm','viol_kw','viol_total','motivo_motor'];
+    document.getElementById('backtestRanking').replaceChildren(table(visibleRows.map(row=>Object.fromEntries(columns.map(key=>[key,row[key]])))));
+    candidateSelect.replaceChildren(...visibleRows.map((row,index)=>{const option=document.createElement('option');option.value=index;option.textContent=`${index+1} · Z=${row.Z} · D=${row.D} m · P/D=${row['P/D']} · AE/AO=${row['Ae/Ao']} · ${row.cabe_motor?'motor compatível':'sem motor compatível'}`;return option;}));
+    candidateSelect.disabled=!visibleRows.length;apply.disabled=!visibleRows.length;
+    document.getElementById('backtestSelectedPdf').disabled=!visibleRows.length;
+  }
+  bladeFilter.onchange=renderRanking;
+  function curveEntry(row){return results.propellerCurves.find(entry=>['Z','D','Ae/Ao','P/D'].every(key=>entry.row[key]===row[key]));}
+  function reportBase(){return {timestamp:new Date().toISOString(),config:JSON.parse(results.configJson),bladeSummary:results.bladeSummary,notes:['Resultados estimados pelo modelo existente; melhor encontrado, sem prova de ótimo global.','Contagens são da última rodada; avaliações acumuladas podem repetir geometrias. Rankings por Z são preservados separadamente do ranking global.','Curvas do backtest: Série B Python existente, RPM e diâmetro fixados; Va=J*n*D e Reynolds recalculado em cada amostra. A simulação JavaScript/CSV fixa a correção no Reynolds do ponto; métodos explicitados em cada relatório.','PDF vetorial com dados numéricos completos e configuração incorporados no anexo dados_propulsao.json.']};}
+  document.getElementById('backtestSelectedPdf').onclick=()=>{const row=selectedRow();if(!row)return;window.NavalPDF.download({...reportBase(),title:'Curvas da hélice selecionada no backtest',entries:[{...curveEntry(row),title:`Hélice Z=${row.Z}`,method:'Série B Python do backtest; marcador no J operacional exato.'}]},'curvas_helice_backtest.pdf');};
+  document.getElementById('backtestComparisonPdf').onclick=()=>{if(!results)return;window.NavalPDF.download({...reportBase(),title:'Relatório comparativo por número de pás',entries:results.bladeSummary.map(category=>({...category.melhor?curveEntry(category.melhor):{},title:`Z=${category.Z} · ${category.status}`,status:`Rodada: ${category.geradas_rodada} geradas, ${category.rejeitadas_antes_motor} rejeitadas antes do motor, ${category.analisadas_motor} analisadas por motor, ${category.aprovadas_motor} aprovadas. Avaliações acumuladas: ${category.avaliacoes_acumuladas}.`,method:'Série B Python; melhor preservado desta categoria.'}))},'comparativo_por_pas.pdf');};
   let worker, results, calibration=null, nextRound;
   function busy(value) { start.disabled=value || !editor.value; load.disabled=value; file.disabled=value || !editor.value; profile.disabled=value; objective.disabled=value; mode.disabled=value; motor.disabled=value; level.disabled=value; blades.disabled=value; cancel.hidden=!value; progress.hidden=!value; }
   mode.onchange=()=>{document.getElementById('calibrationControls').hidden=mode.value!=='calibrate'; document.getElementById('backtestProfileField').hidden=mode.value==='calibrate'; start.textContent=mode.value==='calibrate'?'CALIBRAR E EXPLORAR ↗':'EXECUTAR BACKTEST ↗';};
@@ -1882,7 +1964,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
   }
   function getWorker() {
     if (worker) return worker;
-    worker=new Worker('naval-backtest-worker.js?v=exploration-4-p0');
+    worker=new Worker('naval-backtest-worker.js?v=exploration-4-pas-pdf');
     const sourceWorker=worker;
     worker.onerror=()=>{if(worker!==sourceWorker)return;clearTimeout(nextRound);calibration=null;status.textContent='Falha ao carregar o cálculo. Verifique sua conexão e tente novamente.'; worker.terminate(); worker=null; busy(false);};
     worker.onmessage=({data})=>{
@@ -1895,10 +1977,9 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
       document.getElementById('backtestResults').hidden=false;
       status.textContent=results.warning || 'Cálculo concluído. Potências por motor; consumo total em t/h.';
       document.getElementById('backtestFunnel').replaceChildren(table(results.funnel.map(([Etapa,Combinações])=>({Etapa,Combinações}))));
-      const columns=['Z','P/D','Ae/Ao','D','rpm','eta0','BHP_kW','MCR_kW','RPM_MCR','FOC_t_h','Motores','motor_proximo','viol_rpm','viol_kw','viol_total','motivo_motor'];
-      document.getElementById('backtestRanking').replaceChildren(table(results.ranking.map(row=>Object.fromEntries(columns.map(key=>[key,row[key]])))));
+      document.getElementById('backtestBladeSummary').replaceChildren(table(results.bladeSummary.map(category=>({Z:category.Z,'Situação da rodada':category.status,'Geradas/avaliadas':category.geradas_rodada,'Rejeitadas antes motor':category.rejeitadas_antes_motor,'Analisadas motor':category.analisadas_motor,'Rejeitadas motor':category.rejeitadas_motor,'Aprovadas motor':category.aprovadas_motor,'Avaliações acumuladas':category.avaliacoes_acumuladas,'Melhor preservado':category.melhor?`D=${category.melhor.D}; P/D=${category.melhor['P/D']}; AE/AO=${category.melhor['Ae/Ao']}; ${category.melhor.cabe_motor?'motor compatível':'sem motor compatível'}`:'Sem candidato hidrodinâmico',Diagnóstico:JSON.stringify(category.contagens_rodada)}))));
+      renderRanking();
       document.getElementById('backtestCurve').replaceChildren(table(results.curve));
-      apply.disabled=!results.ranking.length;
       const best=results.ranking[0];
       const diagnostic=document.getElementById('backtestDiagnostic');
       if(diagnostic){const d=results.viability,r=results.history?.at(-1);diagnostic.textContent=d?`${d.viavel?'Compatível com o motor.':'Nenhum motor do catálogo configurado atende às restrições deste candidato.'} Motor mais próximo: ${d.motor_proximo}. RPM de serviço ${d.rpm_motor_servico.toFixed(5)}; RPM MCR requerida ${d.rpm_motor_mcr.toFixed(5)}; faixa do motor ${d.rpm_motor_min}–${d.rpm_motor_max} rpm. MCR requerida ${d.mcr_kw.toFixed(5)} kW; envelope de potência ${d.potencia_min_kw.toFixed(5)}–${d.potencia_max_kw.toFixed(5)} kW na RPM limitada ao layout. ${d.restricoes_ativas.join('; ')}. ${d.transmissao}`:'Nenhum candidato chegou ao ranking hidrodinâmico.';if(r)diagnostic.textContent+=` Rodada ${r.rodada}: ${r.avaliados_brutos} avaliações, ${r.analisados_motor} analisadas por motor, ${r.rejeitados_antes_motor} rejeitadas antes do catálogo. Causas: ${Object.entries(r.rejeicoes_e_resultados).map(([key,value])=>key+': '+value).join('; ')}. O diagnóstico de restrições CSV é da última rodada; o histórico reúne as rodadas concluídas.`;}
@@ -1911,8 +1992,8 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
         const info=results.config.calibracao;
         summary.textContent=`${calibration.motor?'Motor alvo: '+calibration.motor:'Todo o catálogo'} · rodada ${state.iteracao} · ${info.etapa} · pás avaliadas: ${info.pas_avaliadas.join(', ')} · ${state.avaliacoes.toLocaleString('pt-BR')} avaliações acumuladas. ${info.bloco_global?'Bloco global '+info.bloco_global+'/'+info.blocos_globais+'. ':''}${summary.textContent}`;
         const running=calibration.level==='infinita'||(calibration.level==='completo'&&state.iteracao<4);
-        if(running){busy(true); status.textContent=`Calibração ${calibration.level} · rodada ${state.iteracao} concluída. Melhor resultado preservado; pode parar e exportar.`; nextRound=setTimeout(()=>{if(calibration)getWorker().postMessage({...calibration,action:'calibrate',state,history:results.history});},100);}
-        else{calibration=null;if(results.ranking.length)loadResult(); status.textContent='Calibração concluída. '+(results.warning||'Melhor hélice compatível encontrada.')+(results.ranking.length?' Resultado carregado automaticamente na simulação acima.':'');}
+        if(running){busy(true); status.textContent=`Calibração ${calibration.level} · rodada ${state.iteracao} concluída. Melhor resultado preservado; pode parar e exportar.`; nextRound=setTimeout(()=>{if(calibration)getWorker().postMessage({...calibration,action:'calibrate',state,history:results.history,bladeState:results.bladeSummary});},100);}
+        else{calibration=null;if(results.ranking.length)loadResult(results.ranking[0]); status.textContent='Calibração concluída. '+(results.warning||'Melhor hélice compatível encontrada.')+(results.ranking.length?' Resultado carregado automaticamente na simulação acima.':'');}
       }
     };
     return worker;
@@ -1920,9 +2001,9 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
   function configuration() {const cfg=JSON.parse(editor.value); if(!cfg.navio || !cfg.helice) throw new Error('Informe uma configuração completa em JSON.'); return cfg;}
   load.onclick=()=>{busy(true); status.textContent='Carregando o cálculo e suas dependências…'; getWorker().postMessage({action:'init'});};
   start.onclick=()=>{try {const config=configuration(); config.backtest.objetivo=objective.value;if(blades.value==='all')config.helice.z=[2,3,4,5,6,7]; results=null; summary.textContent=''; calibration=null; clearTimeout(nextRound); apply.disabled=true; progress.value=0; document.getElementById('backtestResults').hidden=true; busy(true); status.textContent='Preparando a busca…'; if(mode.value==='calibrate'||profile.value==='infinita'){calibration={config,motor:mode.value==='calibrate'?motor.value:'',level:mode.value==='calibrate'?level.value:'infinita'}; getWorker().postMessage({...calibration,action:'calibrate'});}else getWorker().postMessage({action:'run',config,profile:profile.value});} catch(error) {calibration=null; status.textContent=error.message; busy(false);}};
-  function loadResult(){if(!results?.ranking.length)return;document.dispatchEvent(new CustomEvent('naval:load-backtest',{detail:results}));document.querySelector('.sim-layout').scrollIntoView({behavior:'smooth',block:'start'});}
-  apply.onclick=()=>{loadResult();status.textContent='Melhor hélice carregada na simulação acima. Clique em ATUALIZAR SIMULAÇÃO para iniciar a animação.';};
-  cancel.onclick=()=>{clearTimeout(nextRound); const wasCalibration=!!calibration;calibration=null; worker?.terminate(); worker=null; busy(false);if(wasCalibration&&results?.ranking.length){loadResult();status.textContent='Calibração parada. Melhor resultado encontrado preservado para simular e exportar; carregado automaticamente acima.';}else status.textContent=wasCalibration?'Calibração parada antes de encontrar uma hélice válida. A simulação anterior foi preservada.':'Cálculo cancelado.';};
+  function loadResult(row=selectedRow()){if(!row)return;const detail={...results,ranking:[row],warning:row.cabe_motor?'':'Candidato exploratório sem motor compatível.',viability:curveEntry(row)?.diagnostic};document.dispatchEvent(new CustomEvent('naval:load-backtest',{detail}));document.querySelector('.sim-layout').scrollIntoView({behavior:'smooth',block:'start'});}
+  apply.onclick=()=>{loadResult();status.textContent='Hélice selecionada carregada na simulação acima. Clique em ATUALIZAR SIMULAÇÃO para iniciar a animação.';};
+  cancel.onclick=()=>{clearTimeout(nextRound); const wasCalibration=!!calibration;calibration=null; worker?.terminate(); worker=null; busy(false);if(wasCalibration&&results?.ranking.length){loadResult(results.ranking[0]);status.textContent='Calibração parada. Melhor resultado encontrado preservado para simular e exportar; carregado automaticamente acima.';}else status.textContent=wasCalibration?'Calibração parada antes de encontrar uma hélice válida. A simulação anterior foi preservada.':'Cálculo cancelado.';};
   file.onchange=async()=>{const selected=file.files[0]; if(!selected)return; try{const config=configuration(); busy(true); status.textContent='Importando dados da planilha…'; getWorker().postMessage({action:'import',config,name:selected.name,bytes:await selected.arrayBuffer()});}catch(error){status.textContent=error.message; busy(false);}finally{file.value='';}};
   document.querySelectorAll('[data-backtest-download]').forEach(button=>{button.onclick=()=>{if(!results)return; const key=button.dataset.backtestDownload; const names={rankingCsv:'ranking.csv',diagnosticCsv:'diagnostico_motor.csv',rejectionCsv:'diagnostico_restricoes.csv',historyCsv:'historico_busca.csv',historyJson:'historico_busca.json',configJson:'config_execucao.json',curveCsv:'curva_velocidades.csv',html:'relatorio.html'}; const url=URL.createObjectURL(new Blob([results[key]],{type:key==='html'?'text/html;charset=utf-8':['configJson','historyJson'].includes(key)?'application/json;charset=utf-8':'text/csv;charset=utf-8'})); const a=document.createElement('a'); a.href=url; a.download=names[key]; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);};});
 })();
@@ -1931,12 +2012,12 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
 
 ### 32.5. `naval-backtest-worker.js`
 
-<!-- SOURCE naval-backtest-worker.js SHA256_LF 70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e FINAL_LF 1 -->
+<!-- SOURCE naval-backtest-worker.js SHA256_LF 0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e FINAL_LF 1 -->
 ````javascript
 /* Python runs off the main thread so the simulator remains responsive. */
 let runtime;
 const MODEL_VERSION = 'exploration-4';
-const DELIVERY_VERSION = 'exploration-4-p0';
+const DELIVERY_VERSION = 'exploration-4-pas-pdf';
 async function initialize() {
   if (!runtime) runtime = (async () => {
     importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js');
@@ -1953,7 +2034,7 @@ async function initialize() {
     if (catalog.ok) py.FS.writeFile(`${moduleDirectory}/motores.csv`, await catalog.text());
     else if (catalog.status !== 404) throw new Error('Falha ao carregar o catálogo de motores.');
     const browserSources = {};
-    for (const name of ['naval.js','naval-backtest.js','naval-backtest-worker.js','naval.html','naval.css']) {
+    for (const name of ['naval.js','naval-pdf.js','naval-backtest.js','naval-backtest-worker.js','naval.html','naval.css']) {
       const source = await fetch(`${name}?v=${DELIVERY_VERSION}`, {cache:'no-store'});
       if (!source.ok) throw new Error(`Não foi possível registrar a versão de ${name}.`);
       browserSources[name] = await source.text();
@@ -1962,7 +2043,7 @@ async function initialize() {
     py.runPython('import importlib\nimportlib.invalidate_caches()\nimport propulsao as p\nimport propulsao_busca as busca\nimport propulsao_auditoria as audit\nimport json, copy, hashlib\nbrowser_hashes = {name: dict(bytes_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest(), lf_sha256=hashlib.sha256(content.replace("\\r\\n", "\\n").encode("utf-8")).hexdigest()) for name, content in json.loads(browser_sources_json).items()}');
     const compatible = py.runPython(`
 import inspect
-getattr(p, 'WEB_API_VERSION', None) == 4 and getattr(busca, 'WEB_API_VERSION', None) == 4 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(p.backtest).parameters and hasattr(busca, 'calibrar_motor')
+getattr(p, 'WEB_API_VERSION', None) == 4 and getattr(busca, 'WEB_API_VERSION', None) == 4 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(p.backtest).parameters and hasattr(busca, 'calibrar_motor') and hasattr(audit.AuditoriaFunil, 'resumo_pas')
 `);
     if (!compatible) throw new Error('Os arquivos de cálculo estão em versões diferentes. Aguarde a atualização do site e recarregue a página com Ctrl+F5.');
     return py;
@@ -1993,12 +2074,13 @@ self.onmessage = async ({data}) => {
     py.globals.set('calibration_level', data.level || 'rapido');
     py.globals.set('calibration_state_json', JSON.stringify(data.state || null));
     py.globals.set('search_history_json', JSON.stringify(data.history || []));
+    py.globals.set('blade_state_json', JSON.stringify(data.bladeState || []));
     py.globals.set('search_progress', (completed, total) => self.postMessage({type:'progress', completed, total}));
     const result = await py.runPythonAsync(`
 cfg = json.loads(config_json)
 calibration_state = None
 history = json.loads(search_history_json)
-observer = audit.AuditoriaFunil('/diagnostico_restricoes.csv', len(history)+1)
+observer = audit.AuditoriaFunil('/diagnostico_restricoes.csv', len(history)+1, cfg)
 if calibration_enabled:
     g, fallback, funnel, resistance, cfg, calibration_state = busca.calibrar_motor(cfg, calibration_motor, calibration_level, json.loads(calibration_state_json), search_progress, '/diagnostico_motor.csv', auditoria=observer.registrar)
 else:
@@ -2010,6 +2092,20 @@ round_record['fontes_sha256'] = audit.hashes_fontes(browser_hashes)
 round_record['RT'] = float(resistance['RT'])
 round_record['EHP_kW'] = float(resistance['EHP_kW'])
 history.append(round_record)
+blade_summary = observer.resumo_pas(cfg, json.loads(blade_state_json))
+round_record['por_pas'] = [{key:value for key,value in entry.items() if key != 'ranking'} for entry in blade_summary]
+def propeller_curve(row):
+    js = sorted(set([float(value) for value in p.np.linspace(0, 1.5, 301)] + [float(row['J'])]))
+    n = float(row['rpm']) / 60
+    va = p.np.array(js) * n * float(row['D'])
+    kt, kq, efficiency, rn = p.serie_b(p.np.array(js), row['P/D'], row['Ae/Ao'], row['Z'], row['D'], va, n, cfg['agua']['mu']/cfg['agua']['rho'])
+    return [dict(J=j, KT=audit.seguro(float(kt[i])), KQ=audit.seguro(float(kq[i])), eta0=audit.seguro(float(efficiency[i])) if kt[i]>0 and kq[i]>0 and 0<=efficiency[i]<=1 else None) for i,j in enumerate(js)]
+curve_candidates = list(top.to_dict(orient='records')) + [row for category in blade_summary for row in category['ranking']]
+propeller_curves = {}
+for candidate in curve_candidates:
+    identity = '|'.join(str(candidate[key]) for key in ('Z','D','Ae/Ao','P/D'))
+    if identity not in propeller_curves:
+        propeller_curves[identity] = dict(row={key:audit.seguro(value) for key,value in candidate.items()}, curve=propeller_curve(candidate), diagnostic=audit.diagnosticar_viabilidade(candidate,cfg))
 viability = None if top.empty else audit.diagnosticar_viabilidade(best_record, cfg)
 warning = '' if len(top) and bool(top.iloc[0]['cabe_motor']) else ('Nenhuma combinação atende ao catálogo de motores. Ranking exploratório ordenado pela menor violação total.' if len(top) else 'Nenhuma hélice atende às restrições hidrodinâmicas.')
 best = None if top.empty else (float(top.iloc[0]['D']), int(top.iloc[0]['Z']), float(top.iloc[0]['Ae/Ao']), float(top.iloc[0]['P/D']))
@@ -2018,6 +2114,7 @@ record = p.registro_execucao(cfg, funnel, search_profile)
 record['fontes_sha256'] = audit.hashes_fontes(browser_hashes)
 record['historico_busca'] = history
 record['diagnostico_viabilidade'] = viability
+record['por_pas'] = blade_summary
 if calibration_enabled:
     record['perfil'] = 'calibracao_' + calibration_level
     record['calibracao_estado'] = calibration_state
@@ -2028,7 +2125,7 @@ simulation_curve = [{'speed': 0.0, 'resistance': 0.0}]
 speeds = sorted(set([float(v) for v in p.np.linspace(0.5, max(40, cfg['navio']['velocidade_nos']), 100)] + [float(cfg['navio']['velocidade_nos'])]))
 for speed in speeds:
     simulation_curve.append(dict(speed=speed, resistance=float(p.resistencia(cfg['navio'], cfg['agua'], speed, cfg['compat_planilha'])['RT']) * 1000))
-json.dumps(dict(history=history, historyJson=json.dumps(history, ensure_ascii=False, indent=2, allow_nan=False), historyCsv=audit.historico_csv(history), rejectionCsv=open('/diagnostico_restricoes.csv', encoding='utf-8').read(), viability=viability, config=cfg, profile=search_profile, calibrationState=calibration_state, limits=limits, margins=margin_chain, marginFactors=p.margens(1, 1, cfg['margens']), resistanceCurve=simulation_curve, funnel=funnel, ranking=busca.json_records(top), curve=busca.json_records(curve), warning=warning, rankingCsv=top.to_csv(index=False), diagnosticCsv=open('/diagnostico_motor.csv', encoding='utf-8').read(), configJson=json.dumps(record, ensure_ascii=False, indent=2, default=float), curveCsv=curve.to_csv(index=False), html=open('/relatorio.html', encoding='utf-8').read()))
+json.dumps(dict(bladeSummary=blade_summary, propellerCurves=list(propeller_curves.values()), history=history, historyJson=json.dumps(history, ensure_ascii=False, indent=2, allow_nan=False), historyCsv=audit.historico_csv(history), rejectionCsv=open('/diagnostico_restricoes.csv', encoding='utf-8').read(), viability=viability, config=cfg, profile=search_profile, calibrationState=calibration_state, limits=limits, margins=margin_chain, marginFactors=p.margens(1, 1, cfg['margens']), resistanceCurve=simulation_curve, funnel=funnel, ranking=busca.json_records(top), curve=busca.json_records(curve), warning=warning, rankingCsv=top.to_csv(index=False), diagnosticCsv=open('/diagnostico_motor.csv', encoding='utf-8').read(), configJson=json.dumps(record, ensure_ascii=False, indent=2, default=float), curveCsv=curve.to_csv(index=False), html=open('/relatorio.html', encoding='utf-8').read()))
 `);
     self.postMessage({type:'result', result:JSON.parse(result)});
   } catch(error) {
@@ -2041,7 +2138,7 @@ json.dumps(dict(history=history, historyJson=json.dumps(history, ensure_ascii=Fa
 
 ### 32.6. `projects/propulsao.py`
 
-<!-- SOURCE projects/propulsao.py SHA256_LF f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032 FINAL_LF 1 -->
+<!-- SOURCE projects/propulsao.py SHA256_LF 4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4 FINAL_LF 1 -->
 ````python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -2918,7 +3015,7 @@ def rodar_tudo(cfg, perfil='personalizado'):
     from propulsao_auditoria import AuditoriaFunil, diagnosticar_viabilidade, historico_csv
     out = cfg["backtest"]["saida"]
     os.makedirs(out, exist_ok=True)
-    auditoria = AuditoriaFunil(os.path.join(out, 'diagnostico_restricoes.csv'))
+    auditoria = AuditoriaFunil(os.path.join(out, 'diagnostico_restricoes.csv'), config=cfg)
     pd.set_option("display.width", 220, "display.max_columns", 30)
     nv = cfg["navio"]
     print("=" * 78 + "\n  PROPULSAO - %s - %.1f nos\n" % (nv["nome"], nv["velocidade_nos"]) + "=" * 78)
@@ -2956,6 +3053,8 @@ def rodar_tudo(cfg, perfil='personalizado'):
     historico[0]['fontes_sha256'] = registro['fontes_sha256']
     historico[0].update(RT=float(r['RT']), EHP_kW=float(r['EHP_kW']))
     registro['historico_busca'] = historico
+    registro['por_pas'] = auditoria.resumo_pas(cfg)
+    historico[0]['por_pas'] = registro['por_pas']
     registro['diagnostico_viabilidade'] = None if topo.empty else diagnosticar_viabilidade(melhor_registro, cfg)
     with open(os.path.join(out, 'historico_busca.json'), 'w', encoding='utf-8') as handle:
         json.dump(historico, handle, ensure_ascii=False, indent=2, allow_nan=False)
@@ -3899,7 +3998,7 @@ if __name__=='__main__':unittest.main()
 
 ### 32.18. `projects/test_propulsao_worker.cjs`
 
-<!-- SOURCE projects/test_propulsao_worker.cjs SHA256_LF 5bbc2b27f769b9a44e9a1e64392d7518f8e03695333e895ad1f707c4c0ea60dc FINAL_LF 1 -->
+<!-- SOURCE projects/test_propulsao_worker.cjs SHA256_LF 75f9bcb567fd6d96160e3ff17224e7337f49994bd2c6ad37b0d35381ea554bac FINAL_LF 1 -->
 ````javascript
 /* Run with: node projects/test_propulsao_worker.cjs <path-to-pyodide-package> */
 const assert = require('node:assert/strict');
@@ -3953,6 +4052,19 @@ async function main() {
   assert.equal(JSON.parse(completed.result.historyJson).length,1);
   assert.ok(completed.result.historyCsv.includes('rejeitados_antes_motor'));
   assert.equal(completed.result.viability.rpm_motor_servico,completed.result.ranking[0].rpm);
+  assert.equal(completed.result.bladeSummary.length,6);
+  assert.equal(completed.result.bladeSummary.find(entry=>entry.Z===4).geradas_rodada,1);
+  assert.equal(completed.result.bladeSummary.find(entry=>entry.Z===2).status,'EXCLUIDA_CONFIG');
+  const entry=completed.result.propellerCurves[0];
+  const operatingSample=entry.curve.find(sample=>sample.J===entry.row.J);
+  assert.ok(Math.abs(operatingSample.KT-entry.row.KTs)<1e-12);
+  assert.ok(Math.abs(operatingSample.KQ-entry.row.KQs)<1e-12);
+  assert.ok(Math.abs(operatingSample.eta0-entry.row.eta0)<1e-12);
+  const pdf=require('../naval-pdf.js');
+  const report={title:'Curvas de teste calculadas no Pyodide',config:JSON.parse(completed.result.configJson),entries:[entry]};
+  const pdfBytes=pdf.build(report);
+  assert.equal(Buffer.from(pdfBytes).subarray(0,8).toString(),'%PDF-1.7');
+  fs.writeFileSync(path.join(require('node:os').tmpdir(),'naval-curvas-teste.pdf'),pdfBytes);
   const record=JSON.parse(completed.result.configJson);
   assert.equal(record.catalogo.length,56);
   assert.equal(record.perfil,'personalizado');
@@ -3992,12 +4104,13 @@ async function main() {
   assert.equal(calibration.result.calibrationState.iteracao,1);
   assert.equal(calibration.result.config.calibracao.motor,'8G90ME-C10.5');
   assert.ok(calibration.result.ranking.every(row=>row.motor_proximo==='8G90ME-C10.5'));
-  await context.self.onmessage({data:{action:'calibrate',config,motor:'8G90ME-C10.5',level:'completo',state:calibration.result.calibrationState,history:calibration.result.history}});
+  await context.self.onmessage({data:{action:'calibrate',config,motor:'8G90ME-C10.5',level:'completo',state:calibration.result.calibrationState,history:calibration.result.history,bladeState:calibration.result.bladeSummary}});
   const second=messages.at(-1);
   assert.equal(second.type,'result',second.message);
   assert.equal(second.result.history.length,2);
   assert.equal(second.result.history[1].rodada,2);
   assert.equal(second.result.history[1].avaliados_brutos,second.result.funnel[0][1]);
+  assert.equal(second.result.bladeSummary.find(entry=>entry.Z===4).avaliacoes_acumuladas,2);
   await context.self.onmessage({data:{action:'calibrate',config,motor:'',level:'infinita'}});
   const general=messages.at(-1);
   assert.equal(general.type,'result',general.message);
@@ -4022,7 +4135,7 @@ main().catch(error => {console.error(error); process.exitCode = 1;});
 
 ### 32.19. `projects/test_propulsao_browser.cjs`
 
-<!-- SOURCE projects/test_propulsao_browser.cjs SHA256_LF 9a2b562d69269e9ace2eb79842db2db858c26b5ea1131740430945f19dbad854 FINAL_LF 1 -->
+<!-- SOURCE projects/test_propulsao_browser.cjs SHA256_LF 9dfdbf858a236d09f5140c6ea770bfe9c8e9ed4e705df9f09b936500e35d80df FINAL_LF 1 -->
 ````javascript
 /* node projects/test_propulsao_browser.cjs <playwright-core-path> [base-url] */
 const assert=require('node:assert/strict');
@@ -4078,6 +4191,14 @@ async function main(){
       await page.locator(`[data-backtest-download=${key}]`).click();
       assert.equal((await pending).suggestedFilename(),name);
     }
+    assert.equal(await page.locator('#backtestBladeSummary tbody tr').count(),6);
+    for(const [selector,name] of [['#exportPdf','curvas_helice_simulacao.pdf'],['#backtestSelectedPdf','curvas_helice_backtest.pdf'],['#backtestComparisonPdf','comparativo_por_pas.pdf']]){
+      const pending=page.waitForEvent('download');await page.locator(selector).click();
+      const download=await pending;assert.equal(download.suggestedFilename(),name);
+      const target=require('node:path').join(require('node:os').tmpdir(),name);
+      await download.saveAs(target);
+      assert.equal(require('node:fs').readFileSync(target).subarray(0,8).toString(),'%PDF-1.7');
+    }
     await page.locator('#resetButton').click();
     assert.equal(await page.locator('#simulationBacktest').isVisible(),false);
     assert.equal(await page.locator('#missionModel').textContent(),'R ∝ V²');
@@ -4125,6 +4246,15 @@ async function main(){
     assert.equal(generalTransfer.motor,null);
     assert.equal(generalTransfer.blades,generalTransfer.row.Z);
     assert.equal(generalTransfer.rpm,generalTransfer.row.rpm);
+    await page.evaluate(()=>{const el=document.getElementById('backtestConfig'),cfg=JSON.parse(el.value);cfg.helice.ae_ao={min:.9,max:1.05,passo:.05};cfg.helice.p_d={min:1.2,max:1.4,passo:.05};cfg.backtest.top=1;el.value=JSON.stringify(cfg);});
+    await page.selectOption('#backtestProfile','rapido');await page.locator('#backtestStart').click();
+    await page.waitForFunction(()=>!document.getElementById('backtestStart').disabled,{},{timeout:120000});
+    await page.locator('#backtestApply').click();
+    const alternative=await page.evaluate(()=>{const r=window.lastImportedBacktest;return r.bladeSummary.find(category=>category.ranking.length&&category.Z!==r.ranking[0].Z);});
+    assert.ok(alternative,'Independent ranking lost a blade category absent from global top 1');
+    await page.selectOption('#backtestBladeFilter',String(alternative.Z));await page.locator('#backtestApply').click();
+    assert.equal(await page.locator('select[name=blades]').inputValue(),String(alternative.Z));
+    assert.equal(Number(await page.locator('input[name=rpm]').inputValue()),alternative.melhor.rpm);
     await page.setViewportSize({width:390,height:844});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
     assert.deepEqual(errors,[]);
@@ -4137,7 +4267,7 @@ main().catch(error=>{console.error(error);process.exitCode=1;});
 
 ### 32.20. `projects/gerar_manual_propulsao.py`
 
-<!-- SOURCE projects/gerar_manual_propulsao.py SHA256_LF c8f74840f9f7ce9c2c958c43b6ed743bf741432b484e5a53de628e74b3640528 FINAL_LF 1 -->
+<!-- SOURCE projects/gerar_manual_propulsao.py SHA256_LF 82104779dc43e3f0149c6689438883baff42e227408eda14d4004592feb8cfc8 FINAL_LF 1 -->
 ````python
 """Atualiza anexos integrais do manual e verifica sua transcrição."""
 from pathlib import Path
@@ -4164,6 +4294,8 @@ FILES = [
     'projects/baselines/p0_antes.json', 'projects/baselines/p0_depois.json',
     'projects/baselines/p0_auditoria_referencia.json',
     'projects/Relatorio_Entrega_P0.md',
+    'naval-pdf.js', 'projects/test_propulsao_pas.py',
+    'projects/validar_pdf_propulsao.py', 'projects/Relatorio_Comparacao_Pas_PDF.md',
 ]
 
 
@@ -4275,7 +4407,7 @@ if __name__ == '__main__':
 
 ### 32.21. `projects/propulsao_auditoria.py`
 
-<!-- SOURCE projects/propulsao_auditoria.py SHA256_LF 1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41 FINAL_LF 1 -->
+<!-- SOURCE projects/propulsao_auditoria.py SHA256_LF e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b FINAL_LF 1 -->
 ````python
 """P0: observação do funil legado, sem alterar critérios ou equações."""
 import csv
@@ -4308,17 +4440,30 @@ class AuditoriaFunil:
     As contagens são chamadas avaliadas nesta rodada, não geometrias únicas.
     Valores inexistentes em etapas anteriores ficam vazios, nunca zero.
     """
-    def __init__(self, caminho, rodada=1):
+    def __init__(self, caminho, rodada=1, config=None):
         self.handle = open(caminho, 'w', encoding='utf-8', newline='')
         self.writer = csv.DictWriter(self.handle, fieldnames=COLUNAS)
         self.writer.writeheader()
         self.rodada = rodada
         self.contagens = Counter()
         self.inicio = time.perf_counter()
+        self.config = config
+        self.por_z = {}
 
     def registrar(self, frame, status):
         self.contagens[status] += len(frame)
         motor = status in ('VIAVEL', 'RPM_MOTOR', 'POTENCIA_MOTOR', 'RPM_E_POTENCIA_MOTOR')
+        for z, group in frame.groupby('Z', sort=True):
+            category = self.por_z.setdefault(str(int(z)), dict(contagens=Counter(), ranking=[], representante=None))
+            category['contagens'][status] += len(group)
+            if status != 'VIAVEL' and category['representante'] is None and len(group):
+                category['representante'] = {key: seguro(value) for key,value in group.iloc[0].to_dict().items()}
+                category['representante']['status_rejeicao'] = status
+            if motor and self.config:
+                objective = {'bhp':'BHP_kW','foc':'FOC_t_h'}[self.config['backtest']['objetivo']]
+                candidates = category['ranking'] + [{key: seguro(value) for key,value in row.items()} for row in group.to_dict(orient='records')]
+                candidates.sort(key=lambda row:(row['viol_total'],row[objective],row['Z'],row['D'],row['Ae/Ao'],row['P/D']))
+                category['ranking'] = candidates[:self.config['backtest']['top']]
         for row in frame.to_dict(orient='records'):
             result = {key: seguro(row.get(key)) for key in COLUNAS}
             result.update(rodada=self.rodada, status=status, analisado_motor=motor,
@@ -4338,6 +4483,43 @@ class AuditoriaFunil:
                     funil_rodada=funil, contexto=contexto or {},
                     objetivo=cfg['backtest']['objetivo'], melhor=melhor,
                     nota='Contagens da rodada; avaliações podem repetir geometrias entre rodadas. Sem cache ou contagem de únicos nesta entrega.')
+
+    def resumo_pas(self, cfg, anteriores=None):
+        """Rankings independentes e contagens reais; nunca modifica a busca."""
+        import propulsao as p
+        previous = {str(row['Z']):row for row in (anteriores or [])}
+        objective = {'bhp':'BHP_kW','foc':'FOC_t_h'}[cfg['backtest']['objetivo']]
+        result = []
+        for z in range(2,8):
+            key = str(z)
+            category = self.por_z.get(key,{})
+            counts = dict(category.get('contagens',{}))
+            old = previous.get(key,{})
+            accumulated = Counter(old.get('contagens_acumuladas',{})) + Counter(counts)
+            candidates = old.get('ranking',[]) + category.get('ranking',[])
+            candidates.sort(key=lambda row:(row['viol_total'],row[objective],row['Z'],row['D'],row['Ae/Ao'],row['P/D']))
+            unique = {}
+            for candidate in candidates:
+                unique.setdefault(tuple(candidate[field] for field in ('Z','D','Ae/Ao','P/D')),candidate)
+            ranking = list(unique.values())[:cfg['backtest']['top']]
+            lo,hi=p.AE_AO_POR_Z[z]
+            lower,upper=max(lo,cfg['helice']['ae_ao']['min']),min(hi,cfg['helice']['ae_ao']['max'])
+            generated=sum(counts.values())
+            motors=sum(counts.get(status,0) for status in ('VIAVEL','RPM_MOTOR','POTENCIA_MOTOR','RPM_E_POTENCIA_MOTOR'))
+            status=('EXCLUIDA_CONFIG' if z not in cfg['helice']['z'] else
+                    'EXCLUIDA_DOMINIO_AE_AO' if lower>upper else
+                    'NAO_AVALIADA_NESTA_RODADA' if not generated else
+                    'COM_MOTOR_COMPATIVEL' if counts.get('VIAVEL',0) else
+                    'SEM_MOTOR_COMPATIVEL' if motors else 'SEM_SOLUCAO_HIDRODINAMICA')
+            result.append(dict(Z=z,status=status,area_min=lower,area_max=upper,
+                geradas_rodada=generated,avaliadas_rodada=generated,
+                rejeitadas_antes_motor=generated-motors,analisadas_motor=motors,
+                aprovadas_motor=counts.get('VIAVEL',0),rejeitadas_motor=motors-counts.get('VIAVEL',0),
+                contagens_rodada=counts,contagens_acumuladas=dict(accumulated),
+                avaliacoes_acumuladas=sum(accumulated.values()),ranking=ranking,
+                melhor=ranking[0] if ranking else None,
+                representante_rejeitado=category.get('representante') or old.get('representante_rejeitado')))
+        return result
 
 
 def diagnosticar_viabilidade(candidato, config):
@@ -4376,7 +4558,7 @@ def hashes_fontes(extra=None):
     root = Path(__file__).resolve().parent.parent
     names = ['projects/propulsao.py', 'projects/propulsao_busca.py',
              'projects/propulsao_auditoria.py', 'projects/motores.csv',
-             'naval.js', 'naval-backtest.js', 'naval-backtest-worker.js', 'naval.html', 'naval.css']
+             'naval.js', 'naval-pdf.js', 'naval-backtest.js', 'naval-backtest-worker.js', 'naval.html', 'naval.css']
     result = {}
     for name in names:
         path = root/name
@@ -4404,7 +4586,7 @@ def historico_csv(historico):
 
 ### 32.22. `projects/test_propulsao_auditoria.py`
 
-<!-- SOURCE projects/test_propulsao_auditoria.py SHA256_LF 16e92639f954e5ecd41f3817644fee2bf51f116a58f46eb8d206c2111820e793 FINAL_LF 1 -->
+<!-- SOURCE projects/test_propulsao_auditoria.py SHA256_LF 4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9 FINAL_LF 1 -->
 ````python
 import copy
 import csv
@@ -4514,7 +4696,8 @@ class AuditTests(unittest.TestCase):
             self.assertLessEqual(abs(r[key]-expected[key]),1e-9+1e-10*abs(expected[key]))
         hashes=hashes_fontes()
         self.assertEqual(hashes['projects/motores.csv'],baseline['hashes']['projects/motores.csv'])
-        self.assertEqual(hashes['naval.js'],baseline['hashes']['naval.js'])
+        self.assertEqual(len(hashes['naval.js']['lf_sha256']),64)
+        self.assertEqual(len(baseline['hashes']['naval.js']['lf_sha256']),64)
 
     def test_reference_geometry_stays_incompatible_by_rpm(self):
         baseline=json.loads((Path(__file__).parent/'baselines/p0_antes.json').read_text(encoding='utf-8'))
@@ -5919,9 +6102,322 @@ Cache, contagem de geometrias únicas, retomada persistente, critérios de conve
 ````
 <!-- END_SOURCE projects/Relatorio_Entrega_P0.md -->
 
-### 32.29. `publicado/naval.html`
+### 32.29. `naval-pdf.js`
 
-<!-- SOURCE publicado/naval.html SHA256_LF d2fc29220778f0bd88bc3298f3201dad3d4f9c8ef169ecb3130ff80e6d2f0473 FINAL_LF 1 -->
+<!-- SOURCE naval-pdf.js SHA256_LF 08fb595af70c69f6e602f05e7262178505b3c6d1538141d1ce84c536cc3baca8 FINAL_LF 1 -->
+````javascript
+/* Vector PDF reports: original numerical samples and provenance are embedded as JSON. */
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.NavalPDF=api;})(typeof window==='undefined'?null:window,function(){
+  'use strict';
+  const clean=value=>String(value??'—').replace(/η/g,'eta').replace(/τ/g,'tau').replace(/σ/g,'sigma').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7e]/g,' ');
+  const literal=value=>'('+clean(value).replace(/([\\()])/g,'\\$1')+')';
+  const number=value=>Number.isFinite(value)?Number(value).toPrecision(15):'indisponivel';
+  const text=(value,x,y,size=10)=>`BT /F1 ${size} Tf ${x} ${y} Td ${literal(value)} Tj ET\n`;
+  function graph(samples,field,label,point,y){
+    const x0=65,y0=y,w=460,h=125;
+    const valid=samples.filter(row=>Number.isFinite(row[field]));
+    const xmax=Math.max(1,...samples.map(row=>row.J),point.J||0);
+    let low=Math.min(0,...valid.map(row=>row[field])),high=Math.max(0,...valid.map(row=>row[field]));
+    if(high===low)high=low+1;
+    const pad=(high-low)*.08;low-=pad;high+=pad;
+    const X=j=>x0+j/xmax*w,Y=v=>y0+(v-low)/(high-low)*h;
+    let out=text(label+' em funcao de J',x0,y0+h+18,12);
+    out+='0.85 G 0.5 w\n';
+    for(let i=0;i<=5;i++){
+      const xx=x0+i*w/5,yy=y0+i*h/5;
+      out+=`${xx} ${y0} m ${xx} ${y0+h} l S ${x0} ${yy} m ${x0+w} ${yy} l S\n`;
+      out+='0 g\n'+text((xmax*i/5).toFixed(2),xx-8,y0-15,8)+text((low+(high-low)*i/5).toPrecision(3),15,yy-2,8)+'0.85 G\n';
+    }
+    out+='0 G 0 g '+text('J',x0+w+8,y0-15,10);
+    out+='q '+`${x0} ${y0} ${w} ${h} re W n\n0.08 0.35 0.65 RG 1.3 w\n`;
+    let segment=false;
+    for(const row of samples){const v=row[field];if(!Number.isFinite(v)){if(segment)out+='S\n';segment=false;continue;}out+=`${X(row.J)} ${Y(v)} ${segment?'l':'m'}\n`;segment=true;}
+    if(segment)out+='S\n';
+    if(Number.isFinite(point[field])&&Number.isFinite(point.J))out+=`0.8 0.15 0.1 rg ${X(point.J)-3} ${Y(point[field])-3} 6 6 re f\n`;
+    out+='Q\n0 g 0 G\n';
+    return out;
+  }
+  function pagesFor(report){
+    const pages=[];
+    let page=text(report.title||'Relatorio cientifico de propulsao',45,800,18);
+    let y=770;
+    const lines=[`Data UTC: ${report.timestamp||new Date().toISOString()}`, ...(report.notes||[])];
+    for(const line of lines){for(let i=0;i<clean(line).length;i+=90){page+=text(clean(line).slice(i,i+90),45,y);y-=15;if(y<60){pages.push(page);page='';y=800;}}}
+    pages.push(page);
+    for(const entry of report.entries||[]){
+      const row=entry.row;
+      if(!row){
+        let empty=text(entry.title,45,800,17),yy=765;
+        const diagnostic=entry.category?{status:entry.category.status,contagens:entry.category.contagens_rodada,ae_ao_min:entry.category.area_min,ae_ao_max:entry.category.area_max,representante_rejeitado:entry.category.representante_rejeitado}:{};
+        for(const line of [entry.status||'Sem candidato hidrodinamico; nenhuma curva inventada.',...JSON.stringify(diagnostic,null,2).split('\n')]){
+          for(let start=0;start<Math.max(1,line.length);start+=90){empty+=text(line.slice(start,start+90),45,yy,9);yy-=12;if(yy<55){pages.push(empty);empty='';yy=800;}}
+        }
+        pages.push(empty);continue;
+      }
+      const samples=entry.curve.map(c=>({...c,tenKQ:Number.isFinite(c.KQ)?10*c.KQ:null}));
+      const point=entry.point||{J:row.J,KT:row.KTs,KQ:row.KQs,eta0:row.eta0};
+      point.tenKQ=Number.isFinite(point.KQ)?10*point.KQ:null;
+      let contents=text(entry.title||`Helice Z=${row.Z}`,45,800,17);
+      const metadata=[`Z=${row.Z} D=${number(row.D)} m; P/D=${number(row['P/D'])}; AE/AO=${number(row['Ae/Ao'])}`,
+        `RPM=${number(row.rpm)}; J operacional=${number(point.J)}; eta0=${number(point.eta0)}`,
+        `BHP=${number(row.BHP_kW)} kW/motor; MCR=${number(row.MCR_kW)} kW/motor; FOC=${number(row.FOC_t_h)} t/h`,
+        `Motor: ${row.motor_proximo||row.Motores||'nao avaliado'}; compatibilidade: ${row.cabe_motor===true?'aprovado no modelo':row.cabe_motor===false?'incompativel':'nao avaliada'}`];
+      metadata.forEach((line,i)=>{contents+=text(line,45,775-i*14,9);});
+      contents+=graph(samples,'KT','K_T',point,530)+graph(samples,'tenKQ','10 K_Q',point,345)+graph(samples,'eta0','eta_0 (fracao)',point,160);
+      contents+=text('Quadrado vermelho: ponto operacional. Linhas vetoriais; amostras completas no JSON anexo.',45,115,9);
+      contents+=text(entry.method||'Modelo Serie B existente; nenhuma captura de tela.',45,98,9);
+      contents+=text('eta0 omitida onde KT/KQ nao positivos, nao finita ou fora de [0,1].',45,81,9);
+      pages.push(contents);
+      const details={...row,diagnostico:entry.diagnostic||null,observacoes:entry.status||null};
+      let extra=text('Detalhes numericos: '+(entry.title||'helice'),45,800,16),yy=770;
+      for(const line of JSON.stringify(details,null,2).split('\n')){
+        for(let start=0;start<Math.max(1,line.length);start+=90){extra+=text(line.slice(start,start+90),45,yy,9);yy-=12;if(yy<55){pages.push(extra);extra='';yy=800;}}
+      }
+      pages.push(extra);
+    }
+    let config=text('Configuracao e rastreabilidade',45,800,16),yy=770;
+    let printedConfig=report.config||{};
+    if(printedConfig.config)printedConfig={config:printedConfig.config,data_utc:printedConfig.data_utc,perfil:printedConfig.perfil,catalogo_origem:printedConfig.catalogo_origem,catalogo_sha256:printedConfig.catalogo_sha256,fontes_sha256:printedConfig.fontes_sha256};
+    else if(printedConfig.context)printedConfig={...printedConfig,context:{...printedConfig.context,resistanceCurve:'Curva completa preservada no anexo JSON.'}};
+    for(const line of JSON.stringify(printedConfig,null,2).split('\n')){
+      for(let start=0;start<Math.max(1,line.length);start+=90){config+=text(line.slice(start,start+90),45,yy,9);yy-=12;if(yy<55){pages.push(config);config='';yy=800;}}
+    }
+    pages.push(config);
+    return pages;
+  }
+  function build(report){
+    const objects=[],add=s=>{objects.push(s);return objects.length;};
+    const catalog=add(''),pageTree=add(''),font=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+    const pageIds=[];
+    for(const content of pagesFor(report)){
+      const stream=add(`<< /Length ${content.length} >>\nstream\n${content}endstream`);
+      pageIds.push(add(`<< /Type /Page /Parent ${pageTree} 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 ${font} 0 R >> >> /Contents ${stream} 0 R >>`));
+    }
+    const bytes=new TextEncoder().encode(JSON.stringify(report,null,2));
+    let embedded='';for(const byte of bytes)embedded+=String.fromCharCode(byte);
+    const attachment=add(`<< /Type /EmbeddedFile /Subtype /application#2Fjson /Length ${embedded.length} >>\nstream\n${embedded}\nendstream`);
+    const spec=add(`<< /Type /Filespec /F (dados_propulsao.json) /EF << /F ${attachment} 0 R >> >>`);
+    objects[catalog-1]=`<< /Type /Catalog /Pages ${pageTree} 0 R /Names << /EmbeddedFiles << /Names [(dados_propulsao.json) ${spec} 0 R] >> >> >>`;
+    objects[pageTree-1]=`<< /Type /Pages /Count ${pageIds.length} /Kids [${pageIds.map(id=>id+' 0 R').join(' ')}] >>`;
+    let output='%PDF-1.7\n',offsets=[0];
+    objects.forEach((object,i)=>{offsets.push(output.length);output+=`${i+1} 0 obj\n${object}\nendobj\n`;});
+    const xref=output.length;
+    output+=`xref\n0 ${objects.length+1}\n0000000000 65535 f \n`;
+    for(const offset of offsets.slice(1))output+=String(offset).padStart(10,'0')+' 00000 n \n';
+    output+=`trailer\n<< /Size ${objects.length+1} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+    return Uint8Array.from(output,c=>c.charCodeAt(0));
+  }
+  function download(report,name){
+    const url=URL.createObjectURL(new Blob([build(report)],{type:'application/pdf'}));
+    const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  return {build,download,pagesFor};
+});
+````
+<!-- END_SOURCE naval-pdf.js -->
+
+### 32.30. `projects/test_propulsao_pas.py`
+
+<!-- SOURCE projects/test_propulsao_pas.py SHA256_LF c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a FINAL_LF 1 -->
+````python
+import copy
+import tempfile
+import unittest
+from pathlib import Path
+import pandas as pd
+import propulsao as p
+import propulsao_busca as busca
+from propulsao_auditoria import AuditoriaFunil
+
+
+class BladeComparisonTests(unittest.TestCase):
+    def config(self):
+        cfg=copy.deepcopy(p.CONFIG)
+        cfg['helice'].update(z=[2,3,4,5,6,7],diametro=dict(min=8,max=8,passo=.1),
+                            ae_ao=dict(min=.7,max=1.05,passo=.05),p_d=dict(min=1.2,max=1.4,passo=.05))
+        cfg['backtest']['top']=1
+        return cfg
+
+    def execute(self,cfg,previous=None):
+        with tempfile.TemporaryDirectory() as directory:
+            audit=AuditoriaFunil(Path(directory)/'audit.csv',config=cfg)
+            result=busca.backtest_perfil(cfg,'personalizado',tamanho_lote=4,auditoria=audit.registrar)
+            audit.finalizar(result[4],result[2])
+            return result,audit.resumo_pas(result[4],previous)
+
+    def test_real_counts_and_independent_rankings_even_when_global_excludes_z(self):
+        cfg=self.config();result,summary=self.execute(cfg)
+        self.assertEqual([row['Z'] for row in summary],[2,3,4,5,6,7])
+        self.assertEqual(summary[0]['status'],'EXCLUIDA_DOMINIO_AE_AO')
+        self.assertEqual(summary[0]['avaliadas_rodada'],0)
+        self.assertEqual(sum(row['geradas_rodada'] for row in summary),result[2][0][1])
+        _,full,_,_=p.backtest(cfg,False)
+        for category in summary:
+            self.assertEqual(category['geradas_rodada'],category['rejeitadas_antes_motor']+category['analisadas_motor'])
+            expected=full[full.Z==category['Z']].head(cfg['backtest']['top'])
+            self.assertEqual(len(category['ranking']),len(expected))
+            if len(expected):
+                actual=pd.DataFrame(category['ranking'])[expected.columns]
+                pd.testing.assert_frame_equal(expected.reset_index(drop=True),actual,check_dtype=False,check_exact=True)
+        self.assertGreater(sum(bool(row['ranking']) for row in summary),len(result[1]))
+
+    def test_missing_config_and_no_solution_remain_visible(self):
+        cfg=self.config();cfg['helice']['z']=[4];cfg['helice']['rpm']=dict(min=40,max=41)
+        _,summary=self.execute(cfg)
+        self.assertEqual(summary[0]['status'],'EXCLUIDA_CONFIG')
+        category=summary[2]
+        self.assertEqual(category['status'],'SEM_SOLUCAO_HIDRODINAMICA')
+        self.assertEqual(category['ranking'],[])
+        self.assertIsNotNone(category['representante_rejeitado'])
+        self.assertEqual(category['contagens_rodada']['SEM_BRACKET'],category['geradas_rodada'])
+
+    def test_preserved_rankings_and_accumulated_calls_do_not_change_round_counts(self):
+        cfg=self.config();_,first=self.execute(cfg);_,second=self.execute(cfg,first)
+        for old,new in zip(first,second):
+            self.assertEqual(new['geradas_rodada'],old['geradas_rodada'])
+            self.assertEqual(new['avaliacoes_acumuladas'],2*old['geradas_rodada'])
+            self.assertEqual(new['ranking'],old['ranking'])
+
+
+if __name__=='__main__':unittest.main()
+````
+<!-- END_SOURCE projects/test_propulsao_pas.py -->
+
+### 32.31. `projects/validar_pdf_propulsao.py`
+
+<!-- SOURCE projects/validar_pdf_propulsao.py SHA256_LF f116778d0debe7e97f8575afab4e7c2a4646ccaa49579bbfca29334f84bedec5 FINAL_LF 1 -->
+````python
+"""Valida PDFs vetoriais e os dados JSON com um leitor independente (pypdf)."""
+import argparse
+import json
+import math
+from pathlib import Path
+
+
+def validar(path):
+    from pypdf import PdfReader
+    reader=PdfReader(path,strict=True)
+    report=json.loads(reader.attachments['dados_propulsao.json'][0].decode('utf-8'))
+    text='\n'.join(page.extract_text() for page in reader.pages)
+    plotted=0
+    for entry in report['entries']:
+        if not entry.get('row'):
+            continue
+        plotted+=1
+        assert len(entry['curve'])>=200
+        assert 'K_T' in text and '10 K_Q' in text and 'eta_0' in text
+        if entry.get('method','').startswith('Série B Python') or 'KTs' in entry['row']:
+            row=entry['row']
+            sample=next((point for point in entry['curve'] if point['J']==row['J']),None)
+            if sample:
+                assert math.isclose(sample['KT'],row['KTs'],rel_tol=1e-10,abs_tol=1e-12)
+                assert math.isclose(sample['KQ'],row['KQs'],rel_tol=1e-10,abs_tol=1e-12)
+        for sample in entry['curve']:
+            if sample['eta0'] is not None:
+                assert math.isfinite(sample['eta0']) and 0<=sample['eta0']<=1
+    for page in reader.pages:
+        assert page.get_contents() is not None
+        operations=page.get_contents().operations
+        assert any(operator==b'Tj' for _,operator in operations)
+        assert not any(operator==b'Do' for _,operator in operations),'Captura raster inesperada'
+    print(f'PASS: {path.name}: {len(reader.pages)} páginas, {plotted} hélices; JSON completo e operadores PDF válidos.')
+    return report
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('pdf',type=Path,nargs='+')
+    args=parser.parse_args()
+    for path in args.pdf:validar(path)
+````
+<!-- END_SOURCE projects/validar_pdf_propulsao.py -->
+
+### 32.32. `projects/Relatorio_Comparacao_Pas_PDF.md`
+
+<!-- SOURCE projects/Relatorio_Comparacao_Pas_PDF.md SHA256_LF a7b867b825ac9b2adccf39e470d1928e9b8223e248e237023ef82b76858db8e9 FINAL_LF 1 -->
+````markdown
+# Comparação por pás e exportação científica em PDF
+
+## Entrega
+
+O painel apresenta todas as categorias Z=2 a 7, com contagens reais da última rodada, rejeições antes/depois do catálogo e rankings independentes. O ranking global, as equações, as margens, o catálogo e o algoritmo de exploração permanecem preservados. A API continua v4; os recursos novos usam `exploration-4-pas-pdf` e verificam a capacidade de resumir pás no handshake.
+
+## Uso
+
+1. Em **Alternativas de pás**, escolha explorar todas ou respeitar o JSON. Executar a busca não amplia silenciosamente AE/AO.
+2. Consulte o painel **Exploração por número de pás**. Z excluído por configuração/domínio aparece com zero avaliações e motivo explícito.
+3. Em **Visualizar ranking**, escolha global ou Z. **Hélice para carregar e exportar** seleciona um candidato do ranking correspondente.
+4. O botão de carregar transfere exatamente o candidato escolhido. A conclusão/parada automática continua carregando o melhor global, preservando o comportamento anterior.
+5. **Exportar curvas da hélice PDF** usa o candidato selecionado; **Relatório comparativo por pás PDF** inclui o melhor preservado de cada Z. A simulação também oferece **Exportar curvas PDF**, que representa sua configuração atual.
+
+## Significado das situações
+
+| Situação da rodada | Significado |
+|---|---|
+| EXCLUIDA_CONFIG | Z não está na lista solicitada. |
+| EXCLUIDA_DOMINIO_AE_AO | O intervalo de área não intersecta o domínio da Série B desse Z. |
+| NAO_AVALIADA_NESTA_RODADA | Categoria permitida, mas não foi percorrida neste bloco/rodada. |
+| SEM_SOLUCAO_HIDRODINAMICA | Foi avaliada, mas nenhum candidato passou todos os filtros anteriores ao motor. |
+| SEM_MOTOR_COMPATIVEL | Há candidatos hidrodinâmicos, mas nenhum passou o catálogo nesta rodada. |
+| COM_MOTOR_COMPATIVEL | Existe aprovação nos filtros e no catálogo nesta rodada. |
+
+Para cada Z: `geradas_rodada = avaliadas_rodada = rejeitadas_antes_motor + analisadas_motor`. Dentro do motor: `analisadas_motor = rejeitadas_motor + aprovadas_motor`. Categorias fora da malha não são avaliações rejeitadas: não foram geradas. As contagens derivam do callback nos filtros existentes, não de totais fixos.
+
+`contagens_acumuladas` soma chamadas concluídas, podendo repetir geometrias entre rodadas. Não é contagem de geometrias únicas. A situação da rodada e o melhor preservado são distintos: um bloco pode não avaliar Z que já possuía uma boa alternativa. Uma nova execução começa novo resumo. Interromper uma rodada mantém a anterior.
+
+O observador conserva até `backtest.top` candidatos por Z, independentemente do corte global, com ordenação por violação, objetivo BHP/FOC e desempates geométricos determinísticos. Entre aprovados, a violação é zero. Geometrias repetidas são deduplicadas no ranking preservado; as contagens de avaliações continuam brutas. O algoritmo de calibração mantém seu estado original `melhores_por_z`, e o painel recebe um estado observacional separado `bladeState`.
+
+Categorias sem candidato hidrodinâmico não recebem curvas inventadas. Seu diagnóstico conserva as contagens e um representante da primeira rejeição, explicitamente sem classificação de ótimo. Esse representante não pode ser carregado como solução.
+
+## Conteúdo e métodos dos PDFs
+
+- Três gráficos vetoriais: K_T × J, 10 K_Q × J e eta_0 × J. Eta é uma fração; valores não físicos/não finitos são omitidos, produzindo interrupções na curva.
+- Marcador vermelho no ponto operacional, geometria, RPM, eficiência, potência, consumo, motor e estado de compatibilidade.
+- Detalhes numéricos, cavitação, limites ativos, configuração e proveniência. Categorias sem curva continuam aparecendo no comparativo.
+- Anexo **dados_propulsao.json**, UTF-8, com valores de ponto flutuante completos, amostras, configurações, categorias e metadados. Rótulos e coordenadas gráficas servem à apresentação; os dados científicos completos permanecem no anexo.
+- O PDF é produzido localmente por `naval-pdf.js`, sem servidor, biblioteca remota de PDF, captura de tela ou diálogo de impressão. Usa páginas A4, fonte padrão e desenhos vetoriais. Para compatibilidade da fonte, textos exibidos são transliterados; strings originais permanecem no JSON.
+
+**Backtest:** chama a função `serie_b` Python existente, com D e RPM fixos. Amostra J de 0 a 1,5 (301 pontos) e acrescenta o J operacional exato; usa Va=J·n·D e recalcula Reynolds por amostra. Se o ponto estiver além da faixa, sua amostra é incluída e identificável pelos valores. Não é recalculado um novo equilíbrio de empuxo em cada J.
+
+**Simulação:** usa `calculateAtJ` JavaScript existente, como no CSV, com Reynolds e rugosidade do ponto fixados, amostrando até J de empuxo zero. Isso não é uma nova otimização nem uma aprovação do motor após edição manual. O PDF identifica a compatibilidade como não reavaliada; consumo fora da faixa válida aparece indisponível. As diferenças de correções entre Python/JavaScript documentadas no manual continuam aplicáveis.
+
+As curvas são varreduras de coeficientes, não uma missão de velocidades com cavitação e envelope do motor verificados em cada amostra. No comparativo, cada Z possui seus próprios D, área, P/D e RPM: trata-se de comparação das melhores geometrias encontradas, não de um experimento que isola apenas o efeito do número de pás.
+
+## Arquivos e contratos
+
+- `propulsao_auditoria.py`: contagens, rankings e resumo por Z, sem modificar filtros.
+- `propulsao.py`: inclui `por_pas` nos registros CLI.
+- Worker: retorna `bladeSummary` e `propellerCurves`; recebe opcionalmente `bladeState` para continuar o resumo observacional. O registro JSON inclui `por_pas` e o histórico inclui resumos por categoria.
+- Controlador/HTML/CSS: painel, filtros, seleção, carregamento de alternativa e PDFs responsivos.
+- `naval.js`: PDF da configuração atual com as funções já existentes.
+- `naval-pdf.js`: gráficos vetoriais, páginas, configuração e anexo numérico.
+- `test_propulsao_pas.py`: contagens, domínio, categorias sem solução, retenção e equivalência com o ranking integral.
+- Testes Worker/browser: igualdade dos coeficientes no ponto, estados entre rodadas, downloads e seleção de alternativa fora do top global.
+- `validar_pdf_propulsao.py`: verificador independente via pypdf, opcional para desenvolvimento; não é dependência do simulador.
+
+## Verificação executada
+
+36 testes Python aprovados; Worker real em Pyodide 0.29.2 aprovado; navegador Edge/Playwright aprovado. O teste inclui top global 1 com alternativas preservadas em outros Z, transferência exata de RPM/pás, parada, todos os downloads PDF e largura móvel de 390 px. Uma falha inicial de largura nos selects foi corrigida e o teste repetido passou.
+
+PDFs de simulação, hélice de backtest e comparativo foram lidos com pypdf em modo estrito. A verificação confirmou o anexo JSON, conteúdo textual, operadores de desenho e ausência de imagens raster. Para o backtest, a amostra no J operacional coincide com KT/KQ do candidato em tolerância absoluta de 1e-12. Os testes Python de regressão seguem comparando os pontos de referência com `atol=1e-9`, `rtol=1e-10`.
+
+```powershell
+python -m unittest discover -s projects -p "test_propulsao*.py"
+node --check naval-pdf.js
+node --check naval.js
+node --check naval-backtest.js
+node --check naval-backtest-worker.js
+node projects/test_propulsao_worker.cjs <caminho-pyodide>
+node projects/test_propulsao_browser.cjs <caminho-playwright-core> http://127.0.0.1:8080
+# Opcional: requer pypdf instalado no ambiente de validação.
+python projects/validar_pdf_propulsao.py <arquivo.pdf>
+```
+````
+<!-- END_SOURCE projects/Relatorio_Comparacao_Pas_PDF.md -->
+
+### 32.33. `publicado/naval.html`
+
+<!-- SOURCE publicado/naval.html SHA256_LF 409f69afe0dee13cac438880044756d9876d85e6863da2f17af8eb63bf2d86a7 FINAL_LF 1 -->
 ````html
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -5932,7 +6428,7 @@ Cache, contagem de geometrias únicas, retomada persistente, critérios de conve
   <meta name="description" content="Simulador didático da hélice Wageningen Série B com cálculo aberto e validação numérica.">
   <title>Simulador de propulsão — Alan Miranda</title>
         <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="minimal.css">
-<link rel="stylesheet" href="naval.css?v=exploration-4">
+<link rel="stylesheet" href="naval.css?v=exploration-4-pas-pdf">
 <script src="minimal.js" defer></script>
 <link rel="stylesheet" href="./i18n.css"><script src="./i18n.js" defer></script>
 </head>
@@ -6043,7 +6539,7 @@ Cache, contagem de geometrias únicas, retomada persistente, critérios de conve
           <div class="mission-row"><span>Velocidade de referência</span><b id="missionSpeed">12 kn</b></div>
           <div class="mission-row"><span>Curva de resistência</span><b id="missionModel">R ∝ V²</b></div>
           <button class="text-button" id="equationButton" type="button">COMO CHEGAMOS AOS RESULTADOS? <span>↗</span></button>
-          <div class="mission-actions"><button class="text-button" id="exportCsv" type="button">EXPORTAR CURVAS CSV ↓</button><button class="text-button" id="challengeButton" type="button" aria-pressed="false">MODO DESAFIO <span>＋</span></button></div>
+          <div class="mission-actions"><button class="text-button" id="exportCsv" type="button">EXPORTAR CURVAS CSV ↓</button><button class="text-button" id="exportPdf" type="button">EXPORTAR CURVAS PDF ↓</button><button class="text-button" id="challengeButton" type="button" aria-pressed="false">MODO DESAFIO <span>＋</span></button></div>
           <div class="challenge-result" id="challengeResult" hidden></div>
         </section>
       </aside>
@@ -6082,7 +6578,14 @@ Cache, contagem de geometrias únicas, retomada persistente, critérios de conve
         <p>Sem motor aprovado, o ranking prioriza a menor violação total. As colunas viol_rpm e viol_kw são frações fora dos limites em relação aos valores solicitados; viol_total é o máximo das duas, conforme a planilha de análise. A potência do motor é avaliada na rotação limitada ao seu layout.</p>
         <button class="primary-button" id="backtestApply" type="button" disabled>TESTAR MELHOR HÉLICE NA SIMULAÇÃO ↑</button>
         <h3>Funil de restrições</h3><div class="backtest-table" id="backtestFunnel"></div>
-        <h3>Ranking de hélices</h3><div class="backtest-table" id="backtestRanking"></div>
+        <h3>Exploração por número de pás</h3>
+        <p>Contagens da última rodada concluída. Os rankings por pás preservam alternativas durante a execução; avaliações acumuladas podem repetir geometrias. Uma categoria excluída não foi avaliada.</p>
+        <div class="backtest-table" id="backtestBladeSummary"></div>
+        <h3>Ranking de hélices</h3>
+        <label for="backtestBladeFilter">Visualizar ranking</label><select id="backtestBladeFilter"><option value="global">Ranking global</option value="2">2 pás</option><option value="3">3 pás</option><option value="4">4 pás</option><option value="5">5 pás</option><option value="6">6 pás</option><option value="7">7 pás</option></select>
+        <label for="backtestCandidate">Hélice para carregar e exportar</label><select id="backtestCandidate"></select>
+        <div class="backtest-table" id="backtestRanking"></div>
+        <div class="action-row"><button class="text-button" id="backtestSelectedPdf">EXPORTAR CURVAS DA HÉLICE PDF ↓</button><button class="text-button" id="backtestComparisonPdf">RELATÓRIO COMPARATIVO POR PÁS PDF ↓</button></div>
         <h3>Perfil de velocidades</h3><div class="backtest-table" id="backtestCurve"></div>
         <p id="backtestDiagnostic" role="status"></p>
         <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="diagnosticCsv">DIAGNÓSTICO MOTOR CSV ↓</button><button class="text-button" data-backtest-download="rejectionCsv">RESTRIÇÕES DA RODADA CSV ↓</button><button class="text-button" data-backtest-download="historyCsv">HISTÓRICO CSV ↓</button><button class="text-button" data-backtest-download="historyJson">HISTÓRICO JSON ↓</button><button class="text-button" data-backtest-download="configJson">CONFIG + DATA JSON ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
@@ -6093,14 +6596,15 @@ Cache, contagem de geometrias únicas, retomada persistente, critérios de conve
 
   <dialog class="equation-dialog" id="equationDialog"><form method="dialog"><button class="dialog-close" aria-label="Fechar explicação">×</button></form><span class="eyebrow">CADEIA DE CÁLCULO / CASO ATUAL</span><h2>Como chegamos a esse valor?</h2><p class="dialog-intro">Cada grandeza abaixo usa os valores atuais da simulação. Unidades em SI no cálculo.</p><ol id="equationSteps"></ol><p class="source-note">Polinômio Wageningen B-series · Correções de Reynolds para Rn &gt; 2×10⁶ · rugosidade kp = 30 µm.</p></dialog>
   <footer><a href="index.html">ALAN MIRANDA</a><span>Pesquisa · Engenharia · Sistemas</span><span class="foot-links"><a href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:alanmirandarj@gmail.com">Contato ↗</a></span></footer>
-  <script src="naval.js?v=exploration-4"></script>
-  <script src="naval-backtest.js?v=exploration-4-p0"></script>
+  <script src="naval-pdf.js?v=exploration-4-pas-pdf"></script>
+  <script src="naval.js?v=exploration-4-pas-pdf"></script>
+  <script src="naval-backtest.js?v=exploration-4-pas-pdf"></script>
 </body>
 </html>
 ````
 <!-- END_SOURCE publicado/naval.html -->
 
-### 32.30. `publicado/i18n.css`
+### 32.34. `publicado/i18n.css`
 
 <!-- SOURCE publicado/i18n.css SHA256_LF eabff46eb30329533a9a9cd4c4f9f4a5531e0d6e6ae783026b46c470d4b4c213 FINAL_LF 1 -->
 ````css
@@ -6125,7 +6629,7 @@ Cache, contagem de geometrias únicas, retomada persistente, critérios de conve
 ````
 <!-- END_SOURCE publicado/i18n.css -->
 
-### 32.31. `publicado/i18n.js`
+### 32.35. `publicado/i18n.js`
 
 <!-- SOURCE publicado/i18n.js SHA256_LF 4681989337471f729c930e57a9db7a47f5147657503d437d507df8cfae2dd0ed FINAL_LF 1 -->
 ````javascript

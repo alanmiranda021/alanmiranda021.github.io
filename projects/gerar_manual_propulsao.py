@@ -23,6 +23,8 @@ FILES = [
     'projects/baselines/p0_antes.json', 'projects/baselines/p0_depois.json',
     'projects/baselines/p0_auditoria_referencia.json',
     'projects/Relatorio_Entrega_P0.md',
+    'naval-pdf.js', 'projects/test_propulsao_pas.py',
+    'projects/validar_pdf_propulsao.py', 'projects/Relatorio_Comparacao_Pas_PDF.md',
 ]
 
 

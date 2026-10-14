@@ -873,7 +873,7 @@ def rodar_tudo(cfg, perfil='personalizado'):
     from propulsao_auditoria import AuditoriaFunil, diagnosticar_viabilidade, historico_csv
     out = cfg["backtest"]["saida"]
     os.makedirs(out, exist_ok=True)
-    auditoria = AuditoriaFunil(os.path.join(out, 'diagnostico_restricoes.csv'))
+    auditoria = AuditoriaFunil(os.path.join(out, 'diagnostico_restricoes.csv'), config=cfg)
     pd.set_option("display.width", 220, "display.max_columns", 30)
     nv = cfg["navio"]
     print("=" * 78 + "\n  PROPULSAO - %s - %.1f nos\n" % (nv["nome"], nv["velocidade_nos"]) + "=" * 78)
@@ -911,6 +911,8 @@ def rodar_tudo(cfg, perfil='personalizado'):
     historico[0]['fontes_sha256'] = registro['fontes_sha256']
     historico[0].update(RT=float(r['RT']), EHP_kW=float(r['EHP_kW']))
     registro['historico_busca'] = historico
+    registro['por_pas'] = auditoria.resumo_pas(cfg)
+    historico[0]['por_pas'] = registro['por_pas']
     registro['diagnostico_viabilidade'] = None if topo.empty else diagnosticar_viabilidade(melhor_registro, cfg)
     with open(os.path.join(out, 'historico_busca.json'), 'w', encoding='utf-8') as handle:
         json.dump(historico, handle, ensure_ascii=False, indent=2, allow_nan=False)

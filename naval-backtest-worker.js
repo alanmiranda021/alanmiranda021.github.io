@@ -1,7 +1,7 @@
 /* Python runs off the main thread so the simulator remains responsive. */
 let runtime;
 const MODEL_VERSION = 'exploration-4';
-const DELIVERY_VERSION = 'exploration-4-p0';
+const DELIVERY_VERSION = 'exploration-4-pas-pdf';
 async function initialize() {
   if (!runtime) runtime = (async () => {
     importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js');
@@ -18,7 +18,7 @@ async function initialize() {
     if (catalog.ok) py.FS.writeFile(`${moduleDirectory}/motores.csv`, await catalog.text());
     else if (catalog.status !== 404) throw new Error('Falha ao carregar o catálogo de motores.');
     const browserSources = {};
-    for (const name of ['naval.js','naval-backtest.js','naval-backtest-worker.js','naval.html','naval.css']) {
+    for (const name of ['naval.js','naval-pdf.js','naval-backtest.js','naval-backtest-worker.js','naval.html','naval.css']) {
       const source = await fetch(`${name}?v=${DELIVERY_VERSION}`, {cache:'no-store'});
       if (!source.ok) throw new Error(`Não foi possível registrar a versão de ${name}.`);
       browserSources[name] = await source.text();
@@ -27,7 +27,7 @@ async function initialize() {
     py.runPython('import importlib\nimportlib.invalidate_caches()\nimport propulsao as p\nimport propulsao_busca as busca\nimport propulsao_auditoria as audit\nimport json, copy, hashlib\nbrowser_hashes = {name: dict(bytes_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest(), lf_sha256=hashlib.sha256(content.replace("\\r\\n", "\\n").encode("utf-8")).hexdigest()) for name, content in json.loads(browser_sources_json).items()}');
     const compatible = py.runPython(`
 import inspect
-getattr(p, 'WEB_API_VERSION', None) == 4 and getattr(busca, 'WEB_API_VERSION', None) == 4 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(p.backtest).parameters and hasattr(busca, 'calibrar_motor')
+getattr(p, 'WEB_API_VERSION', None) == 4 and getattr(busca, 'WEB_API_VERSION', None) == 4 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(p.backtest).parameters and hasattr(busca, 'calibrar_motor') and hasattr(audit.AuditoriaFunil, 'resumo_pas')
 `);
     if (!compatible) throw new Error('Os arquivos de cálculo estão em versões diferentes. Aguarde a atualização do site e recarregue a página com Ctrl+F5.');
     return py;
@@ -58,12 +58,13 @@ self.onmessage = async ({data}) => {
     py.globals.set('calibration_level', data.level || 'rapido');
     py.globals.set('calibration_state_json', JSON.stringify(data.state || null));
     py.globals.set('search_history_json', JSON.stringify(data.history || []));
+    py.globals.set('blade_state_json', JSON.stringify(data.bladeState || []));
     py.globals.set('search_progress', (completed, total) => self.postMessage({type:'progress', completed, total}));
     const result = await py.runPythonAsync(`
 cfg = json.loads(config_json)
 calibration_state = None
 history = json.loads(search_history_json)
-observer = audit.AuditoriaFunil('/diagnostico_restricoes.csv', len(history)+1)
+observer = audit.AuditoriaFunil('/diagnostico_restricoes.csv', len(history)+1, cfg)
 if calibration_enabled:
     g, fallback, funnel, resistance, cfg, calibration_state = busca.calibrar_motor(cfg, calibration_motor, calibration_level, json.loads(calibration_state_json), search_progress, '/diagnostico_motor.csv', auditoria=observer.registrar)
 else:
@@ -75,6 +76,20 @@ round_record['fontes_sha256'] = audit.hashes_fontes(browser_hashes)
 round_record['RT'] = float(resistance['RT'])
 round_record['EHP_kW'] = float(resistance['EHP_kW'])
 history.append(round_record)
+blade_summary = observer.resumo_pas(cfg, json.loads(blade_state_json))
+round_record['por_pas'] = [{key:value for key,value in entry.items() if key != 'ranking'} for entry in blade_summary]
+def propeller_curve(row):
+    js = sorted(set([float(value) for value in p.np.linspace(0, 1.5, 301)] + [float(row['J'])]))
+    n = float(row['rpm']) / 60
+    va = p.np.array(js) * n * float(row['D'])
+    kt, kq, efficiency, rn = p.serie_b(p.np.array(js), row['P/D'], row['Ae/Ao'], row['Z'], row['D'], va, n, cfg['agua']['mu']/cfg['agua']['rho'])
+    return [dict(J=j, KT=audit.seguro(float(kt[i])), KQ=audit.seguro(float(kq[i])), eta0=audit.seguro(float(efficiency[i])) if kt[i]>0 and kq[i]>0 and 0<=efficiency[i]<=1 else None) for i,j in enumerate(js)]
+curve_candidates = list(top.to_dict(orient='records')) + [row for category in blade_summary for row in category['ranking']]
+propeller_curves = {}
+for candidate in curve_candidates:
+    identity = '|'.join(str(candidate[key]) for key in ('Z','D','Ae/Ao','P/D'))
+    if identity not in propeller_curves:
+        propeller_curves[identity] = dict(row={key:audit.seguro(value) for key,value in candidate.items()}, curve=propeller_curve(candidate), diagnostic=audit.diagnosticar_viabilidade(candidate,cfg))
 viability = None if top.empty else audit.diagnosticar_viabilidade(best_record, cfg)
 warning = '' if len(top) and bool(top.iloc[0]['cabe_motor']) else ('Nenhuma combinação atende ao catálogo de motores. Ranking exploratório ordenado pela menor violação total.' if len(top) else 'Nenhuma hélice atende às restrições hidrodinâmicas.')
 best = None if top.empty else (float(top.iloc[0]['D']), int(top.iloc[0]['Z']), float(top.iloc[0]['Ae/Ao']), float(top.iloc[0]['P/D']))
@@ -83,6 +98,7 @@ record = p.registro_execucao(cfg, funnel, search_profile)
 record['fontes_sha256'] = audit.hashes_fontes(browser_hashes)
 record['historico_busca'] = history
 record['diagnostico_viabilidade'] = viability
+record['por_pas'] = blade_summary
 if calibration_enabled:
     record['perfil'] = 'calibracao_' + calibration_level
     record['calibracao_estado'] = calibration_state
@@ -93,7 +109,7 @@ simulation_curve = [{'speed': 0.0, 'resistance': 0.0}]
 speeds = sorted(set([float(v) for v in p.np.linspace(0.5, max(40, cfg['navio']['velocidade_nos']), 100)] + [float(cfg['navio']['velocidade_nos'])]))
 for speed in speeds:
     simulation_curve.append(dict(speed=speed, resistance=float(p.resistencia(cfg['navio'], cfg['agua'], speed, cfg['compat_planilha'])['RT']) * 1000))
-json.dumps(dict(history=history, historyJson=json.dumps(history, ensure_ascii=False, indent=2, allow_nan=False), historyCsv=audit.historico_csv(history), rejectionCsv=open('/diagnostico_restricoes.csv', encoding='utf-8').read(), viability=viability, config=cfg, profile=search_profile, calibrationState=calibration_state, limits=limits, margins=margin_chain, marginFactors=p.margens(1, 1, cfg['margens']), resistanceCurve=simulation_curve, funnel=funnel, ranking=busca.json_records(top), curve=busca.json_records(curve), warning=warning, rankingCsv=top.to_csv(index=False), diagnosticCsv=open('/diagnostico_motor.csv', encoding='utf-8').read(), configJson=json.dumps(record, ensure_ascii=False, indent=2, default=float), curveCsv=curve.to_csv(index=False), html=open('/relatorio.html', encoding='utf-8').read()))
+json.dumps(dict(bladeSummary=blade_summary, propellerCurves=list(propeller_curves.values()), history=history, historyJson=json.dumps(history, ensure_ascii=False, indent=2, allow_nan=False), historyCsv=audit.historico_csv(history), rejectionCsv=open('/diagnostico_restricoes.csv', encoding='utf-8').read(), viability=viability, config=cfg, profile=search_profile, calibrationState=calibration_state, limits=limits, margins=margin_chain, marginFactors=p.margens(1, 1, cfg['margens']), resistanceCurve=simulation_curve, funnel=funnel, ranking=busca.json_records(top), curve=busca.json_records(curve), warning=warning, rankingCsv=top.to_csv(index=False), diagnosticCsv=open('/diagnostico_motor.csv', encoding='utf-8').read(), configJson=json.dumps(record, ensure_ascii=False, indent=2, default=float), curveCsv=curve.to_csv(index=False), html=open('/relatorio.html', encoding='utf-8').read()))
 `);
     self.postMessage({type:'result', result:JSON.parse(result)});
   } catch(error) {

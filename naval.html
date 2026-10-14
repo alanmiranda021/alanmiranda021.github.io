@@ -7,7 +7,7 @@
   <meta name="description" content="Simulador didático da hélice Wageningen Série B com cálculo aberto e validação numérica.">
   <title>Simulador de propulsão — Alan Miranda</title>
         <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="minimal.css">
-<link rel="stylesheet" href="naval.css?v=exploration-4">
+<link rel="stylesheet" href="naval.css?v=exploration-4-pas-pdf">
 <script src="minimal.js" defer></script>
 <link rel="stylesheet" href="./i18n.css"><script src="./i18n.js" defer></script>
 </head>
@@ -118,7 +118,7 @@
           <div class="mission-row"><span>Velocidade de referência</span><b id="missionSpeed">12 kn</b></div>
           <div class="mission-row"><span>Curva de resistência</span><b id="missionModel">R ∝ V²</b></div>
           <button class="text-button" id="equationButton" type="button">COMO CHEGAMOS AOS RESULTADOS? <span>↗</span></button>
-          <div class="mission-actions"><button class="text-button" id="exportCsv" type="button">EXPORTAR CURVAS CSV ↓</button><button class="text-button" id="challengeButton" type="button" aria-pressed="false">MODO DESAFIO <span>＋</span></button></div>
+          <div class="mission-actions"><button class="text-button" id="exportCsv" type="button">EXPORTAR CURVAS CSV ↓</button><button class="text-button" id="exportPdf" type="button">EXPORTAR CURVAS PDF ↓</button><button class="text-button" id="challengeButton" type="button" aria-pressed="false">MODO DESAFIO <span>＋</span></button></div>
           <div class="challenge-result" id="challengeResult" hidden></div>
         </section>
       </aside>
@@ -157,7 +157,14 @@
         <p>Sem motor aprovado, o ranking prioriza a menor violação total. As colunas viol_rpm e viol_kw são frações fora dos limites em relação aos valores solicitados; viol_total é o máximo das duas, conforme a planilha de análise. A potência do motor é avaliada na rotação limitada ao seu layout.</p>
         <button class="primary-button" id="backtestApply" type="button" disabled>TESTAR MELHOR HÉLICE NA SIMULAÇÃO ↑</button>
         <h3>Funil de restrições</h3><div class="backtest-table" id="backtestFunnel"></div>
-        <h3>Ranking de hélices</h3><div class="backtest-table" id="backtestRanking"></div>
+        <h3>Exploração por número de pás</h3>
+        <p>Contagens da última rodada concluída. Os rankings por pás preservam alternativas durante a execução; avaliações acumuladas podem repetir geometrias. Uma categoria excluída não foi avaliada.</p>
+        <div class="backtest-table" id="backtestBladeSummary"></div>
+        <h3>Ranking de hélices</h3>
+        <label for="backtestBladeFilter">Visualizar ranking</label><select id="backtestBladeFilter"><option value="global">Ranking global</option value="2">2 pás</option><option value="3">3 pás</option><option value="4">4 pás</option><option value="5">5 pás</option><option value="6">6 pás</option><option value="7">7 pás</option></select>
+        <label for="backtestCandidate">Hélice para carregar e exportar</label><select id="backtestCandidate"></select>
+        <div class="backtest-table" id="backtestRanking"></div>
+        <div class="action-row"><button class="text-button" id="backtestSelectedPdf">EXPORTAR CURVAS DA HÉLICE PDF ↓</button><button class="text-button" id="backtestComparisonPdf">RELATÓRIO COMPARATIVO POR PÁS PDF ↓</button></div>
         <h3>Perfil de velocidades</h3><div class="backtest-table" id="backtestCurve"></div>
         <p id="backtestDiagnostic" role="status"></p>
         <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="diagnosticCsv">DIAGNÓSTICO MOTOR CSV ↓</button><button class="text-button" data-backtest-download="rejectionCsv">RESTRIÇÕES DA RODADA CSV ↓</button><button class="text-button" data-backtest-download="historyCsv">HISTÓRICO CSV ↓</button><button class="text-button" data-backtest-download="historyJson">HISTÓRICO JSON ↓</button><button class="text-button" data-backtest-download="configJson">CONFIG + DATA JSON ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
@@ -168,7 +175,8 @@
 
   <dialog class="equation-dialog" id="equationDialog"><form method="dialog"><button class="dialog-close" aria-label="Fechar explicação">×</button></form><span class="eyebrow">CADEIA DE CÁLCULO / CASO ATUAL</span><h2>Como chegamos a esse valor?</h2><p class="dialog-intro">Cada grandeza abaixo usa os valores atuais da simulação. Unidades em SI no cálculo.</p><ol id="equationSteps"></ol><p class="source-note">Polinômio Wageningen B-series · Correções de Reynolds para Rn &gt; 2×10⁶ · rugosidade kp = 30 µm.</p></dialog>
   <footer><a href="index.html">ALAN MIRANDA</a><span>Pesquisa · Engenharia · Sistemas</span><span class="foot-links"><a href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:alanmirandarj@gmail.com">Contato ↗</a></span></footer>
-  <script src="naval.js?v=exploration-4"></script>
-  <script src="naval-backtest.js?v=exploration-4-p0"></script>
+  <script src="naval-pdf.js?v=exploration-4-pas-pdf"></script>
+  <script src="naval.js?v=exploration-4-pas-pdf"></script>
+  <script src="naval-backtest.js?v=exploration-4-pas-pdf"></script>
 </body>
 </html>

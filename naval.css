@@ -31,3 +31,4 @@
 .inspection-grid dd { margin:6px 0 0; font-size:19px; overflow-wrap:anywhere; }
 .backtest-inspection p { line-height:1.6; }
 @media(max-width:600px) { .inspection-grid { grid-template-columns:1fr; } }
+:is(#backtestBladeFilter, #backtestCandidate){display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;margin:8px 0 18px;padding:12px;background:#080a0c;color:#e3e9ed;border:1px solid #39434a;border-radius:6px;}
