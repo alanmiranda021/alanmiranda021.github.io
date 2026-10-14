@@ -35,3 +35,11 @@ html.alert-open{overflow:hidden}
 .alert-actions .button:not(.solid):hover{background:#fff;color:#080a0c}
 @media(max-width:560px){.alert-overlay{padding:14px;align-items:end}.alert-body{padding:26px 22px 28px}.alert-body p{font-size:15px}.alert-body blockquote{font-size:16px}.alert-bar{letter-spacing:.14em;font-size:11px}}
 @media(prefers-reduced-motion:reduce){.alert-box,.alert-overlay{transition:none}.alert-overlay.show .alert-box,.alert-bar svg,nav a.nav-alert:before{animation:none}}
+
+/* Contact links and accessible decorative icons */
+footer .foot-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px 22px}
+.contact-link{display:inline-flex;align-items:center;gap:8px}
+.contact-icon{width:20px;height:20px;flex-shrink:0}
+.contact-link:focus-visible{outline:2px solid currentColor;outline-offset:5px;border-radius:2px}
+.socials .contact-icon{width:24px;height:24px}
+@media(max-width:600px){footer .foot-links{gap:14px 18px}}
