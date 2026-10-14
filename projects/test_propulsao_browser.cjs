@@ -45,7 +45,9 @@ async function main(){
     assert.equal((await downloadPromise).suggestedFilename(),'relatorio.html');
     assert.match(await page.locator('#backtestSummary').textContent(),/Motor mais próximo/);
     assert.match(await page.locator('#backtestMargins').textContent(),/1,?\.?464395625/);
-    for(const [key,name] of [['diagnosticCsv','diagnostico_motor.csv'],['configJson','config_execucao.json']]){
+    assert.match(await page.locator('#backtestDiagnostic').textContent(),/RPM MCR requerida/);
+    assert.match(await page.locator('#backtestDiagnostic').textContent(),/rejeitadas antes do catálogo/);
+    for(const [key,name] of [['diagnosticCsv','diagnostico_motor.csv'],['configJson','config_execucao.json'],['rejectionCsv','diagnostico_restricoes.csv'],['historyCsv','historico_busca.csv'],['historyJson','historico_busca.json']]){
       const pending=page.waitForEvent('download');
       await page.locator(`[data-backtest-download=${key}]`).click();
       assert.equal((await pending).suggestedFilename(),name);
@@ -72,6 +74,10 @@ async function main(){
     assert.equal(targetTransfer.rpm,targetTransfer.row.rpm);
     assert.equal(targetTransfer.wake,targetTransfer.row.w);
     assert.equal(targetTransfer.diameter,targetTransfer.row.D);
+    const history=await page.evaluate(()=>window.lastImportedBacktest.history);
+    assert.equal(history.length,4);
+    assert.deepEqual(history.map(row=>row.rodada),[1,2,3,4]);
+    assert.ok(history.every(row=>row.avaliados_brutos===row.analisados_motor+row.rejeitados_antes_motor));
     await page.selectOption('#calibrationLevel','infinita');
     await page.locator('#backtestStart').click();
     await page.waitForFunction(()=>document.getElementById('backtestSummary').textContent.includes('rodada 2'),{},{timeout:120000});

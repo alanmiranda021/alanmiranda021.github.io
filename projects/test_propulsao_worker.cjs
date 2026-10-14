@@ -18,7 +18,7 @@ async function main() {
     fetch: async (url, options) => {
       assert.ok(url.includes('?v=exploration-4'));
       assert.equal(options.cache,'no-store');
-      return {ok:true, text:async () => fs.readFileSync(path.join(__dirname, path.basename(url.split('?')[0])), 'utf8')};
+      return {ok:true, text:async () => fs.readFileSync(path.join(__dirname, '..', url.split('?')[0]), 'utf8')};
     },
     self:{postMessage:message => messages.push(message)},
     Uint8Array,
@@ -44,11 +44,18 @@ async function main() {
   assert.ok(completed.result.curveCsv.includes('V_nos'));
   assert.ok(completed.result.html.includes('<!doctype html>'));
   assert.ok(completed.result.diagnosticCsv.includes('viol_total'));
+  assert.ok(completed.result.rejectionCsv.includes('analisado_motor'));
+  assert.equal(completed.result.history[0].avaliados_brutos,1);
+  assert.equal(completed.result.history[0].analisados_motor,1);
+  assert.equal(JSON.parse(completed.result.historyJson).length,1);
+  assert.ok(completed.result.historyCsv.includes('rejeitados_antes_motor'));
+  assert.equal(completed.result.viability.rpm_motor_servico,completed.result.ranking[0].rpm);
   const record=JSON.parse(completed.result.configJson);
   assert.equal(record.catalogo.length,56);
   assert.equal(record.perfil,'personalizado');
   assert.equal(record.config.helice.diametro.max,8);
   assert.equal(record.combinacoes_geradas,1);
+  assert.equal(record.fontes_sha256['naval.js'].bytes_sha256,require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(__dirname,'..','naval.js'))).digest('hex'));
   assert.ok(completed.result.limits.some(warning=>warning.includes('limite de D')));
   assert.ok(completed.result.curve.some(row=>row.status_envelope==='abaixo da faixa SFOC'&&row.FOC_t_h===null));
   const input=simulation.backtestInput(completed.result);
@@ -82,6 +89,12 @@ async function main() {
   assert.equal(calibration.result.calibrationState.iteracao,1);
   assert.equal(calibration.result.config.calibracao.motor,'8G90ME-C10.5');
   assert.ok(calibration.result.ranking.every(row=>row.motor_proximo==='8G90ME-C10.5'));
+  await context.self.onmessage({data:{action:'calibrate',config,motor:'8G90ME-C10.5',level:'completo',state:calibration.result.calibrationState,history:calibration.result.history}});
+  const second=messages.at(-1);
+  assert.equal(second.type,'result',second.message);
+  assert.equal(second.result.history.length,2);
+  assert.equal(second.result.history[1].rodada,2);
+  assert.equal(second.result.history[1].avaliados_brutos,second.result.funnel[0][1]);
   await context.self.onmessage({data:{action:'calibrate',config,motor:'',level:'infinita'}});
   const general=messages.at(-1);
   assert.equal(general.type,'result',general.message);

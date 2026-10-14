@@ -589,7 +589,7 @@ def validar_config(cfg, verbose=False, limite_malha=150000):
     return count
 
 
-def backtest(cfg, verbose=True):
+def backtest(cfg, verbose=True, auditoria=None):
     validar_config(cfg, verbose=verbose)
     nv, ag, hl, rs, mg = cfg["navio"], cfg["agua"], cfg["helice"], cfg["restricoes"], cfg["margens"]
     r = resistencia(nv, ag, nv["velocidade_nos"], cfg["compat_planilha"])
@@ -610,12 +610,18 @@ def backtest(cfg, verbose=True):
     g = pd.concat(linhas, ignore_index=True)
     funil = [("Combinacoes geradas", len(g))]
 
+    def rejeicoes(frame, mask, status):
+        if auditoria is not None:
+            auditoria(frame[~np.asarray(mask, dtype=bool)], status)
+
     w, t, er = coef_propulsivos(nv, r, g["D"].values, g["Ae/Ao"].values, g["P/D"].values, cfg["compat_planilha"])
     va = r["V"] * (1 - w)
     t_req_h = r["RT"] / (1 - t) / Nh
     rpm, ok = _resolver_rpm(nv, ag, g["D"].values, g["Ae/Ao"].values, g["P/D"].values, g["Z"].values, va, t_req_h,
                             hl["rpm"]["min"], hl["rpm"]["max"])
-    g = g.assign(w=w, t=t, etaR=er, Va=va, rpm=rpm)[ok].reset_index(drop=True)
+    g = g.assign(w=w, t=t, etaR=er, Va=va, rpm=rpm)
+    rejeicoes(g, ok, 'SEM_BRACKET')
+    g = g[ok].reset_index(drop=True)
     funil.append(("Empuxo disponivel = requerido (M12 = 0)", len(g)))
 
     n = g["rpm"].values / 60
@@ -624,15 +630,21 @@ def backtest(cfg, verbose=True):
     kts, kqs, eta0, rn = serie_b(J, pd_, ae, z, D, va, n, ag["mu"] / ag["rho"])
     etaH = (1 - g["t"].values) / (1 - g["w"].values)
     g = g.assign(J=J, KTs=kts, KQs=kqs, eta0=eta0, etaH=etaH, etaD=eta0 * etaH * g["etaR"].values)
-    g = g[(g["J"] >= rs["j_min"]) & (g["KTs"] > 0) & (g["KQs"] > 0)].reset_index(drop=True)
+    mask = (g["J"] >= rs["j_min"]) & (g["KTs"] > 0) & (g["KQs"] > 0)
+    rejeicoes(g, mask, 'J_KT_KQ')
+    g = g[mask].reset_index(drop=True)
     funil.append(("J >= %.2f e KT, KQ > 0" % rs["j_min"], len(g)))
-    g = g[(g["eta0"] >= rs["eta0_min"]) & (g["eta0"] <= rs["eta0_max"])].reset_index(drop=True)
+    mask = (g["eta0"] >= rs["eta0_min"]) & (g["eta0"] <= rs["eta0_max"])
+    rejeicoes(g, mask, 'EFICIENCIA')
+    g = g[mask].reset_index(drop=True)
     funil.append(("%.1f <= eta0 <= %.1f" % (rs["eta0_min"], rs["eta0_max"]), len(g)))
 
     t_h = r["RT"] / (1 - g["t"].values) / Nh                         # empuxo por helice (kN)
     ok_cav, tau, tmax, sigma = burrill(ag, nv, g["D"].values, g["Ae/Ao"].values, g["P/D"].values, g["Va"].values,
                                        g["rpm"].values / 60, t_h, rs["cavitacao_pct"])
-    g = g.assign(tau_c=tau, tau_max=tmax, sigma=sigma)[ok_cav].reset_index(drop=True)
+    g = g.assign(tau_c=tau, tau_max=tmax, sigma=sigma)
+    rejeicoes(g, ok_cav, 'CAVITACAO')
+    g = g[ok_cav].reset_index(drop=True)
     funil.append(("Cavitacao Burrill <= %d%% dorso" % rs["cavitacao_pct"], len(g)))
 
     et = eta_t(cfg)
@@ -645,7 +657,9 @@ def backtest(cfg, verbose=True):
     g["MCR_kW"] = [m["bhp3"] for m in mcr]
     g["RPM_MCR"] = [m["rpm3"] for m in mcr]
     if rs["potencia_max_motor_kw"]:
-        g = g[g["MCR_kW"] <= rs["potencia_max_motor_kw"]].reset_index(drop=True)
+        mask = g["MCR_kW"] <= rs["potencia_max_motor_kw"]
+        rejeicoes(g, mask, 'MCR_LIMITE')
+        g = g[mask].reset_index(drop=True)
         funil.append(("MCR <= potencia maxima do motor", len(g)))
 
     motores = carregar_motores(cfg)
@@ -661,6 +675,14 @@ def backtest(cfg, verbose=True):
         df_["SFOC"] = sfoc(carga, cfg)
         df_["FOC_t_h"] = df_["SFOC"] * df_["BHP_kW"] * nv["n_motores"] / 1e6
         df_["FOC_MCR_t_h"] = df_["SFOC"] * df_["MCR_kW"] * nv["n_motores"] / 1e6     # como a aba 'Margens'
+    if auditoria is not None:
+        for status, mask in (
+            ('VIAVEL', sem_motor['cabe_motor']),
+            ('RPM_E_POTENCIA_MOTOR', (sem_motor['viol_rpm'] > 0) & (sem_motor['viol_kw'] > 0)),
+            ('RPM_MOTOR', (sem_motor['viol_rpm'] > 0) & (sem_motor['viol_kw'] == 0)),
+            ('POTENCIA_MOTOR', (sem_motor['viol_rpm'] == 0) & (sem_motor['viol_kw'] > 0)),
+        ):
+            auditoria(sem_motor[mask], status)
     chave = {"bhp": "BHP_kW", "foc": "FOC_t_h"}[cfg["backtest"]["objetivo"]]
     g = g.sort_values(([chave] if rs['motor'] == 'estrito' else ['viol_total', chave]) + ['Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').reset_index(drop=True)
     sem_motor = sem_motor.sort_values(['viol_total', chave, 'Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').reset_index(drop=True)
@@ -745,9 +767,11 @@ def avisos_limites(cfg, row):
 
 
 def registro_execucao(cfg, funil, perfil='personalizado'):
+    from propulsao_auditoria import hashes_fontes
     motors = carregar_motores(cfg)
     catalog = [dict(zip(('modelo', 'n_min', 'n_max', 'p_max_kw', 'p_min_kw'), row)) for row in motors]
     provenance = 'MOTORES interno aproximado (reserva)'
+    catalog_file_hash = None
     if cfg['motor'].get('catalogo_registrado') is not None:
         catalog = copy.deepcopy(cfg['motor']['catalogo_registrado'])
         provenance = 'Catálogo incorporado no registro da execução anterior'
@@ -756,6 +780,8 @@ def registro_execucao(cfg, funil, perfil='personalizado'):
         if csv_path and not os.path.isfile(csv_path) and not os.path.isabs(csv_path):
             csv_path = os.path.join(os.path.dirname(__file__), csv_path)
         if csv_path and os.path.isfile(csv_path):
+            with open(csv_path, 'rb') as handle:
+                catalog_file_hash = hashlib.sha256(handle.read()).hexdigest()
             provenance = 'CSV: ' + cfg['motor']['arquivo_csv']
             catalog = json.loads(pd.read_csv(csv_path).to_json(orient='records'))
     catalog_json = json.dumps(catalog, ensure_ascii=False, sort_keys=True, default=float)
@@ -765,7 +791,7 @@ def registro_execucao(cfg, funil, perfil='personalizado'):
                 combinacoes_geradas=funil[0][1] if funil else tamanho_malha(cfg),
                 funil=funil, catalogo=catalog, catalogo_origem=provenance, catalogo_sha256=hashlib.sha256(catalog_json.encode('utf-8')).hexdigest(),
                 criterio_violacao='viol_total = max(viol_rpm, viol_kw); denominadores: RPM e MCR solicitados; potência avaliada em rpm limitada ao layout',
-                modelo_sha256=model_hash)
+                modelo_sha256=model_hash, fontes_sha256=hashes_fontes(), catalogo_arquivo_sha256=catalog_file_hash)
 
 
 def diagnostico_csv(frame, caminho=None):
@@ -844,8 +870,10 @@ table.t td{padding:5px 8px;text-align:right;border-top:1px solid var(--bd)}svg{w
 
 
 def rodar_tudo(cfg, perfil='personalizado'):
+    from propulsao_auditoria import AuditoriaFunil, diagnosticar_viabilidade, historico_csv
     out = cfg["backtest"]["saida"]
     os.makedirs(out, exist_ok=True)
+    auditoria = AuditoriaFunil(os.path.join(out, 'diagnostico_restricoes.csv'))
     pd.set_option("display.width", 220, "display.max_columns", 30)
     nv = cfg["navio"]
     print("=" * 78 + "\n  PROPULSAO - %s - %.1f nos\n" % (nv["nome"], nv["velocidade_nos"]) + "=" * 78)
@@ -854,9 +882,9 @@ def rodar_tudo(cfg, perfil='personalizado'):
         import propulsao_busca as busca
         g, sem_motor, funil, r, cfg = busca.backtest_perfil(cfg, perfil,
             progresso=lambda done, total: print('Tamanho da malha: %s combinações, processadas em lotes.' % format(total, ',')) if done == 0 else None,
-            diagnostico_destino=os.path.join(out, 'diagnostico_motor.csv'))
+            diagnostico_destino=os.path.join(out, 'diagnostico_motor.csv'), auditoria=auditoria.registrar)
     else:
-        g, sem_motor, funil, r = backtest(cfg)
+        g, sem_motor, funil, r = backtest(cfg, auditoria=auditoria.registrar)
     print("\nRESISTENCIA (Holtrop 84): RT=%.1f kN | EHP=%.0f kW | Fn=%.3f | (1+k1)=%.3f | S=%.0f m2"
           % (r["RT"], r["EHP_kW"], r["Fn"], r["k1"], r["S"]))
     cols = ["Z", "P/D", "Ae/Ao", "D", "rpm", "J", "eta0", "etaD", "tau_c", "tau_max", "BHP_kW", "MCR_kW", "RPM_MCR",
@@ -878,6 +906,16 @@ def rodar_tudo(cfg, perfil='personalizado'):
     if not batched:
         diagnostico_csv(sem_motor, os.path.join(out, 'diagnostico_motor.csv'))
     registro = registro_execucao(cfg, funil, perfil)
+    melhor_registro = None if topo.empty else topo.astype(object).where(pd.notna(topo), None).iloc[0].to_dict()
+    historico = [auditoria.finalizar(cfg, funil, melhor_registro, dict(perfil=perfil, malha=cfg['helice']))]
+    historico[0]['fontes_sha256'] = registro['fontes_sha256']
+    historico[0].update(RT=float(r['RT']), EHP_kW=float(r['EHP_kW']))
+    registro['historico_busca'] = historico
+    registro['diagnostico_viabilidade'] = None if topo.empty else diagnosticar_viabilidade(melhor_registro, cfg)
+    with open(os.path.join(out, 'historico_busca.json'), 'w', encoding='utf-8') as handle:
+        json.dump(historico, handle, ensure_ascii=False, indent=2, allow_nan=False)
+    with open(os.path.join(out, 'historico_busca.csv'), 'w', encoding='utf-8', newline='') as handle:
+        handle.write(historico_csv(historico))
     with open(os.path.join(out, 'config_execucao.json'), 'w', encoding='utf-8') as f:
         json.dump(registro, f, ensure_ascii=False, indent=2, default=float)
     print('Fator total de potência das margens: %.9f; fator de rpm: %.9f' % (margens(1, 1, cfg['margens'])['bhp3'], margens(1, 1, cfg['margens'])['rpm3']))

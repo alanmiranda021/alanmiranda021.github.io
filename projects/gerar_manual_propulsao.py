@@ -18,6 +18,11 @@ FILES = [
     'projects/test_propulsao_diagnostico.py', 'projects/test_propulsao_calibracao.py',
     'projects/test_propulsao_worker.cjs', 'projects/test_propulsao_browser.cjs',
     'projects/gerar_manual_propulsao.py',
+    'projects/propulsao_auditoria.py', 'projects/test_propulsao_auditoria.py',
+    'projects/registrar_baseline_p0.py', 'projects/comparar_baseline_p0.py',
+    'projects/baselines/p0_antes.json', 'projects/baselines/p0_depois.json',
+    'projects/baselines/p0_auditoria_referencia.json',
+    'projects/Relatorio_Entrega_P0.md',
 ]
 
 
@@ -89,7 +94,7 @@ def generate(published=None):
         fence = '`' * max(4, 1 + max((len(m.group()) for m in re.finditer(r'`+', content)), default=0))
         language = {'.py': 'python', '.js': 'javascript', '.cjs': 'javascript',
                     '.html': 'html', '.css': 'css', '.csv': 'csv', '.md': 'markdown',
-                    '.svg': 'xml', '.txt': 'text'}.get(path.suffix, 'text')
+                    '.svg': 'xml', '.txt': 'text', '.json': 'json'}.get(path.suffix, 'text')
         out += [f'\n### 32.{index}. `{name}`\n',
                 f'<!-- SOURCE {name} SHA256_LF {digest(content.encode("utf-8"))} FINAL_LF {int(content.endswith(chr(10)))} -->',
                 fence + language, content + ('' if content.endswith('\n') else '\n') + fence,

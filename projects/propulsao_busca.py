@@ -25,7 +25,7 @@ def configurar_perfil(cfg, perfil):
     return result
 
 
-def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, diagnostico_destino=None):
+def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, diagnostico_destino=None, auditoria=None):
     cfg = configurar_perfil(cfg, perfil)
     hl, nv, rs = cfg['helice'], cfg['navio'], cfg['restricoes']
     # Validate physical inputs and each step without allocating the entire grid.
@@ -86,7 +86,7 @@ def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, d
         local = copy.deepcopy(cfg)
         local['helice']['z'] = [z]
         local['helice']['diametro'].update(min=float(part[0]), max=float(part[-1]))
-        g, f, steps, resistance = p.backtest(local, verbose=False)
+        g, f, steps, resistance = p.backtest(local, verbose=False, auditoria=auditoria)
         accepted, fallback = merge(accepted, g), merge(fallback, f, exploratory=True)
         if diagnostico_destino:
             with open(diagnostico_destino, 'a', encoding='utf-8', newline='') as handle:
@@ -101,7 +101,7 @@ def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, d
     return accepted, fallback, list(funnel.items()), resistance, cfg
 
 
-def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None):
+def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None, auditoria=None):
     """All allowed blades: broad search, per-Z refinement and exhaustive tiles."""
     import os
     import tempfile
@@ -197,7 +197,7 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
         for grid in grids:
             part = os.path.join(temporary,'parte.csv') if diagnostico_destino else None
             callback = (lambda done,size: progresso(completed+done,total)) if progresso else None
-            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part)
+            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part,auditoria=auditoria)
             frames.extend([g,f])
             for name,count in steps:
                 funnel[name] = funnel.get(name,0)+count

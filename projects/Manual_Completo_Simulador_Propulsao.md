@@ -1,6 +1,6 @@
 # Manual completo do simulador de propulsão naval
 
-**Edição:** 13 de outubro de 2026. **Contrato do navegador:** `WEB_API_VERSION = 4`. **Versão dos recursos:** `exploration-4`.
+**Edição:** 13 de outubro de 2026, atualização P0. **Contrato do navegador:** `WEB_API_VERSION = 4`. **Versão dos recursos de busca:** `exploration-4-p0`.
 
 Este documento reúne manual de operação, referência matemática, descrição da implementação, contratos de dados, procedimentos de reprodução e transcrição integral dos arquivos do sistema. A descrição foi conferida contra a implementação local. Os anexos são cópias dos arquivos, sem omissão de coeficientes, funções ou testes; apenas as terminações de linha são normalizadas para LF.
 
@@ -934,6 +934,20 @@ Para a variante publicada com i18n, utilize o HTML do suplemento no lugar da có
 
 Terminações CRLF são normalizadas para LF na transcrição; conteúdo, indentação, coeficientes, comentários e strings não são reformatados. O manifesto informa se o arquivo original tinha newline final, permitindo verificar a cópia extraída sem confundir a newline necessária para fechar uma cerca Markdown com conteúdo original.
 
+## 28.1. Atualização P0: baseline, diagnóstico e histórico
+
+Esta atualização acrescenta observação do algoritmo legado. As explicações físicas anteriores continuam válidas. As assinaturas completas e transcrições ao final refletem os argumentos opcionais `auditoria=None` adicionados em `backtest`, `backtest_perfil` e `calibrar_motor`. O Worker também carrega `projects/propulsao_auditoria.py`. A API permanece v4; as URLs de busca usam `exploration-4-p0` e o handshake verifica a presença do argumento de auditoria para rejeitar arquivos antigos.
+
+O callback recebe `(frame, status)` sem alterar os critérios de aceitação. Cada geometria gerada em um lote é registrada uma vez na primeira rejeição ou após análise de motores: `SEM_BRACKET`, `J_KT_KQ`, `EFICIENCIA`, `CAVITACAO`, `MCR_LIMITE`, `RPM_MOTOR`, `POTENCIA_MOTOR`, `RPM_E_POTENCIA_MOTOR` ou `VIAVEL`. Geometrias excluídas pela interseção de área por Z não foram geradas e não contam como avaliadas. Valores de etapas ainda não alcançadas ficam vazios no CSV. O modo informativo não torna um candidato incompatível viável.
+
+`diagnostico_restricoes.csv` contém os candidatos da última rodada concluída; `diagnostico_motor.csv` conserva seu significado anterior. `historico_busca.json` e `historico_busca.csv` acumulam resumos das rodadas concluídas, distinguindo avaliados brutos, analisados por motor e rejeitados antes do motor. Na calibração, o melhor registrado é o melhor global preservado, podendo ter sido encontrado antes. Não há contagem de geometrias únicas, cache ou retomada persistente nesta entrega. Uma nova execução começa um novo histórico; parar durante uma rodada mantém o snapshot e histórico anteriores, sem incorporar resultados parciais.
+
+O Worker recebe opcionalmente `history` junto com a próxima rodada e retorna `history`, `historyJson`, `historyCsv`, `rejectionCsv` e `viability`. O controlador oferece os três novos downloads e explica RPM de serviço, RPM MCR, faixa do motor, potência requerida e envelope de potência. As fórmulas de violação e a lógica de parada permanecem iguais. `viability.limites_geometricos` distingue teto efetivo e último ponto amostrado; a tolerância padrão depende do passo e pode ser configurada por `diagnostico.tolerancia_limite`, sem alterar os limites físicos.
+
+Os registros incorporam hashes brutos e LF de Python, catálogo e recursos da interface; o catálogo efetivo serializado e o arquivo CSV têm hashes separados. No navegador, os hashes de JS/HTML/CSS identificam fontes baixadas com `no-store`, sem introspecção dos scripts já carregados. `baselines/p0_antes.json` preserva o estado anterior e `baselines/p0_depois.json` guarda a comparação numérica. `registrar_baseline_p0.py` recusa sobrescrever destinos existentes. `comparar_baseline_p0.py` compara CONFIG, contagens, candidato e grandezas com `abs(novo-antigo) <= 1e-9 + 1e-10*abs(antigo)`.
+
+Foram aprovados 33 testes Python, além dos testes reais de Worker/Pyodide e navegador/Playwright. A referência detalhada permanece com zero motores aprovados e RPM MCR 90,27403028244929 frente ao máximo de 84 rpm. O [relatório da entrega P0](Relatorio_Entrega_P0.md) contém a tabela antes/depois, comandos, hashes e pendências. Os arquivos novos, baselines e testes também estão transcritos integralmente abaixo.
+
 <!-- ANEXOS_GERADOS_PROPULSAO -->
 
 ## 29. Manifesto das transcrições integrais
@@ -942,13 +956,13 @@ Os hashes brutos identificam os bytes lidos. Os hashes LF identificam o texto in
 
 | Arquivo | Bytes originais | Linhas | LF final | SHA-256 bruto | SHA-256 LF |
 |---|---:|---:|---|---|---|
-| `naval.html` | 27650 | 172 | sim | `dbde9641244e7cec2515ad99d56698e8c7f43ca4df86b0c2bd433cadd89787ac` | `dbde9641244e7cec2515ad99d56698e8c7f43ca4df86b0c2bd433cadd89787ac` |
+| `naval.html` | 27996 | 173 | sim | `496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663` | `496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663` |
 | `naval.css` | 17008 | 33 | sim | `4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b` | `4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b` |
 | `naval.js` | 32267 | 313 | sim | `1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062` | `1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062` |
-| `naval-backtest.js` | 10167 | 74 | sim | `3e4535bee94f063ec394f8fff3e2d99f764dd18f7032b1dc28ea34b674e2d006` | `3e4535bee94f063ec394f8fff3e2d99f764dd18f7032b1dc28ea34b674e2d006` |
-| `naval-backtest-worker.js` | 5993 | 82 | sim | `5056edaab22fe5be4d5f98d91ca46323c619f6720b730399b1b4a38228f4d394` | `5056edaab22fe5be4d5f98d91ca46323c619f6720b730399b1b4a38228f4d394` |
-| `projects/propulsao.py` | 55434 | 966 | sim | `340f7f354d7188735a3d0b9ca5573b28976b34b2a7aeb7b3e5f464d65de1ea82` | `340f7f354d7188735a3d0b9ca5573b28976b34b2a7aeb7b3e5f464d65de1ea82` |
-| `projects/propulsao_busca.py` | 12747 | 232 | sim | `6e5678ac710502fefd9219e82d77de4306714ade922a8b3cfbbd9b6f531521f0` | `6e5678ac710502fefd9219e82d77de4306714ade922a8b3cfbbd9b6f531521f0` |
+| `naval-backtest.js` | 11476 | 76 | sim | `914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb` | `914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb` |
+| `naval-backtest-worker.js` | 8067 | 103 | sim | `70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e` | `70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e` |
+| `projects/propulsao.py` | 57639 | 1004 | sim | `f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032` | `f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032` |
+| `projects/propulsao_busca.py` | 12820 | 232 | sim | `c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c` | `c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c` |
 | `projects/motores.csv` | 8297 | 57 | sim | `1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e` | `0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8` |
 | `projects/requirements-propulsao.txt` | 48 | 4 | sim | `6aabe26fb66dc06fccf7c796f6ab35655cbbeb96ad5d03fd682d45240bb28e7a` | `6aabe26fb66dc06fccf7c796f6ab35655cbbeb96ad5d03fd682d45240bb28e7a` |
 | `projects/CATALOGO_MOTORES.md` | 2528 | 23 | sim | `50c953b3bbd43fa79320f5320216e54d6409f1ece105b6058ad77add0810fcbc` | `50c953b3bbd43fa79320f5320216e54d6409f1ece105b6058ad77add0810fcbc` |
@@ -959,10 +973,18 @@ Os hashes brutos identificam os bytes lidos. Os hashes LF identificam o texto in
 | `projects/test_propulsao_busca.py` | 2123 | 54 | sim | `76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26` | `76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26` |
 | `projects/test_propulsao_diagnostico.py` | 6493 | 126 | sim | `01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca` | `01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca` |
 | `projects/test_propulsao_calibracao.py` | 4432 | 86 | sim | `7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96` | `7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96` |
-| `projects/test_propulsao_worker.cjs` | 6112 | 103 | sim | `a9d22f04932a38044c26abc608569d5828e403f7f5807dc04f4a0ea9057eeead` | `a9d22f04932a38044c26abc608569d5828e403f7f5807dc04f4a0ea9057eeead` |
-| `projects/test_propulsao_browser.cjs` | 7296 | 102 | sim | `20ac257ed1ee16e473342c6b55e462b08a291b8b010ac54c9dcaddb6760a4a80` | `20ac257ed1ee16e473342c6b55e462b08a291b8b010ac54c9dcaddb6760a4a80` |
-| `projects/gerar_manual_propulsao.py` | 7041 | 126 | sim | `81dd8bb5861977c239ed05cdd05b39c2aa6b26492d264b224e6275830b11645a` | `81dd8bb5861977c239ed05cdd05b39c2aa6b26492d264b224e6275830b11645a` |
-| `publicado/naval.html` | 27730 | 172 | sim | `4b486776fde74ff1fa7a7b6a98e6c8a287f451a75497a61c0aed2792bd6a16fc` | `4b486776fde74ff1fa7a7b6a98e6c8a287f451a75497a61c0aed2792bd6a16fc` |
+| `projects/test_propulsao_worker.cjs` | 7177 | 116 | sim | `5bbc2b27f769b9a44e9a1e64392d7518f8e03695333e895ad1f707c4c0ea60dc` | `5bbc2b27f769b9a44e9a1e64392d7518f8e03695333e895ad1f707c4c0ea60dc` |
+| `projects/test_propulsao_browser.cjs` | 7905 | 108 | sim | `9a2b562d69269e9ace2eb79842db2db858c26b5ea1131740430945f19dbad854` | `9a2b562d69269e9ace2eb79842db2db858c26b5ea1131740430945f19dbad854` |
+| `projects/gerar_manual_propulsao.py` | 7386 | 131 | sim | `c8f74840f9f7ce9c2c958c43b6ed743bf741432b484e5a53de628e74b3640528` | `c8f74840f9f7ce9c2c958c43b6ed743bf741432b484e5a53de628e74b3640528` |
+| `projects/propulsao_auditoria.py` | 6385 | 122 | sim | `1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41` | `1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41` |
+| `projects/test_propulsao_auditoria.py` | 7371 | 141 | sim | `16e92639f954e5ecd41f3817644fee2bf51f116a58f46eb8d206c2111820e793` | `16e92639f954e5ecd41f3817644fee2bf51f116a58f46eb8d206c2111820e793` |
+| `projects/registrar_baseline_p0.py` | 2359 | 52 | sim | `92cb1c90a741aa9f97918860e64dac2053073ea31aacb3e5291d6b5a5439363f` | `92cb1c90a741aa9f97918860e64dac2053073ea31aacb3e5291d6b5a5439363f` |
+| `projects/comparar_baseline_p0.py` | 9439 | 73 | sim | `fcfc9e356d6cc420817fbd5abb76a14bdfcb50fa97e43dd4f0f480812638d7f5` | `fcfc9e356d6cc420817fbd5abb76a14bdfcb50fa97e43dd4f0f480812638d7f5` |
+| `projects/baselines/p0_antes.json` | 12622 | 480 | não | `7964877364f188a710b0eae7e79341f853d62fb0163dbf59e88e5690c9a6cc8d` | `969626310b3232e2cb267efdd1b1eaf999e293706c5916b3c300680db9d73b05` |
+| `projects/baselines/p0_depois.json` | 12622 | 480 | não | `4282514cffc92de653761745538e46c651834b5d8aa2a811e470317b43643413` | `785fa42ebce01b95f898c155b384a50ff98b59a09b320880c7eaa16c569c63fe` |
+| `projects/baselines/p0_auditoria_referencia.json` | 4135 | 124 | não | `12e006c28454b7633f3b2bccb55563dfb8dab431e71b3daef3cff9b3a25bde20` | `a781646265cd5b65af1a0564802b60edf88f168e9c376ceed41fa201b7a1f9e1` |
+| `projects/Relatorio_Entrega_P0.md` | 9000 | 118 | sim | `1b888a88a2b8ad07705f02b39e3cde24b465bb899828bc757f0720039dee64c6` | `1b888a88a2b8ad07705f02b39e3cde24b465bb899828bc757f0720039dee64c6` |
+| `publicado/naval.html` | 28077 | 174 | sim | `d2fc29220778f0bd88bc3298f3201dad3d4f9c8ef169ecb3130ff80e6d2f0473` | `d2fc29220778f0bd88bc3298f3201dad3d4f9c8ef169ecb3130ff80e6d2f0473` |
 | `publicado/i18n.css` | 1979 | 18 | sim | `ac0d20d1de3b7b4392ee23f6969a300b28f8a5796911da221b77d92c374fc61f` | `eabff46eb30329533a9a9cd4c4f9f4a5531e0d6e6ae783026b46c470d4b4c213` |
 | `publicado/i18n.js` | 7298 | 115 | sim | `a2573808fd22645a81111312f003293a2fa988352130e62d391419acdf77bb29` | `4681989337471f729c930e57a9db7a47f5147657503d437d507df8cfae2dd0ed` |
 
@@ -1086,14 +1108,14 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 | 19 | `busy(value)` |
 | 21 | `table(rows)` |
 | 31 | `getWorker()` |
-| 66 | `configuration()` |
-| 69 | `loadResult()` |
+| 68 | `configuration()` |
+| 71 | `loadResult()` |
 
 ### `naval-backtest-worker.js`
 
 | Linha | Assinatura |
 |---:|---|
-| 4 | `initialize()` |
+| 5 | `initialize()` |
 
 ### `projects/propulsao.py`
 
@@ -1120,26 +1142,27 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 | 537 | `_faixa(d)` |
 | 541 | `validar_config(cfg, verbose=False, limite_malha=150000)` |
 | 544 | `positive(value, name)` |
-| 592 | `backtest(cfg, verbose=True)` |
-| 677 | `curva_velocidades(cfg, helice=None, mcr_kw=None)` |
-| 711 | `importar_planilha(caminho)` |
-| 731 | `avisos_limites(cfg, row)` |
-| 747 | `registro_execucao(cfg, funil, perfil='personalizado')` |
-| 771 | `diagnostico_csv(frame, caminho=None)` |
-| 778 | `_svg_linha(x, ys, titulo, unid)` |
-| 796 | `relatorio_html(cfg, topo, funil, curva, caminho, aviso='', registro=None)` |
-| 846 | `rodar_tudo(cfg, perfil='personalizado')` |
-| 892 | `validar(cfg)` |
-| 915 | `main(argv=None)` |
+| 592 | `backtest(cfg, verbose=True, auditoria=None)` |
+| 613 | `rejeicoes(frame, mask, status)` |
+| 699 | `curva_velocidades(cfg, helice=None, mcr_kw=None)` |
+| 733 | `importar_planilha(caminho)` |
+| 753 | `avisos_limites(cfg, row)` |
+| 769 | `registro_execucao(cfg, funil, perfil='personalizado')` |
+| 797 | `diagnostico_csv(frame, caminho=None)` |
+| 804 | `_svg_linha(x, ys, titulo, unid)` |
+| 822 | `relatorio_html(cfg, topo, funil, curva, caminho, aviso='', registro=None)` |
+| 872 | `rodar_tudo(cfg, perfil='personalizado')` |
+| 930 | `validar(cfg)` |
+| 953 | `main(argv=None)` |
 
 ### `projects/propulsao_busca.py`
 
 | Linha | Assinatura |
 |---:|---|
 | 16 | `configurar_perfil(cfg, perfil)` |
-| 28 | `backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, diagnostico_destino=None)` |
+| 28 | `backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, diagnostico_destino=None, auditoria=None)` |
 | 72 | `merge(previous, frame, exploratory=False)` |
-| 104 | `calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None)` |
+| 104 | `calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None, auditoria=None)` |
 | 229 | `json_records(frame)` |
 
 ### `minimal.js`
@@ -1218,12 +1241,52 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 
 | Linha | Assinatura |
 |---:|---|
-| 24 | `digest(value)` |
-| 28 | `normalized(path)` |
-| 32 | `cell(value)` |
-| 36 | `config_leaves(node, prefix='CONFIG')` |
-| 44 | `generate(published=None)` |
-| 102 | `verify(compare_sources=False)` |
+| 29 | `digest(value)` |
+| 33 | `normalized(path)` |
+| 37 | `cell(value)` |
+| 41 | `config_leaves(node, prefix='CONFIG')` |
+| 49 | `generate(published=None)` |
+| 107 | `verify(compare_sources=False)` |
+
+### `projects/propulsao_auditoria.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 18 | `seguro(value)` |
+| 32 | `__init__(self, caminho, rodada=1)` |
+| 40 | `registrar(self, frame, status)` |
+| 49 | `finalizar(self, cfg, funil, melhor=None, contexto=None)` |
+| 64 | `diagnosticar_viabilidade(candidato, config)` |
+| 96 | `hashes_fontes(extra=None)` |
+| 112 | `historico_csv(historico)` |
+
+### `projects/test_propulsao_auditoria.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 16 | `config(self)` |
+| 22 | `run_audit(self, cfg)` |
+| 35 | `test_observer_preserves_values_and_records_unavailable_as_empty(self)` |
+| 45 | `test_first_rejections_bracket_coefficients_efficiency_and_power_limit(self)` |
+| 60 | `test_cavitation_rejection(self)` |
+| 62 | `rejected(*args, **kwargs)` |
+| 70 | `test_compatible_and_only_power_incompatible_catalog(self)` |
+| 80 | `test_batched_trace_conservation_and_calibration_unchanged(self)` |
+| 98 | `test_frozen_reference_point_and_hashes(self)` |
+| 111 | `test_reference_geometry_stays_incompatible_by_rpm(self)` |
+| 129 | `test_limit_input_and_last_sample_are_distinct(self)` |
+
+### `projects/registrar_baseline_p0.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 17 | `capture()` |
+
+### `projects/comparar_baseline_p0.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 10 | `comparar()` |
 
 ### `publicado/i18n.js`
 
@@ -1245,7 +1308,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
 
 ### 32.1. `naval.html`
 
-<!-- SOURCE naval.html SHA256_LF dbde9641244e7cec2515ad99d56698e8c7f43ca4df86b0c2bd433cadd89787ac FINAL_LF 1 -->
+<!-- SOURCE naval.html SHA256_LF 496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663 FINAL_LF 1 -->
 ````html
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -1407,7 +1470,8 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
         <h3>Funil de restrições</h3><div class="backtest-table" id="backtestFunnel"></div>
         <h3>Ranking de hélices</h3><div class="backtest-table" id="backtestRanking"></div>
         <h3>Perfil de velocidades</h3><div class="backtest-table" id="backtestCurve"></div>
-        <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="diagnosticCsv">DIAGNÓSTICO MOTOR CSV ↓</button><button class="text-button" data-backtest-download="configJson">CONFIG + DATA JSON ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
+        <p id="backtestDiagnostic" role="status"></p>
+        <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="diagnosticCsv">DIAGNÓSTICO MOTOR CSV ↓</button><button class="text-button" data-backtest-download="rejectionCsv">RESTRIÇÕES DA RODADA CSV ↓</button><button class="text-button" data-backtest-download="historyCsv">HISTÓRICO CSV ↓</button><button class="text-button" data-backtest-download="historyJson">HISTÓRICO JSON ↓</button><button class="text-button" data-backtest-download="configJson">CONFIG + DATA JSON ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
       </div>
     </section>
     <section class="transparency"><span class="eyebrow">TRANSPARÊNCIA DO MODELO</span><p>A missão interativa usa resistência quadrática didática. A seção de automação usa Holtrop-Mennen 84, Série B com correção de Reynolds, Burrill e margens. O comando Python “validar” compara 12 grandezas com os valores de referência fornecidos no material.</p><span class="version">FONTE E LIMITES EXIBIDOS</span></section>
@@ -1416,7 +1480,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
   <dialog class="equation-dialog" id="equationDialog"><form method="dialog"><button class="dialog-close" aria-label="Fechar explicação">×</button></form><span class="eyebrow">CADEIA DE CÁLCULO / CASO ATUAL</span><h2>Como chegamos a esse valor?</h2><p class="dialog-intro">Cada grandeza abaixo usa os valores atuais da simulação. Unidades em SI no cálculo.</p><ol id="equationSteps"></ol><p class="source-note">Polinômio Wageningen B-series · Correções de Reynolds para Rn &gt; 2×10⁶ · rugosidade kp = 30 µm.</p></dialog>
   <footer><a href="index.html">ALAN MIRANDA</a><span>Pesquisa · Engenharia · Sistemas</span><span class="foot-links"><a href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:alanmirandarj@gmail.com">Contato ↗</a></span></footer>
   <script src="naval.js?v=exploration-4"></script>
-  <script src="naval-backtest.js?v=exploration-4"></script>
+  <script src="naval-backtest.js?v=exploration-4-p0"></script>
 </body>
 </html>
 ````
@@ -1784,7 +1848,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
 
 ### 32.4. `naval-backtest.js`
 
-<!-- SOURCE naval-backtest.js SHA256_LF 3e4535bee94f063ec394f8fff3e2d99f764dd18f7032b1dc28ea34b674e2d006 FINAL_LF 1 -->
+<!-- SOURCE naval-backtest.js SHA256_LF 914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb FINAL_LF 1 -->
 ````javascript
 (() => {
   const editor = document.getElementById('backtestConfig');
@@ -1818,7 +1882,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
   }
   function getWorker() {
     if (worker) return worker;
-    worker=new Worker('naval-backtest-worker.js?v=exploration-4');
+    worker=new Worker('naval-backtest-worker.js?v=exploration-4-p0');
     const sourceWorker=worker;
     worker.onerror=()=>{if(worker!==sourceWorker)return;clearTimeout(nextRound);calibration=null;status.textContent='Falha ao carregar o cálculo. Verifique sua conexão e tente novamente.'; worker.terminate(); worker=null; busy(false);};
     worker.onmessage=({data})=>{
@@ -1836,6 +1900,8 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
       document.getElementById('backtestCurve').replaceChildren(table(results.curve));
       apply.disabled=!results.ranking.length;
       const best=results.ranking[0];
+      const diagnostic=document.getElementById('backtestDiagnostic');
+      if(diagnostic){const d=results.viability,r=results.history?.at(-1);diagnostic.textContent=d?`${d.viavel?'Compatível com o motor.':'Nenhum motor do catálogo configurado atende às restrições deste candidato.'} Motor mais próximo: ${d.motor_proximo}. RPM de serviço ${d.rpm_motor_servico.toFixed(5)}; RPM MCR requerida ${d.rpm_motor_mcr.toFixed(5)}; faixa do motor ${d.rpm_motor_min}–${d.rpm_motor_max} rpm. MCR requerida ${d.mcr_kw.toFixed(5)} kW; envelope de potência ${d.potencia_min_kw.toFixed(5)}–${d.potencia_max_kw.toFixed(5)} kW na RPM limitada ao layout. ${d.restricoes_ativas.join('; ')}. ${d.transmissao}`:'Nenhum candidato chegou ao ranking hidrodinâmico.';if(r)diagnostic.textContent+=` Rodada ${r.rodada}: ${r.avaliados_brutos} avaliações, ${r.analisados_motor} analisadas por motor, ${r.rejeitados_antes_motor} rejeitadas antes do catálogo. Causas: ${Object.entries(r.rejeicoes_e_resultados).map(([key,value])=>key+': '+value).join('; ')}. O diagnóstico de restrições CSV é da última rodada; o histórico reúne as rodadas concluídas.`;}
       const label=results.config.calibracao?`Calibração ${results.config.calibracao.nivel}`:{rapido:'Rápido',completo:'Completo',detalhado:'Extremamente detalhado',personalizado:'Personalizado'}[results.profile];
       summary.textContent=best?`${label} · melhor resultado: ${best.Z} pás · D ${best.D.toFixed(3)} m · P/D ${best['P/D'].toFixed(3)} · AE/AO ${best['Ae/Ao'].toFixed(3)} · η₀ ${(best.eta0*100).toFixed(2)}% · ηD ${(best.etaD*100).toFixed(2)}% · BHP ${best.BHP_kW.toFixed(0)} kW/motor. ${results.warning}`:'Nenhuma hélice atende às restrições. Revise os intervalos e os dados do navio.';
       if(best)summary.textContent+=` ${results.config.calibracao?.motor?'Motor avaliado':'Motor mais próximo'}: ${best.motor_proximo}; violação RPM ${(best.viol_rpm*100).toFixed(2)}%, potência ${(best.viol_kw*100).toFixed(2)}%, total ${(best.viol_total*100).toFixed(2)}%. ${results.limits.join('; ')}.`;
@@ -1845,7 +1911,7 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
         const info=results.config.calibracao;
         summary.textContent=`${calibration.motor?'Motor alvo: '+calibration.motor:'Todo o catálogo'} · rodada ${state.iteracao} · ${info.etapa} · pás avaliadas: ${info.pas_avaliadas.join(', ')} · ${state.avaliacoes.toLocaleString('pt-BR')} avaliações acumuladas. ${info.bloco_global?'Bloco global '+info.bloco_global+'/'+info.blocos_globais+'. ':''}${summary.textContent}`;
         const running=calibration.level==='infinita'||(calibration.level==='completo'&&state.iteracao<4);
-        if(running){busy(true); status.textContent=`Calibração ${calibration.level} · rodada ${state.iteracao} concluída. Melhor resultado preservado; pode parar e exportar.`; nextRound=setTimeout(()=>{if(calibration)getWorker().postMessage({...calibration,action:'calibrate',state});},100);}
+        if(running){busy(true); status.textContent=`Calibração ${calibration.level} · rodada ${state.iteracao} concluída. Melhor resultado preservado; pode parar e exportar.`; nextRound=setTimeout(()=>{if(calibration)getWorker().postMessage({...calibration,action:'calibrate',state,history:results.history});},100);}
         else{calibration=null;if(results.ranking.length)loadResult(); status.textContent='Calibração concluída. '+(results.warning||'Melhor hélice compatível encontrada.')+(results.ranking.length?' Resultado carregado automaticamente na simulação acima.':'');}
       }
     };
@@ -1858,18 +1924,19 @@ Cada arquivo aparece completo em seu próprio bloco. Nenhum trecho foi omitido; 
   apply.onclick=()=>{loadResult();status.textContent='Melhor hélice carregada na simulação acima. Clique em ATUALIZAR SIMULAÇÃO para iniciar a animação.';};
   cancel.onclick=()=>{clearTimeout(nextRound); const wasCalibration=!!calibration;calibration=null; worker?.terminate(); worker=null; busy(false);if(wasCalibration&&results?.ranking.length){loadResult();status.textContent='Calibração parada. Melhor resultado encontrado preservado para simular e exportar; carregado automaticamente acima.';}else status.textContent=wasCalibration?'Calibração parada antes de encontrar uma hélice válida. A simulação anterior foi preservada.':'Cálculo cancelado.';};
   file.onchange=async()=>{const selected=file.files[0]; if(!selected)return; try{const config=configuration(); busy(true); status.textContent='Importando dados da planilha…'; getWorker().postMessage({action:'import',config,name:selected.name,bytes:await selected.arrayBuffer()});}catch(error){status.textContent=error.message; busy(false);}finally{file.value='';}};
-  document.querySelectorAll('[data-backtest-download]').forEach(button=>{button.onclick=()=>{if(!results)return; const key=button.dataset.backtestDownload; const names={rankingCsv:'ranking.csv',diagnosticCsv:'diagnostico_motor.csv',configJson:'config_execucao.json',curveCsv:'curva_velocidades.csv',html:'relatorio.html'}; const url=URL.createObjectURL(new Blob([results[key]],{type:key==='html'?'text/html;charset=utf-8':key==='configJson'?'application/json;charset=utf-8':'text/csv;charset=utf-8'})); const a=document.createElement('a'); a.href=url; a.download=names[key]; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);};});
+  document.querySelectorAll('[data-backtest-download]').forEach(button=>{button.onclick=()=>{if(!results)return; const key=button.dataset.backtestDownload; const names={rankingCsv:'ranking.csv',diagnosticCsv:'diagnostico_motor.csv',rejectionCsv:'diagnostico_restricoes.csv',historyCsv:'historico_busca.csv',historyJson:'historico_busca.json',configJson:'config_execucao.json',curveCsv:'curva_velocidades.csv',html:'relatorio.html'}; const url=URL.createObjectURL(new Blob([results[key]],{type:key==='html'?'text/html;charset=utf-8':['configJson','historyJson'].includes(key)?'application/json;charset=utf-8':'text/csv;charset=utf-8'})); const a=document.createElement('a'); a.href=url; a.download=names[key]; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);};});
 })();
 ````
 <!-- END_SOURCE naval-backtest.js -->
 
 ### 32.5. `naval-backtest-worker.js`
 
-<!-- SOURCE naval-backtest-worker.js SHA256_LF 5056edaab22fe5be4d5f98d91ca46323c619f6720b730399b1b4a38228f4d394 FINAL_LF 1 -->
+<!-- SOURCE naval-backtest-worker.js SHA256_LF 70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e FINAL_LF 1 -->
 ````javascript
 /* Python runs off the main thread so the simulator remains responsive. */
 let runtime;
 const MODEL_VERSION = 'exploration-4';
+const DELIVERY_VERSION = 'exploration-4-p0';
 async function initialize() {
   if (!runtime) runtime = (async () => {
     importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js');
@@ -1877,18 +1944,25 @@ async function initialize() {
     await py.loadPackage(['numpy', 'pandas']);
     // Write into Python's working directory, which is on its import path.
     const moduleDirectory = py.runPython('import os\nos.getcwd()');
-    for (const name of ['propulsao', 'propulsao_busca']) {
-      const response = await fetch(`projects/${name}.py?v=${MODEL_VERSION}`, {cache:'no-store'});
+    for (const name of ['propulsao', 'propulsao_busca', 'propulsao_auditoria']) {
+      const response = await fetch(`projects/${name}.py?v=${DELIVERY_VERSION}`, {cache:'no-store'});
       if (!response.ok) throw new Error(`Não foi possível carregar ${name}.py.`);
       py.FS.writeFile(`${moduleDirectory}/${name}.py`, await response.text());
     }
-    const catalog = await fetch(`projects/motores.csv?v=${MODEL_VERSION}`, {cache:'no-store'});
+    const catalog = await fetch(`projects/motores.csv?v=${DELIVERY_VERSION}`, {cache:'no-store'});
     if (catalog.ok) py.FS.writeFile(`${moduleDirectory}/motores.csv`, await catalog.text());
     else if (catalog.status !== 404) throw new Error('Falha ao carregar o catálogo de motores.');
-    py.runPython('import importlib\nimportlib.invalidate_caches()\nimport propulsao as p\nimport propulsao_busca as busca\nimport json, copy');
+    const browserSources = {};
+    for (const name of ['naval.js','naval-backtest.js','naval-backtest-worker.js','naval.html','naval.css']) {
+      const source = await fetch(`${name}?v=${DELIVERY_VERSION}`, {cache:'no-store'});
+      if (!source.ok) throw new Error(`Não foi possível registrar a versão de ${name}.`);
+      browserSources[name] = await source.text();
+    }
+    py.globals.set('browser_sources_json', JSON.stringify(browserSources));
+    py.runPython('import importlib\nimportlib.invalidate_caches()\nimport propulsao as p\nimport propulsao_busca as busca\nimport propulsao_auditoria as audit\nimport json, copy, hashlib\nbrowser_hashes = {name: dict(bytes_sha256=hashlib.sha256(content.encode("utf-8")).hexdigest(), lf_sha256=hashlib.sha256(content.replace("\\r\\n", "\\n").encode("utf-8")).hexdigest()) for name, content in json.loads(browser_sources_json).items()}');
     const compatible = py.runPython(`
 import inspect
-getattr(p, 'WEB_API_VERSION', None) == 4 and getattr(busca, 'WEB_API_VERSION', None) == 4 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters and hasattr(busca, 'calibrar_motor')
+getattr(p, 'WEB_API_VERSION', None) == 4 and getattr(busca, 'WEB_API_VERSION', None) == 4 and 'diagnostico_destino' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(busca.backtest_perfil).parameters and 'auditoria' in inspect.signature(p.backtest).parameters and hasattr(busca, 'calibrar_motor')
 `);
     if (!compatible) throw new Error('Os arquivos de cálculo estão em versões diferentes. Aguarde a atualização do site e recarregue a página com Ctrl+F5.');
     return py;
@@ -1918,19 +1992,32 @@ self.onmessage = async ({data}) => {
     py.globals.set('calibration_motor', data.motor || '');
     py.globals.set('calibration_level', data.level || 'rapido');
     py.globals.set('calibration_state_json', JSON.stringify(data.state || null));
+    py.globals.set('search_history_json', JSON.stringify(data.history || []));
     py.globals.set('search_progress', (completed, total) => self.postMessage({type:'progress', completed, total}));
     const result = await py.runPythonAsync(`
 cfg = json.loads(config_json)
 calibration_state = None
+history = json.loads(search_history_json)
+observer = audit.AuditoriaFunil('/diagnostico_restricoes.csv', len(history)+1)
 if calibration_enabled:
-    g, fallback, funnel, resistance, cfg, calibration_state = busca.calibrar_motor(cfg, calibration_motor, calibration_level, json.loads(calibration_state_json), search_progress, '/diagnostico_motor.csv')
+    g, fallback, funnel, resistance, cfg, calibration_state = busca.calibrar_motor(cfg, calibration_motor, calibration_level, json.loads(calibration_state_json), search_progress, '/diagnostico_motor.csv', auditoria=observer.registrar)
 else:
-    g, fallback, funnel, resistance, cfg = busca.backtest_perfil(cfg, search_profile, search_progress, diagnostico_destino='/diagnostico_motor.csv')
+    g, fallback, funnel, resistance, cfg = busca.backtest_perfil(cfg, search_profile, search_progress, diagnostico_destino='/diagnostico_motor.csv', auditoria=observer.registrar)
 top = (g if len(g) else fallback).head(cfg['backtest']['top'])
+best_record = None if top.empty else busca.json_records(top.head(1))[0]
+round_record = observer.finalizar(cfg, funnel, best_record, cfg.get('calibracao', dict(perfil=search_profile, malha=cfg['helice'])))
+round_record['fontes_sha256'] = audit.hashes_fontes(browser_hashes)
+round_record['RT'] = float(resistance['RT'])
+round_record['EHP_kW'] = float(resistance['EHP_kW'])
+history.append(round_record)
+viability = None if top.empty else audit.diagnosticar_viabilidade(best_record, cfg)
 warning = '' if len(top) and bool(top.iloc[0]['cabe_motor']) else ('Nenhuma combinação atende ao catálogo de motores. Ranking exploratório ordenado pela menor violação total.' if len(top) else 'Nenhuma hélice atende às restrições hidrodinâmicas.')
 best = None if top.empty else (float(top.iloc[0]['D']), int(top.iloc[0]['Z']), float(top.iloc[0]['Ae/Ao']), float(top.iloc[0]['P/D']))
 curve = p.curva_velocidades(cfg, best, float(top.iloc[0]['MCR_kW']) if best else None)
 record = p.registro_execucao(cfg, funnel, search_profile)
+record['fontes_sha256'] = audit.hashes_fontes(browser_hashes)
+record['historico_busca'] = history
+record['diagnostico_viabilidade'] = viability
 if calibration_enabled:
     record['perfil'] = 'calibracao_' + calibration_level
     record['calibracao_estado'] = calibration_state
@@ -1941,7 +2028,7 @@ simulation_curve = [{'speed': 0.0, 'resistance': 0.0}]
 speeds = sorted(set([float(v) for v in p.np.linspace(0.5, max(40, cfg['navio']['velocidade_nos']), 100)] + [float(cfg['navio']['velocidade_nos'])]))
 for speed in speeds:
     simulation_curve.append(dict(speed=speed, resistance=float(p.resistencia(cfg['navio'], cfg['agua'], speed, cfg['compat_planilha'])['RT']) * 1000))
-json.dumps(dict(config=cfg, profile=search_profile, calibrationState=calibration_state, limits=limits, margins=margin_chain, marginFactors=p.margens(1, 1, cfg['margens']), resistanceCurve=simulation_curve, funnel=funnel, ranking=busca.json_records(top), curve=busca.json_records(curve), warning=warning, rankingCsv=top.to_csv(index=False), diagnosticCsv=open('/diagnostico_motor.csv', encoding='utf-8').read(), configJson=json.dumps(record, ensure_ascii=False, indent=2, default=float), curveCsv=curve.to_csv(index=False), html=open('/relatorio.html', encoding='utf-8').read()))
+json.dumps(dict(history=history, historyJson=json.dumps(history, ensure_ascii=False, indent=2, allow_nan=False), historyCsv=audit.historico_csv(history), rejectionCsv=open('/diagnostico_restricoes.csv', encoding='utf-8').read(), viability=viability, config=cfg, profile=search_profile, calibrationState=calibration_state, limits=limits, margins=margin_chain, marginFactors=p.margens(1, 1, cfg['margens']), resistanceCurve=simulation_curve, funnel=funnel, ranking=busca.json_records(top), curve=busca.json_records(curve), warning=warning, rankingCsv=top.to_csv(index=False), diagnosticCsv=open('/diagnostico_motor.csv', encoding='utf-8').read(), configJson=json.dumps(record, ensure_ascii=False, indent=2, default=float), curveCsv=curve.to_csv(index=False), html=open('/relatorio.html', encoding='utf-8').read()))
 `);
     self.postMessage({type:'result', result:JSON.parse(result)});
   } catch(error) {
@@ -1954,7 +2041,7 @@ json.dumps(dict(config=cfg, profile=search_profile, calibrationState=calibration
 
 ### 32.6. `projects/propulsao.py`
 
-<!-- SOURCE projects/propulsao.py SHA256_LF 340f7f354d7188735a3d0b9ca5573b28976b34b2a7aeb7b3e5f464d65de1ea82 FINAL_LF 1 -->
+<!-- SOURCE projects/propulsao.py SHA256_LF f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032 FINAL_LF 1 -->
 ````python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -2547,7 +2634,7 @@ def validar_config(cfg, verbose=False, limite_malha=150000):
     return count
 
 
-def backtest(cfg, verbose=True):
+def backtest(cfg, verbose=True, auditoria=None):
     validar_config(cfg, verbose=verbose)
     nv, ag, hl, rs, mg = cfg["navio"], cfg["agua"], cfg["helice"], cfg["restricoes"], cfg["margens"]
     r = resistencia(nv, ag, nv["velocidade_nos"], cfg["compat_planilha"])
@@ -2568,12 +2655,18 @@ def backtest(cfg, verbose=True):
     g = pd.concat(linhas, ignore_index=True)
     funil = [("Combinacoes geradas", len(g))]
 
+    def rejeicoes(frame, mask, status):
+        if auditoria is not None:
+            auditoria(frame[~np.asarray(mask, dtype=bool)], status)
+
     w, t, er = coef_propulsivos(nv, r, g["D"].values, g["Ae/Ao"].values, g["P/D"].values, cfg["compat_planilha"])
     va = r["V"] * (1 - w)
     t_req_h = r["RT"] / (1 - t) / Nh
     rpm, ok = _resolver_rpm(nv, ag, g["D"].values, g["Ae/Ao"].values, g["P/D"].values, g["Z"].values, va, t_req_h,
                             hl["rpm"]["min"], hl["rpm"]["max"])
-    g = g.assign(w=w, t=t, etaR=er, Va=va, rpm=rpm)[ok].reset_index(drop=True)
+    g = g.assign(w=w, t=t, etaR=er, Va=va, rpm=rpm)
+    rejeicoes(g, ok, 'SEM_BRACKET')
+    g = g[ok].reset_index(drop=True)
     funil.append(("Empuxo disponivel = requerido (M12 = 0)", len(g)))
 
     n = g["rpm"].values / 60
@@ -2582,15 +2675,21 @@ def backtest(cfg, verbose=True):
     kts, kqs, eta0, rn = serie_b(J, pd_, ae, z, D, va, n, ag["mu"] / ag["rho"])
     etaH = (1 - g["t"].values) / (1 - g["w"].values)
     g = g.assign(J=J, KTs=kts, KQs=kqs, eta0=eta0, etaH=etaH, etaD=eta0 * etaH * g["etaR"].values)
-    g = g[(g["J"] >= rs["j_min"]) & (g["KTs"] > 0) & (g["KQs"] > 0)].reset_index(drop=True)
+    mask = (g["J"] >= rs["j_min"]) & (g["KTs"] > 0) & (g["KQs"] > 0)
+    rejeicoes(g, mask, 'J_KT_KQ')
+    g = g[mask].reset_index(drop=True)
     funil.append(("J >= %.2f e KT, KQ > 0" % rs["j_min"], len(g)))
-    g = g[(g["eta0"] >= rs["eta0_min"]) & (g["eta0"] <= rs["eta0_max"])].reset_index(drop=True)
+    mask = (g["eta0"] >= rs["eta0_min"]) & (g["eta0"] <= rs["eta0_max"])
+    rejeicoes(g, mask, 'EFICIENCIA')
+    g = g[mask].reset_index(drop=True)
     funil.append(("%.1f <= eta0 <= %.1f" % (rs["eta0_min"], rs["eta0_max"]), len(g)))
 
     t_h = r["RT"] / (1 - g["t"].values) / Nh                         # empuxo por helice (kN)
     ok_cav, tau, tmax, sigma = burrill(ag, nv, g["D"].values, g["Ae/Ao"].values, g["P/D"].values, g["Va"].values,
                                        g["rpm"].values / 60, t_h, rs["cavitacao_pct"])
-    g = g.assign(tau_c=tau, tau_max=tmax, sigma=sigma)[ok_cav].reset_index(drop=True)
+    g = g.assign(tau_c=tau, tau_max=tmax, sigma=sigma)
+    rejeicoes(g, ok_cav, 'CAVITACAO')
+    g = g[ok_cav].reset_index(drop=True)
     funil.append(("Cavitacao Burrill <= %d%% dorso" % rs["cavitacao_pct"], len(g)))
 
     et = eta_t(cfg)
@@ -2603,7 +2702,9 @@ def backtest(cfg, verbose=True):
     g["MCR_kW"] = [m["bhp3"] for m in mcr]
     g["RPM_MCR"] = [m["rpm3"] for m in mcr]
     if rs["potencia_max_motor_kw"]:
-        g = g[g["MCR_kW"] <= rs["potencia_max_motor_kw"]].reset_index(drop=True)
+        mask = g["MCR_kW"] <= rs["potencia_max_motor_kw"]
+        rejeicoes(g, mask, 'MCR_LIMITE')
+        g = g[mask].reset_index(drop=True)
         funil.append(("MCR <= potencia maxima do motor", len(g)))
 
     motores = carregar_motores(cfg)
@@ -2619,6 +2720,14 @@ def backtest(cfg, verbose=True):
         df_["SFOC"] = sfoc(carga, cfg)
         df_["FOC_t_h"] = df_["SFOC"] * df_["BHP_kW"] * nv["n_motores"] / 1e6
         df_["FOC_MCR_t_h"] = df_["SFOC"] * df_["MCR_kW"] * nv["n_motores"] / 1e6     # como a aba 'Margens'
+    if auditoria is not None:
+        for status, mask in (
+            ('VIAVEL', sem_motor['cabe_motor']),
+            ('RPM_E_POTENCIA_MOTOR', (sem_motor['viol_rpm'] > 0) & (sem_motor['viol_kw'] > 0)),
+            ('RPM_MOTOR', (sem_motor['viol_rpm'] > 0) & (sem_motor['viol_kw'] == 0)),
+            ('POTENCIA_MOTOR', (sem_motor['viol_rpm'] == 0) & (sem_motor['viol_kw'] > 0)),
+        ):
+            auditoria(sem_motor[mask], status)
     chave = {"bhp": "BHP_kW", "foc": "FOC_t_h"}[cfg["backtest"]["objetivo"]]
     g = g.sort_values(([chave] if rs['motor'] == 'estrito' else ['viol_total', chave]) + ['Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').reset_index(drop=True)
     sem_motor = sem_motor.sort_values(['viol_total', chave, 'Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').reset_index(drop=True)
@@ -2703,9 +2812,11 @@ def avisos_limites(cfg, row):
 
 
 def registro_execucao(cfg, funil, perfil='personalizado'):
+    from propulsao_auditoria import hashes_fontes
     motors = carregar_motores(cfg)
     catalog = [dict(zip(('modelo', 'n_min', 'n_max', 'p_max_kw', 'p_min_kw'), row)) for row in motors]
     provenance = 'MOTORES interno aproximado (reserva)'
+    catalog_file_hash = None
     if cfg['motor'].get('catalogo_registrado') is not None:
         catalog = copy.deepcopy(cfg['motor']['catalogo_registrado'])
         provenance = 'Catálogo incorporado no registro da execução anterior'
@@ -2714,6 +2825,8 @@ def registro_execucao(cfg, funil, perfil='personalizado'):
         if csv_path and not os.path.isfile(csv_path) and not os.path.isabs(csv_path):
             csv_path = os.path.join(os.path.dirname(__file__), csv_path)
         if csv_path and os.path.isfile(csv_path):
+            with open(csv_path, 'rb') as handle:
+                catalog_file_hash = hashlib.sha256(handle.read()).hexdigest()
             provenance = 'CSV: ' + cfg['motor']['arquivo_csv']
             catalog = json.loads(pd.read_csv(csv_path).to_json(orient='records'))
     catalog_json = json.dumps(catalog, ensure_ascii=False, sort_keys=True, default=float)
@@ -2723,7 +2836,7 @@ def registro_execucao(cfg, funil, perfil='personalizado'):
                 combinacoes_geradas=funil[0][1] if funil else tamanho_malha(cfg),
                 funil=funil, catalogo=catalog, catalogo_origem=provenance, catalogo_sha256=hashlib.sha256(catalog_json.encode('utf-8')).hexdigest(),
                 criterio_violacao='viol_total = max(viol_rpm, viol_kw); denominadores: RPM e MCR solicitados; potência avaliada em rpm limitada ao layout',
-                modelo_sha256=model_hash)
+                modelo_sha256=model_hash, fontes_sha256=hashes_fontes(), catalogo_arquivo_sha256=catalog_file_hash)
 
 
 def diagnostico_csv(frame, caminho=None):
@@ -2802,8 +2915,10 @@ table.t td{padding:5px 8px;text-align:right;border-top:1px solid var(--bd)}svg{w
 
 
 def rodar_tudo(cfg, perfil='personalizado'):
+    from propulsao_auditoria import AuditoriaFunil, diagnosticar_viabilidade, historico_csv
     out = cfg["backtest"]["saida"]
     os.makedirs(out, exist_ok=True)
+    auditoria = AuditoriaFunil(os.path.join(out, 'diagnostico_restricoes.csv'))
     pd.set_option("display.width", 220, "display.max_columns", 30)
     nv = cfg["navio"]
     print("=" * 78 + "\n  PROPULSAO - %s - %.1f nos\n" % (nv["nome"], nv["velocidade_nos"]) + "=" * 78)
@@ -2812,9 +2927,9 @@ def rodar_tudo(cfg, perfil='personalizado'):
         import propulsao_busca as busca
         g, sem_motor, funil, r, cfg = busca.backtest_perfil(cfg, perfil,
             progresso=lambda done, total: print('Tamanho da malha: %s combinações, processadas em lotes.' % format(total, ',')) if done == 0 else None,
-            diagnostico_destino=os.path.join(out, 'diagnostico_motor.csv'))
+            diagnostico_destino=os.path.join(out, 'diagnostico_motor.csv'), auditoria=auditoria.registrar)
     else:
-        g, sem_motor, funil, r = backtest(cfg)
+        g, sem_motor, funil, r = backtest(cfg, auditoria=auditoria.registrar)
     print("\nRESISTENCIA (Holtrop 84): RT=%.1f kN | EHP=%.0f kW | Fn=%.3f | (1+k1)=%.3f | S=%.0f m2"
           % (r["RT"], r["EHP_kW"], r["Fn"], r["k1"], r["S"]))
     cols = ["Z", "P/D", "Ae/Ao", "D", "rpm", "J", "eta0", "etaD", "tau_c", "tau_max", "BHP_kW", "MCR_kW", "RPM_MCR",
@@ -2836,6 +2951,16 @@ def rodar_tudo(cfg, perfil='personalizado'):
     if not batched:
         diagnostico_csv(sem_motor, os.path.join(out, 'diagnostico_motor.csv'))
     registro = registro_execucao(cfg, funil, perfil)
+    melhor_registro = None if topo.empty else topo.astype(object).where(pd.notna(topo), None).iloc[0].to_dict()
+    historico = [auditoria.finalizar(cfg, funil, melhor_registro, dict(perfil=perfil, malha=cfg['helice']))]
+    historico[0]['fontes_sha256'] = registro['fontes_sha256']
+    historico[0].update(RT=float(r['RT']), EHP_kW=float(r['EHP_kW']))
+    registro['historico_busca'] = historico
+    registro['diagnostico_viabilidade'] = None if topo.empty else diagnosticar_viabilidade(melhor_registro, cfg)
+    with open(os.path.join(out, 'historico_busca.json'), 'w', encoding='utf-8') as handle:
+        json.dump(historico, handle, ensure_ascii=False, indent=2, allow_nan=False)
+    with open(os.path.join(out, 'historico_busca.csv'), 'w', encoding='utf-8', newline='') as handle:
+        handle.write(historico_csv(historico))
     with open(os.path.join(out, 'config_execucao.json'), 'w', encoding='utf-8') as f:
         json.dump(registro, f, ensure_ascii=False, indent=2, default=float)
     print('Fator total de potência das margens: %.9f; fator de rpm: %.9f' % (margens(1, 1, cfg['margens'])['bhp3'], margens(1, 1, cfg['margens'])['rpm3']))
@@ -2927,7 +3052,7 @@ if __name__ == "__main__":
 
 ### 32.7. `projects/propulsao_busca.py`
 
-<!-- SOURCE projects/propulsao_busca.py SHA256_LF 6e5678ac710502fefd9219e82d77de4306714ade922a8b3cfbbd9b6f531521f0 FINAL_LF 1 -->
+<!-- SOURCE projects/propulsao_busca.py SHA256_LF c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c FINAL_LF 1 -->
 ````python
 """Search profiles with bounded batches and a global, deterministic ranking."""
 import copy
@@ -2956,7 +3081,7 @@ def configurar_perfil(cfg, perfil):
     return result
 
 
-def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, diagnostico_destino=None):
+def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, diagnostico_destino=None, auditoria=None):
     cfg = configurar_perfil(cfg, perfil)
     hl, nv, rs = cfg['helice'], cfg['navio'], cfg['restricoes']
     # Validate physical inputs and each step without allocating the entire grid.
@@ -3017,7 +3142,7 @@ def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, d
         local = copy.deepcopy(cfg)
         local['helice']['z'] = [z]
         local['helice']['diametro'].update(min=float(part[0]), max=float(part[-1]))
-        g, f, steps, resistance = p.backtest(local, verbose=False)
+        g, f, steps, resistance = p.backtest(local, verbose=False, auditoria=auditoria)
         accepted, fallback = merge(accepted, g), merge(fallback, f, exploratory=True)
         if diagnostico_destino:
             with open(diagnostico_destino, 'a', encoding='utf-8', newline='') as handle:
@@ -3032,7 +3157,7 @@ def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, d
     return accepted, fallback, list(funnel.items()), resistance, cfg
 
 
-def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None):
+def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None, auditoria=None):
     """All allowed blades: broad search, per-Z refinement and exhaustive tiles."""
     import os
     import tempfile
@@ -3128,7 +3253,7 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
         for grid in grids:
             part = os.path.join(temporary,'parte.csv') if diagnostico_destino else None
             callback = (lambda done,size: progresso(completed+done,total)) if progresso else None
-            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part)
+            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part,auditoria=auditoria)
             frames.extend([g,f])
             for name,count in steps:
                 funnel[name] = funnel.get(name,0)+count
@@ -3774,7 +3899,7 @@ if __name__=='__main__':unittest.main()
 
 ### 32.18. `projects/test_propulsao_worker.cjs`
 
-<!-- SOURCE projects/test_propulsao_worker.cjs SHA256_LF a9d22f04932a38044c26abc608569d5828e403f7f5807dc04f4a0ea9057eeead FINAL_LF 1 -->
+<!-- SOURCE projects/test_propulsao_worker.cjs SHA256_LF 5bbc2b27f769b9a44e9a1e64392d7518f8e03695333e895ad1f707c4c0ea60dc FINAL_LF 1 -->
 ````javascript
 /* Run with: node projects/test_propulsao_worker.cjs <path-to-pyodide-package> */
 const assert = require('node:assert/strict');
@@ -3796,7 +3921,7 @@ async function main() {
     fetch: async (url, options) => {
       assert.ok(url.includes('?v=exploration-4'));
       assert.equal(options.cache,'no-store');
-      return {ok:true, text:async () => fs.readFileSync(path.join(__dirname, path.basename(url.split('?')[0])), 'utf8')};
+      return {ok:true, text:async () => fs.readFileSync(path.join(__dirname, '..', url.split('?')[0]), 'utf8')};
     },
     self:{postMessage:message => messages.push(message)},
     Uint8Array,
@@ -3822,11 +3947,18 @@ async function main() {
   assert.ok(completed.result.curveCsv.includes('V_nos'));
   assert.ok(completed.result.html.includes('<!doctype html>'));
   assert.ok(completed.result.diagnosticCsv.includes('viol_total'));
+  assert.ok(completed.result.rejectionCsv.includes('analisado_motor'));
+  assert.equal(completed.result.history[0].avaliados_brutos,1);
+  assert.equal(completed.result.history[0].analisados_motor,1);
+  assert.equal(JSON.parse(completed.result.historyJson).length,1);
+  assert.ok(completed.result.historyCsv.includes('rejeitados_antes_motor'));
+  assert.equal(completed.result.viability.rpm_motor_servico,completed.result.ranking[0].rpm);
   const record=JSON.parse(completed.result.configJson);
   assert.equal(record.catalogo.length,56);
   assert.equal(record.perfil,'personalizado');
   assert.equal(record.config.helice.diametro.max,8);
   assert.equal(record.combinacoes_geradas,1);
+  assert.equal(record.fontes_sha256['naval.js'].bytes_sha256,require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(__dirname,'..','naval.js'))).digest('hex'));
   assert.ok(completed.result.limits.some(warning=>warning.includes('limite de D')));
   assert.ok(completed.result.curve.some(row=>row.status_envelope==='abaixo da faixa SFOC'&&row.FOC_t_h===null));
   const input=simulation.backtestInput(completed.result);
@@ -3860,6 +3992,12 @@ async function main() {
   assert.equal(calibration.result.calibrationState.iteracao,1);
   assert.equal(calibration.result.config.calibracao.motor,'8G90ME-C10.5');
   assert.ok(calibration.result.ranking.every(row=>row.motor_proximo==='8G90ME-C10.5'));
+  await context.self.onmessage({data:{action:'calibrate',config,motor:'8G90ME-C10.5',level:'completo',state:calibration.result.calibrationState,history:calibration.result.history}});
+  const second=messages.at(-1);
+  assert.equal(second.type,'result',second.message);
+  assert.equal(second.result.history.length,2);
+  assert.equal(second.result.history[1].rodada,2);
+  assert.equal(second.result.history[1].avaliados_brutos,second.result.funnel[0][1]);
   await context.self.onmessage({data:{action:'calibrate',config,motor:'',level:'infinita'}});
   const general=messages.at(-1);
   assert.equal(general.type,'result',general.message);
@@ -3884,7 +4022,7 @@ main().catch(error => {console.error(error); process.exitCode = 1;});
 
 ### 32.19. `projects/test_propulsao_browser.cjs`
 
-<!-- SOURCE projects/test_propulsao_browser.cjs SHA256_LF 20ac257ed1ee16e473342c6b55e462b08a291b8b010ac54c9dcaddb6760a4a80 FINAL_LF 1 -->
+<!-- SOURCE projects/test_propulsao_browser.cjs SHA256_LF 9a2b562d69269e9ace2eb79842db2db858c26b5ea1131740430945f19dbad854 FINAL_LF 1 -->
 ````javascript
 /* node projects/test_propulsao_browser.cjs <playwright-core-path> [base-url] */
 const assert=require('node:assert/strict');
@@ -3933,7 +4071,9 @@ async function main(){
     assert.equal((await downloadPromise).suggestedFilename(),'relatorio.html');
     assert.match(await page.locator('#backtestSummary').textContent(),/Motor mais próximo/);
     assert.match(await page.locator('#backtestMargins').textContent(),/1,?\.?464395625/);
-    for(const [key,name] of [['diagnosticCsv','diagnostico_motor.csv'],['configJson','config_execucao.json']]){
+    assert.match(await page.locator('#backtestDiagnostic').textContent(),/RPM MCR requerida/);
+    assert.match(await page.locator('#backtestDiagnostic').textContent(),/rejeitadas antes do catálogo/);
+    for(const [key,name] of [['diagnosticCsv','diagnostico_motor.csv'],['configJson','config_execucao.json'],['rejectionCsv','diagnostico_restricoes.csv'],['historyCsv','historico_busca.csv'],['historyJson','historico_busca.json']]){
       const pending=page.waitForEvent('download');
       await page.locator(`[data-backtest-download=${key}]`).click();
       assert.equal((await pending).suggestedFilename(),name);
@@ -3960,6 +4100,10 @@ async function main(){
     assert.equal(targetTransfer.rpm,targetTransfer.row.rpm);
     assert.equal(targetTransfer.wake,targetTransfer.row.w);
     assert.equal(targetTransfer.diameter,targetTransfer.row.D);
+    const history=await page.evaluate(()=>window.lastImportedBacktest.history);
+    assert.equal(history.length,4);
+    assert.deepEqual(history.map(row=>row.rodada),[1,2,3,4]);
+    assert.ok(history.every(row=>row.avaliados_brutos===row.analisados_motor+row.rejeitados_antes_motor));
     await page.selectOption('#calibrationLevel','infinita');
     await page.locator('#backtestStart').click();
     await page.waitForFunction(()=>document.getElementById('backtestSummary').textContent.includes('rodada 2'),{},{timeout:120000});
@@ -3993,7 +4137,7 @@ main().catch(error=>{console.error(error);process.exitCode=1;});
 
 ### 32.20. `projects/gerar_manual_propulsao.py`
 
-<!-- SOURCE projects/gerar_manual_propulsao.py SHA256_LF 81dd8bb5861977c239ed05cdd05b39c2aa6b26492d264b224e6275830b11645a FINAL_LF 1 -->
+<!-- SOURCE projects/gerar_manual_propulsao.py SHA256_LF c8f74840f9f7ce9c2c958c43b6ed743bf741432b484e5a53de628e74b3640528 FINAL_LF 1 -->
 ````python
 """Atualiza anexos integrais do manual e verifica sua transcrição."""
 from pathlib import Path
@@ -4015,6 +4159,11 @@ FILES = [
     'projects/test_propulsao_diagnostico.py', 'projects/test_propulsao_calibracao.py',
     'projects/test_propulsao_worker.cjs', 'projects/test_propulsao_browser.cjs',
     'projects/gerar_manual_propulsao.py',
+    'projects/propulsao_auditoria.py', 'projects/test_propulsao_auditoria.py',
+    'projects/registrar_baseline_p0.py', 'projects/comparar_baseline_p0.py',
+    'projects/baselines/p0_antes.json', 'projects/baselines/p0_depois.json',
+    'projects/baselines/p0_auditoria_referencia.json',
+    'projects/Relatorio_Entrega_P0.md',
 ]
 
 
@@ -4086,7 +4235,7 @@ def generate(published=None):
         fence = '`' * max(4, 1 + max((len(m.group()) for m in re.finditer(r'`+', content)), default=0))
         language = {'.py': 'python', '.js': 'javascript', '.cjs': 'javascript',
                     '.html': 'html', '.css': 'css', '.csv': 'csv', '.md': 'markdown',
-                    '.svg': 'xml', '.txt': 'text'}.get(path.suffix, 'text')
+                    '.svg': 'xml', '.txt': 'text', '.json': 'json'}.get(path.suffix, 'text')
         out += [f'\n### 32.{index}. `{name}`\n',
                 f'<!-- SOURCE {name} SHA256_LF {digest(content.encode("utf-8"))} FINAL_LF {int(content.endswith(chr(10)))} -->',
                 fence + language, content + ('' if content.endswith('\n') else '\n') + fence,
@@ -4124,9 +4273,1655 @@ if __name__ == '__main__':
 ````
 <!-- END_SOURCE projects/gerar_manual_propulsao.py -->
 
-### 32.21. `publicado/naval.html`
+### 32.21. `projects/propulsao_auditoria.py`
 
-<!-- SOURCE publicado/naval.html SHA256_LF 4b486776fde74ff1fa7a7b6a98e6c8a287f451a75497a61c0aed2792bd6a16fc FINAL_LF 1 -->
+<!-- SOURCE projects/propulsao_auditoria.py SHA256_LF 1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41 FINAL_LF 1 -->
+````python
+"""P0: observação do funil legado, sem alterar critérios ou equações."""
+import csv
+import hashlib
+import json
+import math
+import time
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+
+COLUNAS = ['rodada', 'Z', 'D', 'Ae/Ao', 'P/D', 'status', 'analisado_motor',
+           'viavel', 'rpm', 'J', 'KTs', 'KQs', 'eta0', 'tau_c', 'tau_max', 'sigma',
+           'BHP_kW', 'MCR_kW', 'RPM_MCR', 'SFOC', 'FOC_t_h', 'motor_proximo',
+           'motor_n_min', 'motor_n_max', 'motor_p_min_kw', 'motor_p_max_kw',
+           'viol_rpm', 'viol_kw', 'viol_total']
+
+
+def seguro(value):
+    if hasattr(value, 'item'):
+        value = value.item()
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
+class AuditoriaFunil:
+    """Uma linha por geometria/lote, na primeira rejeição ou análise do motor.
+
+    As contagens são chamadas avaliadas nesta rodada, não geometrias únicas.
+    Valores inexistentes em etapas anteriores ficam vazios, nunca zero.
+    """
+    def __init__(self, caminho, rodada=1):
+        self.handle = open(caminho, 'w', encoding='utf-8', newline='')
+        self.writer = csv.DictWriter(self.handle, fieldnames=COLUNAS)
+        self.writer.writeheader()
+        self.rodada = rodada
+        self.contagens = Counter()
+        self.inicio = time.perf_counter()
+
+    def registrar(self, frame, status):
+        self.contagens[status] += len(frame)
+        motor = status in ('VIAVEL', 'RPM_MOTOR', 'POTENCIA_MOTOR', 'RPM_E_POTENCIA_MOTOR')
+        for row in frame.to_dict(orient='records'):
+            result = {key: seguro(row.get(key)) for key in COLUNAS}
+            result.update(rodada=self.rodada, status=status, analisado_motor=motor,
+                          viavel=(status == 'VIAVEL'))
+            self.writer.writerow(result)
+
+    def finalizar(self, cfg, funil, melhor=None, contexto=None):
+        self.handle.flush()
+        self.handle.close()
+        counts = dict(self.contagens)
+        motor_keys = ('VIAVEL', 'RPM_MOTOR', 'POTENCIA_MOTOR', 'RPM_E_POTENCIA_MOTOR')
+        return dict(rodada=self.rodada, data_utc=datetime.now(timezone.utc).isoformat(),
+                    duracao_s=time.perf_counter()-self.inicio, avaliados_brutos=sum(counts.values()),
+                    analisados_motor=sum(counts.get(key, 0) for key in motor_keys),
+                    rejeitados_antes_motor=sum(value for key,value in counts.items() if key not in motor_keys),
+                    aprovados_motor=counts.get('VIAVEL', 0), rejeicoes_e_resultados=counts,
+                    funil_rodada=funil, contexto=contexto or {},
+                    objetivo=cfg['backtest']['objetivo'], melhor=melhor,
+                    nota='Contagens da rodada; avaliações podem repetir geometrias entre rodadas. Sem cache ou contagem de únicos nesta entrega.')
+
+
+def diagnosticar_viabilidade(candidato, config):
+    import propulsao as p
+    row = candidato
+    vr, vp = float(row['viol_rpm']), float(row['viol_kw'])
+    status = 'RPM_E_POTENCIA_MOTOR' if vr > 0 and vp > 0 else 'RPM_MOTOR' if vr > 0 else 'POTENCIA_MOTOR' if vp > 0 else 'VIAVEL'
+    limites = []
+    z = int(row['Z'])
+    for key,column in (('diametro','D'),('p_d','P/D'),('ae_ao','Ae/Ao')):
+        span = config['helice'][key]
+        lower,upper = span['min'],span['max']
+        if upper is None:
+            upper = config['navio']['calado_popa']/config['restricoes']['ta_sobre_d_min']
+        if key == 'ae_ao':
+            lower,upper = max(lower,p.AE_AO_POR_Z[z][0]),min(upper,p.AE_AO_POR_Z[z][1])
+        last = lower+math.floor((upper-lower+1e-9)/span['passo'])*span['passo']
+        tolerance = config.get('diagnostico',{}).get('tolerancia_limite',min(span['passo']/2,max(1e-9,span['passo']*1e-5)))
+        if not math.isfinite(tolerance) or tolerance < 0:
+            raise ValueError('Tolerância de diagnóstico deve ser finita e não negativa.')
+        limites.append(dict(parametro=column, minimo_efetivo=lower, teto_efetivo=upper,
+                            ultimo_ponto_amostrado=last, tolerancia=tolerance,
+                            no_teto=math.isclose(float(row[column]),upper,rel_tol=0,abs_tol=tolerance),
+                            no_ultimo_ponto=math.isclose(float(row[column]),last,rel_tol=0,abs_tol=tolerance)))
+    return dict(viavel=bool(row['cabe_motor']), status=status,
+                motor_proximo=row['motor_proximo'], rpm_helice_servico=float(row['rpm']),
+                rpm_motor_servico=float(row['rpm']), rpm_motor_mcr=float(row['RPM_MCR']),
+                rpm_motor_min=float(row['motor_n_min']), rpm_motor_max=float(row['motor_n_max']),
+                mcr_kw=float(row['MCR_kW']), potencia_min_kw=float(row['motor_p_min_kw']),
+                potencia_max_kw=float(row['motor_p_max_kw']), viol_rpm=vr, viol_kw=vp,
+                viol_total=float(row['viol_total']), restricoes_ativas=p.avisos_limites(config,row), limites_geometricos=limites,
+                transmissao='Modelo legado: rotação do motor igual à da hélice; nenhuma relação de redução implementada.')
+
+
+def hashes_fontes(extra=None):
+    root = Path(__file__).resolve().parent.parent
+    names = ['projects/propulsao.py', 'projects/propulsao_busca.py',
+             'projects/propulsao_auditoria.py', 'projects/motores.csv',
+             'naval.js', 'naval-backtest.js', 'naval-backtest-worker.js', 'naval.html', 'naval.css']
+    result = {}
+    for name in names:
+        path = root/name
+        if path.is_file():
+            raw = path.read_bytes()
+            result[name] = dict(bytes_sha256=hashlib.sha256(raw).hexdigest(),
+                                lf_sha256=hashlib.sha256(raw.replace(b'\r\n',b'\n')).hexdigest())
+    result.update(extra or {})
+    return result
+
+
+def historico_csv(historico):
+    import io
+    stream = io.StringIO(newline='')
+    columns = ['rodada', 'data_utc', 'duracao_s', 'avaliados_brutos', 'analisados_motor',
+               'rejeitados_antes_motor', 'aprovados_motor', 'objetivo', 'rejeicoes_e_resultados', 'contexto']
+    writer = csv.DictWriter(stream, fieldnames=columns)
+    writer.writeheader()
+    for row in historico:
+        writer.writerow({key: json.dumps(row.get(key),ensure_ascii=False,allow_nan=False)
+                         if isinstance(row.get(key),(dict,list)) else row.get(key) for key in columns})
+    return stream.getvalue()
+````
+<!-- END_SOURCE projects/propulsao_auditoria.py -->
+
+### 32.22. `projects/test_propulsao_auditoria.py`
+
+<!-- SOURCE projects/test_propulsao_auditoria.py SHA256_LF 16e92639f954e5ecd41f3817644fee2bf51f116a58f46eb8d206c2111820e793 FINAL_LF 1 -->
+````python
+import copy
+import csv
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+import numpy as np
+import pandas as pd
+import propulsao as p
+import propulsao_busca as busca
+from propulsao_auditoria import AuditoriaFunil, diagnosticar_viabilidade, historico_csv, hashes_fontes
+
+
+class AuditTests(unittest.TestCase):
+    def config(self):
+        cfg = copy.deepcopy(p.CONFIG)
+        cfg['helice'].update(z=[4], diametro=dict(min=8,max=8,passo=.1),
+                             ae_ao=dict(min=.7,max=.7,passo=.05), p_d=dict(min=.85,max=.85,passo=.05))
+        return cfg
+
+    def run_audit(self, cfg):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'diagnostico.csv'
+            audit = AuditoriaFunil(path)
+            g,f,funnel,r = p.backtest(cfg, False, audit.registrar)
+            history = audit.finalizar(cfg,funnel)
+            with path.open(encoding='utf-8',newline='') as handle:
+                rows = list(csv.DictReader(handle))
+        self.assertEqual(history['avaliados_brutos'],funnel[0][1])
+        self.assertEqual(len(rows),funnel[0][1])
+        self.assertEqual(history['analisados_motor']+history['rejeitados_antes_motor'],funnel[0][1])
+        return g,f,rows,history
+
+    def test_observer_preserves_values_and_records_unavailable_as_empty(self):
+        cfg = self.config()
+        g,f,_,_ = p.backtest(cfg,False)
+        observed, fallback, rows, history = self.run_audit(cfg)
+        pd.testing.assert_frame_equal(g,observed,check_exact=True)
+        pd.testing.assert_frame_equal(f,fallback,check_exact=True)
+        self.assertEqual(rows[0]['analisado_motor'],'True')
+        self.assertEqual(float(rows[0]['MCR_kW']),float(f.iloc[0].MCR_kW))
+        self.assertEqual(len(list(csv.DictReader(historico_csv([history]).splitlines()))),1)
+
+    def test_first_rejections_bracket_coefficients_efficiency_and_power_limit(self):
+        for status, change in (
+            ('SEM_BRACKET',lambda cfg:cfg['helice'].update(rpm=dict(min=40,max=41))),
+            ('J_KT_KQ',lambda cfg:cfg['restricoes'].update(j_min=10)),
+            ('EFICIENCIA',lambda cfg:cfg['restricoes'].update(eta0_max=.01)),
+            ('MCR_LIMITE',lambda cfg:cfg['restricoes'].update(potencia_max_motor_kw=1)),
+        ):
+            with self.subTest(status=status):
+                cfg=self.config();change(cfg)
+                _,_,rows,history=self.run_audit(cfg)
+                self.assertEqual(rows[0]['status'],status)
+                self.assertEqual(rows[0]['analisado_motor'],'False')
+                self.assertEqual(rows[0]['motor_proximo'],'')
+                self.assertEqual(history['rejeitados_antes_motor'],1)
+
+    def test_cavitation_rejection(self):
+        original=p.burrill
+        def rejected(*args,**kwargs):
+            ok,tau,maximum,sigma=original(*args,**kwargs)
+            return np.zeros_like(ok,dtype=bool),tau,maximum,sigma
+        with patch.object(p,'burrill',side_effect=rejected):
+            _,_,rows,_=self.run_audit(self.config())
+        self.assertEqual(rows[0]['status'],'CAVITACAO')
+        self.assertNotEqual(rows[0]['sigma'],'')
+
+    def test_compatible_and_only_power_incompatible_catalog(self):
+        for maximum,status in ((1000000,'VIAVEL'),(1,'POTENCIA_MOTOR')):
+            with patch.object(p,'carregar_motores',return_value=[('TESTE',1,1000,maximum,.001)]):
+                _,f,rows,_=self.run_audit(self.config())
+                diag=diagnosticar_viabilidade(f.iloc[0],self.config())
+            self.assertEqual(rows[0]['status'],status)
+            self.assertEqual(diag['status'],status)
+            self.assertEqual(diag['viavel'],status=='VIAVEL')
+            self.assertEqual(diag['rpm_motor_servico'],float(f.iloc[0].rpm))
+
+    def test_batched_trace_conservation_and_calibration_unchanged(self):
+        cfg=self.config();cfg['helice']['z']=[3,4,5,6]
+        cfg['helice']['ae_ao']=dict(min=.7,max=1.05,passo=.05)
+        with tempfile.TemporaryDirectory() as directory:
+            audit=AuditoriaFunil(Path(directory)/'round.csv')
+            g,f,funnel,_,used=busca.backtest_perfil(cfg,'personalizado',tamanho_lote=4,auditoria=audit.registrar)
+            record=audit.finalizar(used,funnel)
+        self.assertEqual(record['avaliados_brutos'],funnel[0][1])
+        plain=busca.calibrar_motor(cfg,nivel='rapido')
+        with tempfile.TemporaryDirectory() as directory:
+            audit=AuditoriaFunil(Path(directory)/'calibration.csv')
+            observed=busca.calibrar_motor(cfg,nivel='rapido',auditoria=audit.registrar)
+            record=audit.finalizar(observed[4],observed[2])
+        pd.testing.assert_frame_equal(plain[0],observed[0],check_exact=True)
+        pd.testing.assert_frame_equal(plain[1],observed[1],check_exact=True)
+        self.assertEqual(plain[5],observed[5])
+        self.assertEqual(record['avaliados_brutos'],observed[2][0][1])
+
+    def test_frozen_reference_point_and_hashes(self):
+        baseline=json.loads((Path(__file__).parent/'baselines/p0_antes.json').read_text(encoding='utf-8'))
+        expected=baseline['casos']['pontual']
+        g,f,_,r=p.backtest(expected['config'],False)
+        row=(g if len(g) else f).iloc[0]
+        for key in ('rpm','BHP_kW','MCR_kW','RPM_MCR','SFOC','FOC_t_h'):
+            self.assertLessEqual(abs(float(row[key])-expected['melhor'][key]),1e-9+1e-10*abs(expected['melhor'][key]))
+        for key in ('RT','EHP_kW'):
+            self.assertLessEqual(abs(r[key]-expected[key]),1e-9+1e-10*abs(expected[key]))
+        hashes=hashes_fontes()
+        self.assertEqual(hashes['projects/motores.csv'],baseline['hashes']['projects/motores.csv'])
+        self.assertEqual(hashes['naval.js'],baseline['hashes']['naval.js'])
+
+    def test_reference_geometry_stays_incompatible_by_rpm(self):
+        baseline=json.loads((Path(__file__).parent/'baselines/p0_antes.json').read_text(encoding='utf-8'))
+        expected=baseline['casos']['referencia_detalhada']; row=expected['melhor']
+        cfg=copy.deepcopy(expected['config'])
+        cfg['helice']['z']=[row['Z']]
+        for key,column in (('diametro','D'),('ae_ao','Ae/Ao'),('p_d','P/D')):
+            cfg['helice'][key].update(min=row[column],max=row[column])
+        g,f,rows,_=self.run_audit(cfg)
+        self.assertTrue(g.empty)
+        diag=diagnosticar_viabilidade(f.iloc[0],expected['config'])
+        self.assertFalse(diag['viavel'])
+        self.assertEqual(diag['status'],'RPM_MOTOR')
+        self.assertEqual(diag['rpm_motor_max'],84)
+        self.assertEqual(diag['motor_proximo'],'8G90ME-C10.5')
+        for key in ('rpm','BHP_kW','MCR_kW','RPM_MCR','SFOC','FOC_t_h'):
+            self.assertLessEqual(abs(float(f.iloc[0][key])-row[key]),1e-9+1e-10*abs(row[key]))
+        self.assertEqual(rows[0]['status'],'RPM_MOTOR')
+
+    def test_limit_input_and_last_sample_are_distinct(self):
+        cfg=self.config();cfg['helice']['p_d']=dict(min=.85,max=.94,passo=.05)
+        _,f,_,_=p.backtest(self.config(),False)
+        row=f.iloc[0].copy();row['P/D']=.9
+        limits=diagnosticar_viabilidade(row,cfg)['limites_geometricos']
+        pitch=next(item for item in limits if item['parametro']=='P/D')
+        self.assertTrue(pitch['no_ultimo_ponto'])
+        self.assertFalse(pitch['no_teto'])
+        self.assertEqual(pitch['teto_efetivo'],.94)
+
+
+if __name__=='__main__':
+    unittest.main()
+````
+<!-- END_SOURCE projects/test_propulsao_auditoria.py -->
+
+### 32.23. `projects/registrar_baseline_p0.py`
+
+<!-- SOURCE projects/registrar_baseline_p0.py SHA256_LF 92cb1c90a741aa9f97918860e64dac2053073ea31aacb3e5291d6b5a5439363f FINAL_LF 1 -->
+````python
+"""Registra evidência numérica antes/depois; recusa sobrescrever o destino."""
+import argparse
+import copy
+import hashlib
+import json
+import time
+from pathlib import Path
+import propulsao as p
+import propulsao_busca as busca
+
+ROOT = Path(__file__).resolve().parent.parent
+SOURCES = ['projects/propulsao.py', 'projects/propulsao_busca.py',
+           'projects/motores.csv', 'naval.js', 'naval-backtest.js',
+           'naval-backtest-worker.js', 'naval.html', 'naval.css']
+
+
+def capture():
+    result = {'api': p.WEB_API_VERSION, 'tolerancias': {
+        'rtol': 1e-10, 'atol': 1e-9,
+        'regra': 'abs(novo-antigo) <= atol + rtol*abs(antigo); contagens e geometrias exatas'},
+        'hashes': {name: {'bytes_sha256': hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),
+                         'lf_sha256': hashlib.sha256((ROOT/name).read_bytes().replace(b'\r\n', b'\n')).hexdigest()}
+                   for name in SOURCES}, 'casos': {}}
+    for name in ('referencia_detalhada', 'pontual'):
+        cfg = copy.deepcopy(p.CONFIG)
+        profile = 'detalhado'
+        if name == 'pontual':
+            cfg['helice'].update(z=[4], diametro=dict(min=8,max=8,passo=.1),
+                                 ae_ao=dict(min=.7,max=.7,passo=.05), p_d=dict(min=.85,max=.85,passo=.05))
+            profile = 'personalizado'
+        started = time.perf_counter()
+        g, f, funnel, resistance, effective = busca.backtest_perfil(cfg, profile)
+        top = g if len(g) else f
+        row = None if top.empty else busca.json_records(top.head(1))[0]
+        result['casos'][name] = {'config': cfg, 'perfil': profile, 'funil': funnel,
+            'aprovados_retidos': len(g), 'RT': float(resistance['RT']),
+            'EHP_kW': float(resistance['EHP_kW']), 'melhor': row,
+            'duracao_s': time.perf_counter()-started}
+    return result
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('destino', type=Path)
+    args = parser.parse_args()
+    if args.destino.exists():
+        parser.error('Destino já existe: baseline não será sobrescrito.')
+    result = capture()
+    args.destino.parent.mkdir(parents=True, exist_ok=True)
+    with args.destino.open('x', encoding='utf-8') as handle:
+        json.dump(result, handle, ensure_ascii=False, indent=2, allow_nan=False)
+    print(args.destino)
+````
+<!-- END_SOURCE projects/registrar_baseline_p0.py -->
+
+### 32.24. `projects/comparar_baseline_p0.py`
+
+<!-- SOURCE projects/comparar_baseline_p0.py SHA256_LF fcfc9e356d6cc420817fbd5abb76a14bdfcb50fa97e43dd4f0f480812638d7f5 FINAL_LF 1 -->
+````python
+"""Compara os snapshots P0 e gera relatório com tolerâncias explícitas."""
+import json
+import math
+from pathlib import Path
+from propulsao_auditoria import hashes_fontes
+
+ROOT=Path(__file__).resolve().parent
+
+
+def comparar():
+    before=json.loads((ROOT/'baselines/p0_antes.json').read_text(encoding='utf-8'))
+    after=json.loads((ROOT/'baselines/p0_depois.json').read_text(encoding='utf-8'))
+    rows=[]
+    for name,old in before['casos'].items():
+        new=after['casos'][name]
+        assert old['config']==new['config'], name+' configuração'
+        assert old['funil']==new['funil'], name+' funil'
+        assert old['aprovados_retidos']==new['aprovados_retidos'], name+' aprovados'
+        for key in ('RT','EHP_kW'):
+            assert math.isclose(old[key],new[key],rel_tol=1e-10,abs_tol=1e-9), (name,key)
+            rows.append((name,key,old[key],new[key],new[key]-old[key]))
+        for key,value in old['melhor'].items():
+            changed=new['melhor'][key]
+            if isinstance(value,(int,float)) and not isinstance(value,bool):
+                assert math.isclose(value,changed,rel_tol=1e-10,abs_tol=1e-9),(name,key)
+            else:
+                assert value==changed,(name,key)
+        for key in ('rpm','BHP_kW','MCR_kW','RPM_MCR','SFOC','FOC_t_h'):
+            rows.append((name,key,old['melhor'][key],new['melhor'][key],new['melhor'][key]-old['melhor'][key]))
+    return before,after,rows
+
+
+if __name__=='__main__':
+    before,after,rows=comparar()
+    text=['# Entrega P0 — baseline, diagnóstico e rastreabilidade\n',
+          '## Escopo implementado\n',
+          'API v4 preservada. Equações, margens, limites geométricos, catálogo, seleção, refinamentos e parada permanecem com o comportamento legado. A observação é opcional em `backtest`, `backtest_perfil` e `calibrar_motor`, pelo argumento adicional `auditoria=None`.\n',
+          '- `propulsao_auditoria.py`: CSV de primeira rejeição por geometria/lote, diagnóstico do candidato, hashes e histórico.\n- `propulsao.py` e `propulsao_busca.py`: callbacks nos filtros existentes e integração das exportações.\n- Worker/controlador/HTML: explicação de RPM e potência, downloads e histórico das rodadas concluídas.\n- Testes: conservação das contagens, valores sem arredondamento, causas de rejeição, exclusividade de motor, snapshots, transferências e downloads.\n',
+          '## Evidência numérica\n',
+          'Os snapshots `baselines/p0_antes.json` e `baselines/p0_depois.json` incluem CONFIG integral e hashes. O registrador recusa sobrescrever arquivos existentes. Este comparador verifica todas as colunas do melhor candidato e exige igualdade de CONFIG, funil e contagem de aprovados.\n',
+          'Aceite: `abs(novo-antigo) <= 1e-9 + 1e-10*abs(antigo)`. Contagens são exatas. Nenhuma diferença foi observada nos valores abaixo. Tempos foram registrados, mas não constituem benchmark controlado.\n',
+          '| Caso | Grandeza | Antes | Depois | Diferença |','|---|---|---:|---:|---:|']
+    text += [f'| {name} | {key} | {old:.17g} | {new:.17g} | {difference:.17g} |' for name,key,old,new,difference in rows]
+    reference=after['casos']['referencia_detalhada']
+    text += ['\n### Funil de referência\n','| Etapa | Sobreviventes |','|---|---:|']
+    text += [f'| {name} | {count} |' for name,count in reference['funil']]
+    audited=ROOT/'baselines/p0_auditoria_referencia.json'
+    if audited.exists():
+        audit=json.loads(audited.read_text(encoding='utf-8'))
+        assert audit['avaliados_brutos']==reference['funil'][0][1]
+        assert audit['analisados_motor']==14213 and audit['aprovados_motor']==0
+        text += ['\n### Auditoria executada na malha completa\n',
+                 'Evidência: `baselines/p0_auditoria_referencia.json`. Foram observadas todas as 214.415 avaliações, com 200.202 rejeições anteriores ao motor e 14.213 análises pelo catálogo. Cada avaliação consta exatamente uma vez no diagnóstico da execução.\n',
+                 '| Primeira rejeição ou resultado | Quantidade |','|---|---:|']
+        text += [f'| {name} | {count} |' for name,count in audit['rejeicoes_e_resultados'].items()]
+    text += ['\nO caso continua sem motor aprovado: 8G90ME-C10.5, RPM MCR 90,27403028244929 contra máximo 84, violação 0,06949983580902624. O ranking exibido é exploratório.\n',
+             '## Interpretação dos novos arquivos\n',
+             '- `diagnostico_restricoes.csv`: última rodada, uma linha por geometria avaliada em cada lote. Registra a primeira rejeição: `SEM_BRACKET`, `J_KT_KQ`, `EFICIENCIA`, `CAVITACAO`, `MCR_LIMITE`; quem chega ao motor recebe `VIAVEL`, `RPM_MOTOR`, `POTENCIA_MOTOR` ou `RPM_E_POTENCIA_MOTOR`.\n- `analisado_motor=false`: não houve avaliação pelo catálogo. Campos ainda não calculados ficam vazios. `viavel=true` exige passar os filtros legados e o catálogo; modo informativo não transforma incompatibilidade em aprovação.\n- `historico_busca.json`: rodadas concluídas, datas, duração, causas, avaliados brutos, rejeitados anteriores ao motor, analisados por motor, aprovados, objetivo, contexto da malha e melhor preservado. Na calibração, o melhor inclui candidatos de rodadas anteriores; não significa candidato encontrado nessa rodada.\n- `historico_busca.csv`: contagens e contexto por rodada; detalhes do melhor e hashes estão no JSON.\n- `config_execucao.json`: CONFIG, catálogo efetivo, diagnóstico e histórico com hashes. O hash do arquivo CSV é separado do hash do catálogo efetivo serializado. Para catálogo incorporado, o hash bruto do CSV é `null`.\n',
+             'As contagens são da rodada, não cumulativas. A soma `analisados_motor + rejeitados_antes_motor` deve igualar `avaliados_brutos`. Uma geometria pode reaparecer em outra rodada. Os CSVs de candidatos não são um arquivo acumulado de todas as rodadas; o histórico acumulado reúne seus resumos. Interseções de área por Z delimitam a malha gerada; geometrias excluídas antes de gerá-la não contam como avaliadas. Em `SEM_BRACKET`, a RPM é a tentativa retornada pela bisseção legada, não equilíbrio confirmado; o status impede interpretá-la como solução.\n',
+             'O histórico acompanha o último snapshot concluído. Ao parar durante a próxima rodada, as contagens parciais não são incorporadas; o snapshot anterior é preservado. Uma nova execução começa outro histórico. Não foi implementada persistência entre sessões.\n',
+             '## Limites ativos\n',
+             '`diagnostico_viabilidade.limites_geometricos` separa teto efetivo, mínimo, último ponto amostrado e indicadores de proximidade. Tolerância padrão: `min(passo/2, max(1e-9, passo*1e-5))`; pode ser informada em `diagnostico.tolerancia_limite`. Isso apenas anota proximidade e não altera restrições nem cálculo. Para refinamentos, esses campos descrevem a malha-base da configuração exportada; as malhas efetivamente percorridas estão em `contexto.malhas_rodada`.\n',
+             '## Verificação executada\n',
+             '- Antes: 25 testes Python aprovados. Depois: 33 testes Python aprovados.\n- Teste real Worker/Pyodide 0.29.2 aprovado, incluindo históricos, hashes e equivalência Python/JS.\n- Teste real Edge/Playwright aprovado, incluindo calibração completa, exploração infinita com parada, transferências, exportações e largura móvel.\n- Verificação sintática dos três JavaScripts aprovada.\n- Comparação das árvores sintáticas de `resistencia`, `serie_b`, `coef_propulsivos`, `burrill`, `margens`, `sfoc`, `_resolver_rpm` e `motores_que_cabem`: sem alterações em relação ao checkout publicado anterior.\n',
+             '```powershell\npython -m unittest discover -s projects -p "test_propulsao*.py"\npython projects/comparar_baseline_p0.py\nnode --check naval.js\nnode --check naval-backtest.js\nnode --check naval-backtest-worker.js\nnode projects/test_propulsao_worker.cjs <caminho-pyodide>\nnode projects/test_propulsao_browser.cjs <caminho-playwright-core> http://127.0.0.1:8080\n```\n',
+             '## Rastreabilidade dos arquivos finais\n',
+             'Hashes abaixo correspondem aos arquivos disponíveis quando este relatório foi gerado. Os snapshots numéricos também guardam seus próprios hashes; pequenos acréscimos posteriores de metadados não reescrevem essas evidências. No navegador, os hashes de recursos JS/HTML/CSS são calculados das fontes obtidas com `no-store`, não de uma introspecção do código já carregado pelo navegador.\n',
+             '| Arquivo | SHA-256 LF |','|---|---|']
+    text += [f'| `{name}` | `{value["lf_sha256"]}` |' for name,value in hashes_fontes().items()]
+    text += ['\n## Pendências deliberadas\n',
+             'Cache, contagem de geometrias únicas, retomada persistente, critérios de convergência, otimizadores heurísticos, transmissão, missão e calibração experimental pertencem às próximas fases. O status `VIAVEL` significa aprovação nos filtros atuais do modelo; não certificação de engenharia. Este P0 não acrescenta filtros de domínio empírico nem altera raízes nos extremos. Catálogo ausente/entrada inválida continua sendo erro de execução; não é contado como rejeição de uma geometria.\n']
+    (ROOT/'Relatorio_Entrega_P0.md').write_text('\n'.join(text)+'\n',encoding='utf-8',newline='\n')
+    print('PASS: baseline comparado; relatório gerado.')
+````
+<!-- END_SOURCE projects/comparar_baseline_p0.py -->
+
+### 32.25. `projects/baselines/p0_antes.json`
+
+<!-- SOURCE projects/baselines/p0_antes.json SHA256_LF 969626310b3232e2cb267efdd1b1eaf999e293706c5916b3c300680db9d73b05 FINAL_LF 0 -->
+````json
+{
+  "api": 4,
+  "tolerancias": {
+    "rtol": 1e-10,
+    "atol": 1e-09,
+    "regra": "abs(novo-antigo) <= atol + rtol*abs(antigo); contagens e geometrias exatas"
+  },
+  "hashes": {
+    "projects/propulsao.py": {
+      "bytes_sha256": "340f7f354d7188735a3d0b9ca5573b28976b34b2a7aeb7b3e5f464d65de1ea82",
+      "lf_sha256": "340f7f354d7188735a3d0b9ca5573b28976b34b2a7aeb7b3e5f464d65de1ea82"
+    },
+    "projects/propulsao_busca.py": {
+      "bytes_sha256": "6e5678ac710502fefd9219e82d77de4306714ade922a8b3cfbbd9b6f531521f0",
+      "lf_sha256": "6e5678ac710502fefd9219e82d77de4306714ade922a8b3cfbbd9b6f531521f0"
+    },
+    "projects/motores.csv": {
+      "bytes_sha256": "1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e",
+      "lf_sha256": "0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8"
+    },
+    "naval.js": {
+      "bytes_sha256": "1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062",
+      "lf_sha256": "1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062"
+    },
+    "naval-backtest.js": {
+      "bytes_sha256": "3e4535bee94f063ec394f8fff3e2d99f764dd18f7032b1dc28ea34b674e2d006",
+      "lf_sha256": "3e4535bee94f063ec394f8fff3e2d99f764dd18f7032b1dc28ea34b674e2d006"
+    },
+    "naval-backtest-worker.js": {
+      "bytes_sha256": "5056edaab22fe5be4d5f98d91ca46323c619f6720b730399b1b4a38228f4d394",
+      "lf_sha256": "5056edaab22fe5be4d5f98d91ca46323c619f6720b730399b1b4a38228f4d394"
+    },
+    "naval.html": {
+      "bytes_sha256": "dbde9641244e7cec2515ad99d56698e8c7f43ca4df86b0c2bd433cadd89787ac",
+      "lf_sha256": "dbde9641244e7cec2515ad99d56698e8c7f43ca4df86b0c2bd433cadd89787ac"
+    },
+    "naval.css": {
+      "bytes_sha256": "4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b",
+      "lf_sha256": "4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b"
+    }
+  },
+  "casos": {
+    "referencia_detalhada": {
+      "config": {
+        "navio": {
+          "nome": "Navio Holtrop",
+          "lpp": 200.0,
+          "lwl": 205.0,
+          "boca": 32.0,
+          "calado_proa": 10.0,
+          "calado_popa": 10.0,
+          "deslocamento": 37500.0,
+          "lcb_pr": 104.0,
+          "abt": 20.0,
+          "hb": 4.0,
+          "cm": 0.98,
+          "cwp": 0.75,
+          "at": 16.0,
+          "c_popa": 10,
+          "velocidade_nos": 25.0,
+          "n_motores": 1,
+          "n_helices": 1,
+          "apendices": {
+            "Leme a re de cadaste": [
+              0,
+              1.75
+            ],
+            "Leme a re de popa": [
+              0,
+              1.4
+            ],
+            "Lemes compensados bi-helice": [
+              0,
+              2.8
+            ],
+            "Pe-de-galinha": [
+              0,
+              3.0
+            ],
+            "Cadaste": [
+              0,
+              1.75
+            ],
+            "Leme a re do propulsor": [
+              67,
+              1.96
+            ],
+            "Bosso do eixo": [
+              0,
+              2.0
+            ],
+            "Eixo do propulsor": [
+              0,
+              3.0
+            ],
+            "Estabilizador": [
+              0,
+              2.8
+            ],
+            "Sonar-dome": [
+              0,
+              2.7
+            ],
+            "Bolina": [
+              0,
+              1.4
+            ]
+          }
+        },
+        "agua": {
+          "rho": 1025.0,
+          "mu": 0.00085,
+          "g": 9.805,
+          "p_atm": 101325.0,
+          "p_vapor": 2278.0
+        },
+        "helice": {
+          "z": [
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ae_ao": {
+            "min": 0.3,
+            "max": 1.05,
+            "passo": 0.05
+          },
+          "p_d": {
+            "min": 0.5,
+            "max": 1.4,
+            "passo": 0.05
+          },
+          "diametro": {
+            "min": 5.0,
+            "max": null,
+            "passo": 0.1
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        },
+        "restricoes": {
+          "eta0_min": 0.1,
+          "eta0_max": 0.9,
+          "j_min": 0.01,
+          "cavitacao_pct": 5,
+          "ta_sobre_d_min": 1.25,
+          "potencia_max_motor_kw": null,
+          "motor": "estrito"
+        },
+        "margens": {
+          "mar": 15.0,
+          "rotacao": 5.0,
+          "operacional": 10.0,
+          "expoente_rpm": 0.3333333333333333,
+          "acoplamento": "direto",
+          "eta_t": {
+            "direto": 0.97,
+            "caixa": 0.93
+          }
+        },
+        "motor": {
+          "sfoc_min": 165.0,
+          "carga_otima": 0.8,
+          "curvatura": 0.3,
+          "arquivo_csv": "motores.csv",
+          "carga_min_sfoc": 0.25,
+          "carga_max_sfoc": 1.0
+        },
+        "compat_planilha": false,
+        "backtest": {
+          "objetivo": "bhp",
+          "top": 15,
+          "saida": "saida"
+        },
+        "perfil_velocidades": [
+          5,
+          7,
+          10,
+          12,
+          15,
+          17,
+          20,
+          22,
+          25,
+          28,
+          30
+        ]
+      },
+      "perfil": "detalhado",
+      "funil": [
+        [
+          "Combinacoes geradas",
+          214415
+        ],
+        [
+          "Empuxo disponivel = requerido (M12 = 0)",
+          199557
+        ],
+        [
+          "J >= 0.01 e KT, KQ > 0",
+          199557
+        ],
+        [
+          "0.1 <= eta0 <= 0.9",
+          199557
+        ],
+        [
+          "Cavitacao Burrill <= 5% dorso",
+          14213
+        ],
+        [
+          "Cabe no layout de um motor MAN B&W",
+          0
+        ]
+      ],
+      "aprovados_retidos": 0,
+      "RT": 1787.4331403028286,
+      "EHP_kW": 22988.376221116934,
+      "melhor": {
+        "Z": 5,
+        "D": 8.0,
+        "Ae/Ao": 0.975,
+        "P/D": 1.4,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9726057366849179,
+        "Va": 9.557653569805808,
+        "rpm": 79.49564871830827,
+        "J": 0.9017147847619831,
+        "KTs": 0.3023033356968156,
+        "KQs": 0.06517364523238109,
+        "eta0": 0.6656719380250781,
+        "etaH": 1.079558158476437,
+        "etaD": 0.6989451890658444,
+        "tau_c": 0.18724929299075918,
+        "tau_max": 0.19029191784903376,
+        "sigma": 0.4898930255559815,
+        "BHP_kW": 33907.318198528905,
+        "MCR_kW": 49653.728425408626,
+        "RPM_MCR": 90.27403028244929,
+        "motor_proximo": "8G90ME-C10.5",
+        "viol_rpm": 0.06949983580902624,
+        "viol_kw": 0.0,
+        "viol_total": 0.06949983580902624,
+        "motor_n_min": 72.0,
+        "motor_n_max": 84.0,
+        "rpm_layout": 84.0,
+        "motor_p_min_kw": 37360.0,
+        "motor_p_max_kw": 49920.0,
+        "motivo_motor": "só rpm",
+        "Motores": "-",
+        "cabe_motor": false,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.617732182965866,
+        "FOC_MCR_t_h": 8.226582431156915
+      },
+      "duracao_s": 103.54109020001488
+    },
+    "pontual": {
+      "config": {
+        "navio": {
+          "nome": "Navio Holtrop",
+          "lpp": 200.0,
+          "lwl": 205.0,
+          "boca": 32.0,
+          "calado_proa": 10.0,
+          "calado_popa": 10.0,
+          "deslocamento": 37500.0,
+          "lcb_pr": 104.0,
+          "abt": 20.0,
+          "hb": 4.0,
+          "cm": 0.98,
+          "cwp": 0.75,
+          "at": 16.0,
+          "c_popa": 10,
+          "velocidade_nos": 25.0,
+          "n_motores": 1,
+          "n_helices": 1,
+          "apendices": {
+            "Leme a re de cadaste": [
+              0,
+              1.75
+            ],
+            "Leme a re de popa": [
+              0,
+              1.4
+            ],
+            "Lemes compensados bi-helice": [
+              0,
+              2.8
+            ],
+            "Pe-de-galinha": [
+              0,
+              3.0
+            ],
+            "Cadaste": [
+              0,
+              1.75
+            ],
+            "Leme a re do propulsor": [
+              67,
+              1.96
+            ],
+            "Bosso do eixo": [
+              0,
+              2.0
+            ],
+            "Eixo do propulsor": [
+              0,
+              3.0
+            ],
+            "Estabilizador": [
+              0,
+              2.8
+            ],
+            "Sonar-dome": [
+              0,
+              2.7
+            ],
+            "Bolina": [
+              0,
+              1.4
+            ]
+          }
+        },
+        "agua": {
+          "rho": 1025.0,
+          "mu": 0.00085,
+          "g": 9.805,
+          "p_atm": 101325.0,
+          "p_vapor": 2278.0
+        },
+        "helice": {
+          "z": [
+            4
+          ],
+          "ae_ao": {
+            "min": 0.7,
+            "max": 0.7,
+            "passo": 0.05
+          },
+          "p_d": {
+            "min": 0.85,
+            "max": 0.85,
+            "passo": 0.05
+          },
+          "diametro": {
+            "min": 8,
+            "max": 8,
+            "passo": 0.1
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        },
+        "restricoes": {
+          "eta0_min": 0.1,
+          "eta0_max": 0.9,
+          "j_min": 0.01,
+          "cavitacao_pct": 5,
+          "ta_sobre_d_min": 1.25,
+          "potencia_max_motor_kw": null,
+          "motor": "estrito"
+        },
+        "margens": {
+          "mar": 15.0,
+          "rotacao": 5.0,
+          "operacional": 10.0,
+          "expoente_rpm": 0.3333333333333333,
+          "acoplamento": "direto",
+          "eta_t": {
+            "direto": 0.97,
+            "caixa": 0.93
+          }
+        },
+        "motor": {
+          "sfoc_min": 165.0,
+          "carga_otima": 0.8,
+          "curvatura": 0.3,
+          "arquivo_csv": "motores.csv",
+          "carga_min_sfoc": 0.25,
+          "carga_max_sfoc": 1.0
+        },
+        "compat_planilha": false,
+        "backtest": {
+          "objetivo": "bhp",
+          "top": 15,
+          "saida": "saida"
+        },
+        "perfil_velocidades": [
+          5,
+          7,
+          10,
+          12,
+          15,
+          17,
+          20,
+          22,
+          25,
+          28,
+          30
+        ]
+      },
+      "perfil": "personalizado",
+      "funil": [
+        [
+          "Combinacoes geradas",
+          1
+        ],
+        [
+          "Empuxo disponivel = requerido (M12 = 0)",
+          1
+        ],
+        [
+          "J >= 0.01 e KT, KQ > 0",
+          1
+        ],
+        [
+          "0.1 <= eta0 <= 0.9",
+          1
+        ],
+        [
+          "Cavitacao Burrill <= 5% dorso",
+          1
+        ],
+        [
+          "Cabe no layout de um motor MAN B&W",
+          0
+        ]
+      ],
+      "aprovados_retidos": 0,
+      "RT": 1787.4331403028286,
+      "EHP_kW": 22988.376221116934,
+      "melhor": {
+        "Z": 4,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 115.95876981227279,
+        "J": 0.6181714577482252,
+        "KTs": 0.14207656745216676,
+        "KQs": 0.019818697083245785,
+        "eta0": 0.705304146119456,
+        "etaH": 1.079558158476437,
+        "etaD": 0.752929131085084,
+        "tau_c": 0.11354016996623682,
+        "tau_max": 0.11717985587357319,
+        "sigma": 0.24925459256050153,
+        "BHP_kW": 31476.211970749755,
+        "MCR_kW": 46093.62710153857,
+        "RPM_MCR": 131.6809871524179,
+        "motor_proximo": "5G90ME-C10.5",
+        "viol_rpm": 0.36209469706684533,
+        "viol_kw": 0.3231168393133773,
+        "viol_total": 0.36209469706684533,
+        "motor_n_min": 72.0,
+        "motor_n_max": 84.0,
+        "rpm_layout": 84.0,
+        "motor_p_min_kw": 23350.0,
+        "motor_p_max_kw": 31200.0,
+        "motivo_motor": "rpm e potência",
+        "Motores": "-",
+        "cabe_motor": false,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.214948818736364,
+        "FOC_MCR_t_h": 7.636748234756451
+      },
+      "duracao_s": 0.028523399989353493
+    }
+  }
+}
+````
+<!-- END_SOURCE projects/baselines/p0_antes.json -->
+
+### 32.26. `projects/baselines/p0_depois.json`
+
+<!-- SOURCE projects/baselines/p0_depois.json SHA256_LF 785fa42ebce01b95f898c155b384a50ff98b59a09b320880c7eaa16c569c63fe FINAL_LF 0 -->
+````json
+{
+  "api": 4,
+  "tolerancias": {
+    "rtol": 1e-10,
+    "atol": 1e-09,
+    "regra": "abs(novo-antigo) <= atol + rtol*abs(antigo); contagens e geometrias exatas"
+  },
+  "hashes": {
+    "projects/propulsao.py": {
+      "bytes_sha256": "1a3b05267a783d61bfdffcce1e8bd571a33cb76a168a921aa6027b3456e53788",
+      "lf_sha256": "1a3b05267a783d61bfdffcce1e8bd571a33cb76a168a921aa6027b3456e53788"
+    },
+    "projects/propulsao_busca.py": {
+      "bytes_sha256": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c",
+      "lf_sha256": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c"
+    },
+    "projects/motores.csv": {
+      "bytes_sha256": "1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e",
+      "lf_sha256": "0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8"
+    },
+    "naval.js": {
+      "bytes_sha256": "1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062",
+      "lf_sha256": "1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062"
+    },
+    "naval-backtest.js": {
+      "bytes_sha256": "914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb",
+      "lf_sha256": "914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb"
+    },
+    "naval-backtest-worker.js": {
+      "bytes_sha256": "70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e",
+      "lf_sha256": "70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e"
+    },
+    "naval.html": {
+      "bytes_sha256": "496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663",
+      "lf_sha256": "496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663"
+    },
+    "naval.css": {
+      "bytes_sha256": "4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b",
+      "lf_sha256": "4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b"
+    }
+  },
+  "casos": {
+    "referencia_detalhada": {
+      "config": {
+        "navio": {
+          "nome": "Navio Holtrop",
+          "lpp": 200.0,
+          "lwl": 205.0,
+          "boca": 32.0,
+          "calado_proa": 10.0,
+          "calado_popa": 10.0,
+          "deslocamento": 37500.0,
+          "lcb_pr": 104.0,
+          "abt": 20.0,
+          "hb": 4.0,
+          "cm": 0.98,
+          "cwp": 0.75,
+          "at": 16.0,
+          "c_popa": 10,
+          "velocidade_nos": 25.0,
+          "n_motores": 1,
+          "n_helices": 1,
+          "apendices": {
+            "Leme a re de cadaste": [
+              0,
+              1.75
+            ],
+            "Leme a re de popa": [
+              0,
+              1.4
+            ],
+            "Lemes compensados bi-helice": [
+              0,
+              2.8
+            ],
+            "Pe-de-galinha": [
+              0,
+              3.0
+            ],
+            "Cadaste": [
+              0,
+              1.75
+            ],
+            "Leme a re do propulsor": [
+              67,
+              1.96
+            ],
+            "Bosso do eixo": [
+              0,
+              2.0
+            ],
+            "Eixo do propulsor": [
+              0,
+              3.0
+            ],
+            "Estabilizador": [
+              0,
+              2.8
+            ],
+            "Sonar-dome": [
+              0,
+              2.7
+            ],
+            "Bolina": [
+              0,
+              1.4
+            ]
+          }
+        },
+        "agua": {
+          "rho": 1025.0,
+          "mu": 0.00085,
+          "g": 9.805,
+          "p_atm": 101325.0,
+          "p_vapor": 2278.0
+        },
+        "helice": {
+          "z": [
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "ae_ao": {
+            "min": 0.3,
+            "max": 1.05,
+            "passo": 0.05
+          },
+          "p_d": {
+            "min": 0.5,
+            "max": 1.4,
+            "passo": 0.05
+          },
+          "diametro": {
+            "min": 5.0,
+            "max": null,
+            "passo": 0.1
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        },
+        "restricoes": {
+          "eta0_min": 0.1,
+          "eta0_max": 0.9,
+          "j_min": 0.01,
+          "cavitacao_pct": 5,
+          "ta_sobre_d_min": 1.25,
+          "potencia_max_motor_kw": null,
+          "motor": "estrito"
+        },
+        "margens": {
+          "mar": 15.0,
+          "rotacao": 5.0,
+          "operacional": 10.0,
+          "expoente_rpm": 0.3333333333333333,
+          "acoplamento": "direto",
+          "eta_t": {
+            "direto": 0.97,
+            "caixa": 0.93
+          }
+        },
+        "motor": {
+          "sfoc_min": 165.0,
+          "carga_otima": 0.8,
+          "curvatura": 0.3,
+          "arquivo_csv": "motores.csv",
+          "carga_min_sfoc": 0.25,
+          "carga_max_sfoc": 1.0
+        },
+        "compat_planilha": false,
+        "backtest": {
+          "objetivo": "bhp",
+          "top": 15,
+          "saida": "saida"
+        },
+        "perfil_velocidades": [
+          5,
+          7,
+          10,
+          12,
+          15,
+          17,
+          20,
+          22,
+          25,
+          28,
+          30
+        ]
+      },
+      "perfil": "detalhado",
+      "funil": [
+        [
+          "Combinacoes geradas",
+          214415
+        ],
+        [
+          "Empuxo disponivel = requerido (M12 = 0)",
+          199557
+        ],
+        [
+          "J >= 0.01 e KT, KQ > 0",
+          199557
+        ],
+        [
+          "0.1 <= eta0 <= 0.9",
+          199557
+        ],
+        [
+          "Cavitacao Burrill <= 5% dorso",
+          14213
+        ],
+        [
+          "Cabe no layout de um motor MAN B&W",
+          0
+        ]
+      ],
+      "aprovados_retidos": 0,
+      "RT": 1787.4331403028286,
+      "EHP_kW": 22988.376221116934,
+      "melhor": {
+        "Z": 5,
+        "D": 8.0,
+        "Ae/Ao": 0.975,
+        "P/D": 1.4,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9726057366849179,
+        "Va": 9.557653569805808,
+        "rpm": 79.49564871830827,
+        "J": 0.9017147847619831,
+        "KTs": 0.3023033356968156,
+        "KQs": 0.06517364523238109,
+        "eta0": 0.6656719380250781,
+        "etaH": 1.079558158476437,
+        "etaD": 0.6989451890658444,
+        "tau_c": 0.18724929299075918,
+        "tau_max": 0.19029191784903376,
+        "sigma": 0.4898930255559815,
+        "BHP_kW": 33907.318198528905,
+        "MCR_kW": 49653.728425408626,
+        "RPM_MCR": 90.27403028244929,
+        "motor_proximo": "8G90ME-C10.5",
+        "viol_rpm": 0.06949983580902624,
+        "viol_kw": 0.0,
+        "viol_total": 0.06949983580902624,
+        "motor_n_min": 72.0,
+        "motor_n_max": 84.0,
+        "rpm_layout": 84.0,
+        "motor_p_min_kw": 37360.0,
+        "motor_p_max_kw": 49920.0,
+        "motivo_motor": "só rpm",
+        "Motores": "-",
+        "cabe_motor": false,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.617732182965866,
+        "FOC_MCR_t_h": 8.226582431156915
+      },
+      "duracao_s": 101.04499460000079
+    },
+    "pontual": {
+      "config": {
+        "navio": {
+          "nome": "Navio Holtrop",
+          "lpp": 200.0,
+          "lwl": 205.0,
+          "boca": 32.0,
+          "calado_proa": 10.0,
+          "calado_popa": 10.0,
+          "deslocamento": 37500.0,
+          "lcb_pr": 104.0,
+          "abt": 20.0,
+          "hb": 4.0,
+          "cm": 0.98,
+          "cwp": 0.75,
+          "at": 16.0,
+          "c_popa": 10,
+          "velocidade_nos": 25.0,
+          "n_motores": 1,
+          "n_helices": 1,
+          "apendices": {
+            "Leme a re de cadaste": [
+              0,
+              1.75
+            ],
+            "Leme a re de popa": [
+              0,
+              1.4
+            ],
+            "Lemes compensados bi-helice": [
+              0,
+              2.8
+            ],
+            "Pe-de-galinha": [
+              0,
+              3.0
+            ],
+            "Cadaste": [
+              0,
+              1.75
+            ],
+            "Leme a re do propulsor": [
+              67,
+              1.96
+            ],
+            "Bosso do eixo": [
+              0,
+              2.0
+            ],
+            "Eixo do propulsor": [
+              0,
+              3.0
+            ],
+            "Estabilizador": [
+              0,
+              2.8
+            ],
+            "Sonar-dome": [
+              0,
+              2.7
+            ],
+            "Bolina": [
+              0,
+              1.4
+            ]
+          }
+        },
+        "agua": {
+          "rho": 1025.0,
+          "mu": 0.00085,
+          "g": 9.805,
+          "p_atm": 101325.0,
+          "p_vapor": 2278.0
+        },
+        "helice": {
+          "z": [
+            4
+          ],
+          "ae_ao": {
+            "min": 0.7,
+            "max": 0.7,
+            "passo": 0.05
+          },
+          "p_d": {
+            "min": 0.85,
+            "max": 0.85,
+            "passo": 0.05
+          },
+          "diametro": {
+            "min": 8,
+            "max": 8,
+            "passo": 0.1
+          },
+          "rpm": {
+            "min": 40.0,
+            "max": 250.0
+          }
+        },
+        "restricoes": {
+          "eta0_min": 0.1,
+          "eta0_max": 0.9,
+          "j_min": 0.01,
+          "cavitacao_pct": 5,
+          "ta_sobre_d_min": 1.25,
+          "potencia_max_motor_kw": null,
+          "motor": "estrito"
+        },
+        "margens": {
+          "mar": 15.0,
+          "rotacao": 5.0,
+          "operacional": 10.0,
+          "expoente_rpm": 0.3333333333333333,
+          "acoplamento": "direto",
+          "eta_t": {
+            "direto": 0.97,
+            "caixa": 0.93
+          }
+        },
+        "motor": {
+          "sfoc_min": 165.0,
+          "carga_otima": 0.8,
+          "curvatura": 0.3,
+          "arquivo_csv": "motores.csv",
+          "carga_min_sfoc": 0.25,
+          "carga_max_sfoc": 1.0
+        },
+        "compat_planilha": false,
+        "backtest": {
+          "objetivo": "bhp",
+          "top": 15,
+          "saida": "saida"
+        },
+        "perfil_velocidades": [
+          5,
+          7,
+          10,
+          12,
+          15,
+          17,
+          20,
+          22,
+          25,
+          28,
+          30
+        ]
+      },
+      "perfil": "personalizado",
+      "funil": [
+        [
+          "Combinacoes geradas",
+          1
+        ],
+        [
+          "Empuxo disponivel = requerido (M12 = 0)",
+          1
+        ],
+        [
+          "J >= 0.01 e KT, KQ > 0",
+          1
+        ],
+        [
+          "0.1 <= eta0 <= 0.9",
+          1
+        ],
+        [
+          "Cavitacao Burrill <= 5% dorso",
+          1
+        ],
+        [
+          "Cabe no layout de um motor MAN B&W",
+          0
+        ]
+      ],
+      "aprovados_retidos": 0,
+      "RT": 1787.4331403028286,
+      "EHP_kW": 22988.376221116934,
+      "melhor": {
+        "Z": 4,
+        "D": 8.0,
+        "Ae/Ao": 0.7,
+        "P/D": 0.85,
+        "w": 0.2568563099071078,
+        "t": 0.19773316643993316,
+        "etaR": 0.9888527366849179,
+        "Va": 9.557653569805808,
+        "rpm": 115.95876981227279,
+        "J": 0.6181714577482252,
+        "KTs": 0.14207656745216676,
+        "KQs": 0.019818697083245785,
+        "eta0": 0.705304146119456,
+        "etaH": 1.079558158476437,
+        "etaD": 0.752929131085084,
+        "tau_c": 0.11354016996623682,
+        "tau_max": 0.11717985587357319,
+        "sigma": 0.24925459256050153,
+        "BHP_kW": 31476.211970749755,
+        "MCR_kW": 46093.62710153857,
+        "RPM_MCR": 131.6809871524179,
+        "motor_proximo": "5G90ME-C10.5",
+        "viol_rpm": 0.36209469706684533,
+        "viol_kw": 0.3231168393133773,
+        "viol_total": 0.36209469706684533,
+        "motor_n_min": 72.0,
+        "motor_n_max": 84.0,
+        "rpm_layout": 84.0,
+        "motor_p_min_kw": 23350.0,
+        "motor_p_max_kw": 31200.0,
+        "motivo_motor": "rpm e potência",
+        "Motores": "-",
+        "cabe_motor": false,
+        "SFOC": 165.67904751634399,
+        "FOC_t_h": 5.214948818736364,
+        "FOC_MCR_t_h": 7.636748234756451
+      },
+      "duracao_s": 0.030296199984150007
+    }
+  }
+}
+````
+<!-- END_SOURCE projects/baselines/p0_depois.json -->
+
+### 32.27. `projects/baselines/p0_auditoria_referencia.json`
+
+<!-- SOURCE projects/baselines/p0_auditoria_referencia.json SHA256_LF a781646265cd5b65af1a0564802b60edf88f168e9c376ceed41fa201b7a1f9e1 FINAL_LF 0 -->
+````json
+{
+  "rodada": 1,
+  "data_utc": "2026-10-14T01:29:46.216274+00:00",
+  "duracao_s": 115.71556969999801,
+  "avaliados_brutos": 214415,
+  "analisados_motor": 14213,
+  "rejeitados_antes_motor": 200202,
+  "aprovados_motor": 0,
+  "rejeicoes_e_resultados": {
+    "SEM_BRACKET": 14858,
+    "J_KT_KQ": 0,
+    "EFICIENCIA": 0,
+    "CAVITACAO": 185344,
+    "VIAVEL": 0,
+    "RPM_E_POTENCIA_MOTOR": 14149,
+    "RPM_MOTOR": 64,
+    "POTENCIA_MOTOR": 0
+  },
+  "funil_rodada": [
+    [
+      "Combinacoes geradas",
+      214415
+    ],
+    [
+      "Empuxo disponivel = requerido (M12 = 0)",
+      199557
+    ],
+    [
+      "J >= 0.01 e KT, KQ > 0",
+      199557
+    ],
+    [
+      "0.1 <= eta0 <= 0.9",
+      199557
+    ],
+    [
+      "Cavitacao Burrill <= 5% dorso",
+      14213
+    ],
+    [
+      "Cabe no layout de um motor MAN B&W",
+      0
+    ]
+  ],
+  "contexto": {},
+  "objetivo": "bhp",
+  "melhor": {
+    "Z": 5,
+    "D": 8.0,
+    "Ae/Ao": 0.975,
+    "P/D": 1.4,
+    "w": 0.2568563099071078,
+    "t": 0.19773316643993316,
+    "etaR": 0.9726057366849179,
+    "Va": 9.557653569805808,
+    "rpm": 79.49564871830827,
+    "J": 0.9017147847619831,
+    "KTs": 0.3023033356968156,
+    "KQs": 0.06517364523238109,
+    "eta0": 0.6656719380250781,
+    "etaH": 1.079558158476437,
+    "etaD": 0.6989451890658444,
+    "tau_c": 0.18724929299075918,
+    "tau_max": 0.19029191784903376,
+    "sigma": 0.4898930255559815,
+    "BHP_kW": 33907.318198528905,
+    "MCR_kW": 49653.728425408626,
+    "RPM_MCR": 90.27403028244929,
+    "motor_proximo": "8G90ME-C10.5",
+    "viol_rpm": 0.06949983580902624,
+    "viol_kw": 0.0,
+    "viol_total": 0.06949983580902624,
+    "motor_n_min": 72.0,
+    "motor_n_max": 84.0,
+    "rpm_layout": 84.0,
+    "motor_p_min_kw": 37360.0,
+    "motor_p_max_kw": 49920.0,
+    "motivo_motor": "só rpm",
+    "Motores": "-",
+    "cabe_motor": false,
+    "SFOC": 165.67904751634399,
+    "FOC_t_h": 5.617732182965866,
+    "FOC_MCR_t_h": 8.226582431156915
+  },
+  "nota": "Contagens da rodada; avaliações podem repetir geometrias entre rodadas. Sem cache ou contagem de únicos nesta entrega.",
+  "fontes_sha256": {
+    "projects/propulsao.py": {
+      "bytes_sha256": "f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032",
+      "lf_sha256": "f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032"
+    },
+    "projects/propulsao_busca.py": {
+      "bytes_sha256": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c",
+      "lf_sha256": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c"
+    },
+    "projects/propulsao_auditoria.py": {
+      "bytes_sha256": "1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41",
+      "lf_sha256": "1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41"
+    },
+    "projects/motores.csv": {
+      "bytes_sha256": "1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e",
+      "lf_sha256": "0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8"
+    },
+    "naval.js": {
+      "bytes_sha256": "1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062",
+      "lf_sha256": "1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062"
+    },
+    "naval-backtest.js": {
+      "bytes_sha256": "914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb",
+      "lf_sha256": "914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb"
+    },
+    "naval-backtest-worker.js": {
+      "bytes_sha256": "70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e",
+      "lf_sha256": "70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e"
+    },
+    "naval.html": {
+      "bytes_sha256": "496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663",
+      "lf_sha256": "496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663"
+    },
+    "naval.css": {
+      "bytes_sha256": "4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b",
+      "lf_sha256": "4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b"
+    }
+  }
+}
+````
+<!-- END_SOURCE projects/baselines/p0_auditoria_referencia.json -->
+
+### 32.28. `projects/Relatorio_Entrega_P0.md`
+
+<!-- SOURCE projects/Relatorio_Entrega_P0.md SHA256_LF 1b888a88a2b8ad07705f02b39e3cde24b465bb899828bc757f0720039dee64c6 FINAL_LF 1 -->
+````markdown
+# Entrega P0 — baseline, diagnóstico e rastreabilidade
+
+## Escopo implementado
+
+API v4 preservada. Equações, margens, limites geométricos, catálogo, seleção, refinamentos e parada permanecem com o comportamento legado. A observação é opcional em `backtest`, `backtest_perfil` e `calibrar_motor`, pelo argumento adicional `auditoria=None`.
+
+- `propulsao_auditoria.py`: CSV de primeira rejeição por geometria/lote, diagnóstico do candidato, hashes e histórico.
+- `propulsao.py` e `propulsao_busca.py`: callbacks nos filtros existentes e integração das exportações.
+- Worker/controlador/HTML: explicação de RPM e potência, downloads e histórico das rodadas concluídas.
+- Testes: conservação das contagens, valores sem arredondamento, causas de rejeição, exclusividade de motor, snapshots, transferências e downloads.
+
+## Evidência numérica
+
+Os snapshots `baselines/p0_antes.json` e `baselines/p0_depois.json` incluem CONFIG integral e hashes. O registrador recusa sobrescrever arquivos existentes. Este comparador verifica todas as colunas do melhor candidato e exige igualdade de CONFIG, funil e contagem de aprovados.
+
+Aceite: `abs(novo-antigo) <= 1e-9 + 1e-10*abs(antigo)`. Contagens são exatas. Nenhuma diferença foi observada nos valores abaixo. Tempos foram registrados, mas não constituem benchmark controlado.
+
+| Caso | Grandeza | Antes | Depois | Diferença |
+|---|---|---:|---:|---:|
+| referencia_detalhada | RT | 1787.4331403028286 | 1787.4331403028286 | 0 |
+| referencia_detalhada | EHP_kW | 22988.376221116934 | 22988.376221116934 | 0 |
+| referencia_detalhada | rpm | 79.495648718308274 | 79.495648718308274 | 0 |
+| referencia_detalhada | BHP_kW | 33907.318198528905 | 33907.318198528905 | 0 |
+| referencia_detalhada | MCR_kW | 49653.728425408626 | 49653.728425408626 | 0 |
+| referencia_detalhada | RPM_MCR | 90.274030282449289 | 90.274030282449289 | 0 |
+| referencia_detalhada | SFOC | 165.67904751634399 | 165.67904751634399 | 0 |
+| referencia_detalhada | FOC_t_h | 5.6177321829658657 | 5.6177321829658657 | 0 |
+| pontual | RT | 1787.4331403028286 | 1787.4331403028286 | 0 |
+| pontual | EHP_kW | 22988.376221116934 | 22988.376221116934 | 0 |
+| pontual | rpm | 115.95876981227279 | 115.95876981227279 | 0 |
+| pontual | BHP_kW | 31476.211970749755 | 31476.211970749755 | 0 |
+| pontual | MCR_kW | 46093.627101538572 | 46093.627101538572 | 0 |
+| pontual | RPM_MCR | 131.68098715241791 | 131.68098715241791 | 0 |
+| pontual | SFOC | 165.67904751634399 | 165.67904751634399 | 0 |
+| pontual | FOC_t_h | 5.2149488187363637 | 5.2149488187363637 | 0 |
+
+### Funil de referência
+
+| Etapa | Sobreviventes |
+|---|---:|
+| Combinacoes geradas | 214415 |
+| Empuxo disponivel = requerido (M12 = 0) | 199557 |
+| J >= 0.01 e KT, KQ > 0 | 199557 |
+| 0.1 <= eta0 <= 0.9 | 199557 |
+| Cavitacao Burrill <= 5% dorso | 14213 |
+| Cabe no layout de um motor MAN B&W | 0 |
+
+### Auditoria executada na malha completa
+
+Evidência: `baselines/p0_auditoria_referencia.json`. Foram observadas todas as 214.415 avaliações, com 200.202 rejeições anteriores ao motor e 14.213 análises pelo catálogo. Cada avaliação consta exatamente uma vez no diagnóstico da execução.
+
+| Primeira rejeição ou resultado | Quantidade |
+|---|---:|
+| SEM_BRACKET | 14858 |
+| J_KT_KQ | 0 |
+| EFICIENCIA | 0 |
+| CAVITACAO | 185344 |
+| VIAVEL | 0 |
+| RPM_E_POTENCIA_MOTOR | 14149 |
+| RPM_MOTOR | 64 |
+| POTENCIA_MOTOR | 0 |
+
+O caso continua sem motor aprovado: 8G90ME-C10.5, RPM MCR 90,27403028244929 contra máximo 84, violação 0,06949983580902624. O ranking exibido é exploratório.
+
+## Interpretação dos novos arquivos
+
+- `diagnostico_restricoes.csv`: última rodada, uma linha por geometria avaliada em cada lote. Registra a primeira rejeição: `SEM_BRACKET`, `J_KT_KQ`, `EFICIENCIA`, `CAVITACAO`, `MCR_LIMITE`; quem chega ao motor recebe `VIAVEL`, `RPM_MOTOR`, `POTENCIA_MOTOR` ou `RPM_E_POTENCIA_MOTOR`.
+- `analisado_motor=false`: não houve avaliação pelo catálogo. Campos ainda não calculados ficam vazios. `viavel=true` exige passar os filtros legados e o catálogo; modo informativo não transforma incompatibilidade em aprovação.
+- `historico_busca.json`: rodadas concluídas, datas, duração, causas, avaliados brutos, rejeitados anteriores ao motor, analisados por motor, aprovados, objetivo, contexto da malha e melhor preservado. Na calibração, o melhor inclui candidatos de rodadas anteriores; não significa candidato encontrado nessa rodada.
+- `historico_busca.csv`: contagens e contexto por rodada; detalhes do melhor e hashes estão no JSON.
+- `config_execucao.json`: CONFIG, catálogo efetivo, diagnóstico e histórico com hashes. O hash do arquivo CSV é separado do hash do catálogo efetivo serializado. Para catálogo incorporado, o hash bruto do CSV é `null`.
+
+As contagens são da rodada, não cumulativas. A soma `analisados_motor + rejeitados_antes_motor` deve igualar `avaliados_brutos`. Uma geometria pode reaparecer em outra rodada. Os CSVs de candidatos não são um arquivo acumulado de todas as rodadas; o histórico acumulado reúne seus resumos. Interseções de área por Z delimitam a malha gerada; geometrias excluídas antes de gerá-la não contam como avaliadas. Em `SEM_BRACKET`, a RPM é a tentativa retornada pela bisseção legada, não equilíbrio confirmado; o status impede interpretá-la como solução.
+
+O histórico acompanha o último snapshot concluído. Ao parar durante a próxima rodada, as contagens parciais não são incorporadas; o snapshot anterior é preservado. Uma nova execução começa outro histórico. Não foi implementada persistência entre sessões.
+
+## Limites ativos
+
+`diagnostico_viabilidade.limites_geometricos` separa teto efetivo, mínimo, último ponto amostrado e indicadores de proximidade. Tolerância padrão: `min(passo/2, max(1e-9, passo*1e-5))`; pode ser informada em `diagnostico.tolerancia_limite`. Isso apenas anota proximidade e não altera restrições nem cálculo. Para refinamentos, esses campos descrevem a malha-base da configuração exportada; as malhas efetivamente percorridas estão em `contexto.malhas_rodada`.
+
+## Verificação executada
+
+- Antes: 25 testes Python aprovados. Depois: 33 testes Python aprovados.
+- Teste real Worker/Pyodide 0.29.2 aprovado, incluindo históricos, hashes e equivalência Python/JS.
+- Teste real Edge/Playwright aprovado, incluindo calibração completa, exploração infinita com parada, transferências, exportações e largura móvel.
+- Verificação sintática dos três JavaScripts aprovada.
+- Comparação das árvores sintáticas de `resistencia`, `serie_b`, `coef_propulsivos`, `burrill`, `margens`, `sfoc`, `_resolver_rpm` e `motores_que_cabem`: sem alterações em relação ao checkout publicado anterior.
+
+```powershell
+python -m unittest discover -s projects -p "test_propulsao*.py"
+python projects/comparar_baseline_p0.py
+node --check naval.js
+node --check naval-backtest.js
+node --check naval-backtest-worker.js
+node projects/test_propulsao_worker.cjs <caminho-pyodide>
+node projects/test_propulsao_browser.cjs <caminho-playwright-core> http://127.0.0.1:8080
+```
+
+## Rastreabilidade dos arquivos finais
+
+Hashes abaixo correspondem aos arquivos disponíveis quando este relatório foi gerado. Os snapshots numéricos também guardam seus próprios hashes; pequenos acréscimos posteriores de metadados não reescrevem essas evidências. No navegador, os hashes de recursos JS/HTML/CSS são calculados das fontes obtidas com `no-store`, não de uma introspecção do código já carregado pelo navegador.
+
+| Arquivo | SHA-256 LF |
+|---|---|
+| `projects/propulsao.py` | `f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032` |
+| `projects/propulsao_busca.py` | `c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c` |
+| `projects/propulsao_auditoria.py` | `1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41` |
+| `projects/motores.csv` | `0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8` |
+| `naval.js` | `1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062` |
+| `naval-backtest.js` | `914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb` |
+| `naval-backtest-worker.js` | `70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e` |
+| `naval.html` | `496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663` |
+| `naval.css` | `4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b` |
+
+## Pendências deliberadas
+
+Cache, contagem de geometrias únicas, retomada persistente, critérios de convergência, otimizadores heurísticos, transmissão, missão e calibração experimental pertencem às próximas fases. O status `VIAVEL` significa aprovação nos filtros atuais do modelo; não certificação de engenharia. Este P0 não acrescenta filtros de domínio empírico nem altera raízes nos extremos. Catálogo ausente/entrada inválida continua sendo erro de execução; não é contado como rejeição de uma geometria.
+
+````
+<!-- END_SOURCE projects/Relatorio_Entrega_P0.md -->
+
+### 32.29. `publicado/naval.html`
+
+<!-- SOURCE publicado/naval.html SHA256_LF d2fc29220778f0bd88bc3298f3201dad3d4f9c8ef169ecb3130ff80e6d2f0473 FINAL_LF 1 -->
 ````html
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -4139,7 +5934,8 @@ if __name__ == '__main__':
         <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="minimal.css">
 <link rel="stylesheet" href="naval.css?v=exploration-4">
 <script src="minimal.js" defer></script>
-<link rel="stylesheet" href="./i18n.css"><script src="./i18n.js" defer></script></head>
+<link rel="stylesheet" href="./i18n.css"><script src="./i18n.js" defer></script>
+</head>
 <body>
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a><header class="header"><a class="logo" href="index.html">ALAN MIRANDA<span>Pesquisa & Sistemas</span></a><button class="menu-toggle" aria-expanded="false" aria-controls="navigation" aria-label="Abrir menu"><span></span><span></span></button><nav id="navigation" aria-label="Navegação principal"><a href="projetos-navais.html" aria-current="page">Navais</a><a href="outros-projetos.html">Projetos</a><a href="sobre.html">Autor</a><a href="arquivos-uteis.html">Arquivos úteis</a><a class="nav-alert" href="manifesto.html">Manifesto</a></nav></header>
 
@@ -4288,7 +6084,8 @@ if __name__ == '__main__':
         <h3>Funil de restrições</h3><div class="backtest-table" id="backtestFunnel"></div>
         <h3>Ranking de hélices</h3><div class="backtest-table" id="backtestRanking"></div>
         <h3>Perfil de velocidades</h3><div class="backtest-table" id="backtestCurve"></div>
-        <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="diagnosticCsv">DIAGNÓSTICO MOTOR CSV ↓</button><button class="text-button" data-backtest-download="configJson">CONFIG + DATA JSON ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
+        <p id="backtestDiagnostic" role="status"></p>
+        <div class="action-row"><button class="text-button" data-backtest-download="rankingCsv">RANKING CSV ↓</button><button class="text-button" data-backtest-download="diagnosticCsv">DIAGNÓSTICO MOTOR CSV ↓</button><button class="text-button" data-backtest-download="rejectionCsv">RESTRIÇÕES DA RODADA CSV ↓</button><button class="text-button" data-backtest-download="historyCsv">HISTÓRICO CSV ↓</button><button class="text-button" data-backtest-download="historyJson">HISTÓRICO JSON ↓</button><button class="text-button" data-backtest-download="configJson">CONFIG + DATA JSON ↓</button><button class="text-button" data-backtest-download="curveCsv">CURVA CSV ↓</button><button class="text-button" data-backtest-download="html">RELATÓRIO HTML ↓</button></div>
       </div>
     </section>
     <section class="transparency"><span class="eyebrow">TRANSPARÊNCIA DO MODELO</span><p>A missão interativa usa resistência quadrática didática. A seção de automação usa Holtrop-Mennen 84, Série B com correção de Reynolds, Burrill e margens. O comando Python “validar” compara 12 grandezas com os valores de referência fornecidos no material.</p><span class="version">FONTE E LIMITES EXIBIDOS</span></section>
@@ -4297,13 +6094,13 @@ if __name__ == '__main__':
   <dialog class="equation-dialog" id="equationDialog"><form method="dialog"><button class="dialog-close" aria-label="Fechar explicação">×</button></form><span class="eyebrow">CADEIA DE CÁLCULO / CASO ATUAL</span><h2>Como chegamos a esse valor?</h2><p class="dialog-intro">Cada grandeza abaixo usa os valores atuais da simulação. Unidades em SI no cálculo.</p><ol id="equationSteps"></ol><p class="source-note">Polinômio Wageningen B-series · Correções de Reynolds para Rn &gt; 2×10⁶ · rugosidade kp = 30 µm.</p></dialog>
   <footer><a href="index.html">ALAN MIRANDA</a><span>Pesquisa · Engenharia · Sistemas</span><span class="foot-links"><a href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:alanmirandarj@gmail.com">Contato ↗</a></span></footer>
   <script src="naval.js?v=exploration-4"></script>
-  <script src="naval-backtest.js?v=exploration-4"></script>
+  <script src="naval-backtest.js?v=exploration-4-p0"></script>
 </body>
 </html>
 ````
 <!-- END_SOURCE publicado/naval.html -->
 
-### 32.22. `publicado/i18n.css`
+### 32.30. `publicado/i18n.css`
 
 <!-- SOURCE publicado/i18n.css SHA256_LF eabff46eb30329533a9a9cd4c4f9f4a5531e0d6e6ae783026b46c470d4b4c213 FINAL_LF 1 -->
 ````css
@@ -4328,7 +6125,7 @@ if __name__ == '__main__':
 ````
 <!-- END_SOURCE publicado/i18n.css -->
 
-### 32.23. `publicado/i18n.js`
+### 32.31. `publicado/i18n.js`
 
 <!-- SOURCE publicado/i18n.js SHA256_LF 4681989337471f729c930e57a9db7a47f5147657503d437d507df8cfae2dd0ed FINAL_LF 1 -->
 ````javascript
