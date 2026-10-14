@@ -1,0 +1,7 @@
+.radio-player{position:fixed;bottom:20px;left:20px;z-index:90;display:flex;align-items:center;gap:18px;padding:12px 16px;border:1px solid #32748d;border-radius:14px;background:#edf8fff2;color:#16384e;box-shadow:0 4px 20px #0002;font:14px/1.4 system-ui,sans-serif;max-width:calc(100vw - 40px)}
+.radio-player strong,.radio-player span{display:block}
+.radio-player span{font-size:12px;color:#486878;max-width:220px}
+.radio-player button{border:0;border-radius:8px;padding:10px 14px;background:#174b68;color:#fff;font:inherit;cursor:pointer;min-width:76px;min-height:44px}
+.radio-player button:hover{background:#236a88}
+.radio-player button:focus-visible{outline:3px solid #32748d;outline-offset:3px}
+@media(max-width:600px){.radio-player{bottom:12px;left:12px;padding:8px 12px;gap:12px;max-width:calc(100vw - 24px)}.radio-player span{max-width:175px}}
