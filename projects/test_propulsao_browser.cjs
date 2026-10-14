@@ -54,10 +54,25 @@ async function main(){
     await page.locator('#backtestCancel').click();
     assert.equal(await page.locator('#backtestStatus').textContent(),'Cálculo cancelado.');
     assert.equal(await page.locator('#backtestStart').isEnabled(),true);
+    await page.selectOption('#backtestMode','calibrate');
+    assert.equal(await page.locator('#backtestProfileField').isVisible(),false);
+    await page.selectOption('#calibrationMotor','8G90ME-C10.5');
+    await page.selectOption('#calibrationLevel','completo');
+    await page.locator('#backtestStart').click();
+    await page.waitForFunction(()=>!document.getElementById('backtestStart').disabled,{},{timeout:120000});
+    assert.match(await page.locator('#backtestSummary').textContent(),/rodada 4/);
+    assert.match(await page.locator('#backtestSummary').textContent(),/8G90ME-C10.5/);
+    await page.selectOption('#calibrationLevel','infinita');
+    await page.locator('#backtestStart').click();
+    await page.waitForFunction(()=>document.getElementById('backtestSummary').textContent.includes('rodada 2'),{},{timeout:120000});
+    await page.locator('#backtestCancel').click();
+    assert.match(await page.locator('#backtestStatus').textContent(),/Melhor resultado encontrado preservado/);
+    assert.equal(await page.locator('#backtestApply').isEnabled(),true);
+    assert.equal(await page.locator('#backtestResults').isVisible(),true);
     await page.setViewportSize({width:390,height:844});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
     assert.deepEqual(errors,[]);
-    console.log('PASS: browser profiles, best-result transfer, recalculation, export, reset, cancel and mobile width.');
+    console.log('PASS: backtest, targeted complete calibration, infinite stop preserves best, simulation, exports and mobile width.');
   }finally{await browser.close();}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

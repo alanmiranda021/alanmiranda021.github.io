@@ -90,3 +90,13 @@ python projects/propulsao.py tudo --config saida/config_execucao.json
 ```
 
 A reprodução usa o catálogo incorporado ao registro, mesmo que o CSV instalado tenha mudado. Malhas grandes são executadas em lotes; `validar_config` informa o tamanho real e o limite por lote. Veja [fonte e limites do catálogo](projects/CATALOGO_MOTORES.md): o Project Guide procurado não estava disponível, portanto o CSV não é apresentado como catálogo atual de fabricante. A planilha de análise foi consultada e preservada, sem executar instruções ou alterar cenários nela.
+
+### Calibrar para um motor específico
+
+Em **Modo de análise**, mantenha **Backtest atual** para comparar o catálogo inteiro e encontrar o motor mais próximo, ou selecione **Calibrar para um motor específico**. O seletor lista variantes com cilindros definidos e limites de RPM/potência. A calibração restringe o catálogo ao motor escolhido, ajusta D, P/D, AE/AO e pás dentro dos limites do JSON e resolve a RPM de equilíbrio. Navio, margens e restrições físicas permanecem configurados pelo usuário.
+
+- **Rápida:** uma busca ampla com malha rápida.
+- **Completa:** busca completa e três rodadas de refinamento local.
+- **Infinita:** busca inicial rápida seguida de refinamentos e exploração de novas regiões a cada cinco rodadas, até clicar em parar.
+
+O melhor resultado encontrado é preservado entre rodadas; candidatos compatíveis têm prioridade e o objetivo BHP/FOC desempata. Se nada couber, a menor violação frente ao motor alvo fica explícita. Parar mantém o último melhor resultado para simulação e downloads. A busca contínua não garante encontrar solução nem ótimo global. O funil e o diagnóstico CSV se referem à última rodada; o contador acumulado mede avaliações e pode repetir pontos. O JSON registra motor, nível, rodada e malha da rodada. Os refinamentos usam uma sequência determinística de exploração.

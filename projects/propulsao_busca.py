@@ -4,7 +4,7 @@ import math
 
 import pandas as pd
 import propulsao as p
-WEB_API_VERSION = 2
+WEB_API_VERSION = 3
 
 PERFIS = {
     'rapido': ('Rápido', 0.25, 0.10, 0.10),
@@ -99,3 +99,68 @@ def backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, d
         if progresso:
             progresso(completed, total)
     return accepted, fallback, list(funnel.items()), resistance, cfg
+
+
+def calibrar_motor(cfg, motor, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None):
+    """One bounded round; the browser repeats infinite rounds until stopped.
+
+    Only propeller geometry is optimized. Ship, margins, RPM limits and
+    physical restrictions are preserved. Motor selection is a strict filter.
+    """
+    if nivel not in ('rapido', 'completo', 'infinita'):
+        raise ValueError('Nível de calibração inválido.')
+    base = copy.deepcopy(cfg)
+    catalog = p.carregar_motores(base)
+    chosen = [row for row in catalog if row[0] == motor]
+    if not chosen:
+        raise ValueError('Motor selecionado não existe no catálogo da configuração.')
+    base['motor']['catalogo_registrado'] = [dict(zip(('modelo', 'n_min', 'n_max', 'p_max_kw', 'p_min_kw'), chosen[0]))]
+    base['restricoes']['motor'] = 'estrito'
+    valid_z = [z for z in base['helice']['z'] if max(base['helice']['ae_ao']['min'], p.AE_AO_POR_Z[z][0]) <= min(base['helice']['ae_ao']['max'], p.AE_AO_POR_Z[z][1])]
+    if not valid_z:
+        raise ValueError('Nenhuma área de hélice válida para as pás selecionadas.')
+    iteration = 0 if estado is None else estado['iteracao']
+    local = copy.deepcopy(base)
+    profile = 'completo' if nivel == 'completo' else 'rapido'
+    if iteration:
+        profile = 'personalizado'
+        previous = estado['ranking']
+        rng = p.np.random.default_rng(20261013 + iteration)
+        explore = not previous or iteration % 5 == 0
+        row = None if explore else previous[(iteration - 1) % min(5, len(previous))]
+        if row is not None:
+            local['helice']['z'] = [int(row['Z'])]
+        else:
+            local['helice']['z'] = [int(rng.choice(valid_z))]
+        for key, column, initial in [('diametro', 'D', .1), ('ae_ao', 'Ae/Ao', .05), ('p_d', 'P/D', .05)]:
+            span = base['helice'][key]
+            lower = span['min']
+            upper = span['max'] if span['max'] is not None else base['navio']['calado_popa'] / base['restricoes']['ta_sobre_d_min']
+            if key == 'ae_ao':
+                z = local['helice']['z'][0]
+                lower, upper = max(lower, p.AE_AO_POR_Z[z][0]), min(upper, p.AE_AO_POR_Z[z][1])
+            center = float(rng.uniform(lower, upper)) if row is None else float(row[column])
+            step = max(0.0001, initial / 2 ** min(iteration, 10))
+            radius = step * 2
+            minimum, maximum = max(lower, center - radius), min(upper, center + radius)
+            # Preserve the incumbent as a sampled point, including at the upper bound.
+            if row is not None:
+                minimum = center - math.floor((center-minimum+1e-9)/step)*step
+            local['helice'][key] = dict(min=round(minimum, 6), max=round(maximum, 6), passo=step)
+    g, fallback, funnel, resistance, effective = backtest_perfil(local, profile, progresso, diagnostico_destino=diagnostico_destino)
+    candidates = pd.concat([g, fallback], ignore_index=True)
+    if estado is not None and estado['ranking']:
+        candidates = pd.concat([pd.DataFrame(estado['ranking']), candidates], ignore_index=True)
+    objective = {'bhp':'BHP_kW', 'foc':'FOC_t_h'}[base['backtest']['objetivo']]
+    candidates = candidates.drop_duplicates(['Z', 'D', 'Ae/Ao', 'P/D']).sort_values(['viol_total', objective, 'Z', 'D', 'Ae/Ao', 'P/D'], kind='stable').head(base['backtest']['top']).reset_index(drop=True)
+    previous_total = 0 if estado is None else estado['avaliacoes']
+    state = dict(iteracao=iteration+1, avaliacoes=previous_total+funnel[0][1], ranking=json_records(candidates))
+    base['calibracao'] = dict(motor=motor, nivel=nivel, iteracao=state['iteracao'], avaliacoes=state['avaliacoes'],
+                             malha_rodada=effective['helice'], contagens='avaliações acumuladas podem repetir pontos; funil e diagnóstico CSV referem-se à última rodada')
+    approved = candidates[candidates['cabe_motor']].reset_index(drop=True)
+    return approved, candidates, funnel, resistance, base, state
+
+
+def json_records(frame):
+    import json
+    return json.loads(frame.to_json(orient='records', double_precision=15))
