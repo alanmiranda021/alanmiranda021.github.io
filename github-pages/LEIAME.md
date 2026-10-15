@@ -87,7 +87,33 @@ só são gravadas com `--export-predictions`.
 
 SAE é NumPy com penalidade KL, não depende de PyTorch, mas está restrito ao modo
 local. Sua geração em atributos tabulares difere da síntese de sinais do artigo;
-`article3_reproduction` está bloqueado. No navegador, E1–E4 com SAE e SHAP
-ficam indisponíveis. MAT v7.3 depende de h5py local. Não há promessa de acurácia.
+`article3_reproduction` está bloqueado. No navegador, o protocolo científico **genérico** E1–E4 com SAE e SHAP
+continua indisponível. **O laboratório naval** permite especificamente o
+perfil N-FAST demonstrativo E1/E3/DIST com SAE leve em Stlite; execução
+completa E1–E4/E4b, E3-orig e sensibilidade exigem Python local. MAT v7.3 depende de h5py local. Não há promessa de acurácia.
 O pipeline científico exportado continua ajustado apenas no treino reservado;
 o teste externo é preservado. Nunca carregue joblib de origem desconhecida.
+
+## Verificação de entrega (sem inventar dados do navio)
+
+Instale as dependências de teste e execute da pasta `github-pages`:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+python -m pytest -q tests
+python scripts/verify_naval_release.py --out verification
+```
+
+**Atenção:** sem `--input`, o verificador usa uma tabela **ARTIFICIAL**,
+identifica o PDF como demonstração e gera `verification/evidencias_execucao.json`
+e `verification/RELATORIO_VERIFICACAO.md`. Com os dados originais, use:
+
+```powershell
+python scripts/verify_naval_release.py --input "C:\dados\Dados_navio_nig(1).mat" --out verification-real --budget 600
+```
+
+Os arquivos do MAT real não são incluídos neste repositório; confirme
+permissões, dimensões, conteúdo e unidades. Testes UI exigem Streamlit instalado;
+o navegador Stlite requer verificação manual em HTTP e rede ativa. O verificador
+local não efetua commit, push ou validação de interface WebAssembly. Veja
+`docs/RELATORIO_CORRECOES_AUDITORIA.md`.
