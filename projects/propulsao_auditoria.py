@@ -147,10 +147,14 @@ def hashes_fontes(extra=None):
     root = Path(__file__).resolve().parent.parent
     names = ['projects/propulsao.py', 'projects/propulsao_busca.py',
              'projects/propulsao_auditoria.py', 'projects/motores.csv',
+             'projects/propulsao_auto.py', 'projects/propulsao_auto_nucleo.py',
              'naval.js', 'naval-pdf.js', 'naval-backtest.js', 'naval-backtest-worker.js', 'naval.html', 'naval.css']
     result = {}
     for name in names:
         path = root/name
+        if not path.is_file() and name.startswith('projects/'):
+            # Pyodide loads the Python files directly in its working directory.
+            path = Path(__file__).resolve().parent/Path(name).name
         if path.is_file():
             raw = path.read_bytes()
             result[name] = dict(bytes_sha256=hashlib.sha256(raw).hexdigest(),

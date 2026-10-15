@@ -105,7 +105,7 @@ O melhor resultado global e os melhores de cada número de pás são preservados
 
 ### Manual completo do simulador de propulsão
 
-Consulte o [Manual completo do simulador de propulsão](projects/Manual_Completo_Simulador_Propulsao.md) para arquitetura, fórmulas, parâmetros, funis, ranking de motores, calibração, simulação, saídas, limitações e código integral de 35 arquivos. Confira as transcrições SHA-256 com `python projects/gerar_manual_propulsao.py --verificar`.
+Consulte o [Manual completo do simulador de propulsão](projects/Manual_Completo_Simulador_Propulsao.md) para arquitetura, fórmulas, parâmetros, funis, ranking de motores, calibração, simulação, saídas, limitações e código integral de 43 arquivos. Confira as transcrições SHA-256 com `python projects/gerar_manual_propulsao.py --verificar`.
 
 
 ### Entrega P0: baseline e auditoria
@@ -116,3 +116,8 @@ Consulte o [Manual completo do simulador de propulsão](projects/Manual_Completo
 ### Comparação por pás e curvas em PDF
 
 O painel distingue categorias excluídas, rejeições e aprovações por Z. Selecione ranking global ou por pás para carregar uma alternativa e exportar curvas vetoriais K_T, 10K_Q e eta_0 em PDF com dados JSON completos anexados. [Métodos e testes desta entrega](projects/Relatorio_Comparacao_Pas_PDF.md).
+
+
+### Modo FOC automático: Sprints 0/1
+
+Orquestrador Python com CONFIG preservado, melhores viável/diagnóstico separados e cobertura da malha ampla declarada antes de estagnação. A cobertura global profunda, cache e integração web ficam para os próximos sprints. [Relatório e evidências](projects/Relatorio_Auto_Sprints_0_1.md).
