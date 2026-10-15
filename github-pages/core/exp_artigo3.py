@@ -65,6 +65,14 @@ class NavalConfig:
 
     def effective(self):
         cfg = NavalConfig(**asdict(self))
+        # API pública pode receber uma string. Não interpretar string como
+        # iterável de letras, nem procurar colunas proibidas por substring.
+        if isinstance(cfg.excluded, str):
+            cfg.excluded = (cfg.excluded,)
+        elif cfg.excluded is None:
+            raise ValueError("'excluded' deve ser uma coleção de nomes de colunas.")
+        else:
+            cfg.excluded = tuple(cfg.excluded)
         if cfg.mode not in ("rapido", "mvp", "completo"):
             raise ValueError("Modo deve ser rapido, mvp ou completo.")
         if cfg.mode == "rapido":
@@ -85,14 +93,27 @@ class NavalConfig:
 
 
 def validate_naval(df, cfg):
+    if not isinstance(df, pd.DataFrame):
+        raise ValueError("Entrada naval deve ser um DataFrame.")
+    if not df.columns.is_unique:
+        raise ValueError("Nomes de colunas duplicados impedem auditoria de vazamento.")
     if df.empty:
         raise ValueError("Tabela vazia.")
     if cfg.target not in ("fuel_consumption", "CO2_emissions") or cfg.target not in df:
         raise ValueError("Alvo naval ausente ou não suportado.")
     forbidden = "CO2_emissions" if cfg.target == "fuel_consumption" else "fuel_consumption"
+    # Defesa independente de NavalConfig.effective() em chamadas diretas.
+    if isinstance(cfg.excluded, str):
+        cfg.excluded = (cfg.excluded,)
+    elif cfg.excluded is None:
+        raise ValueError("'excluded' deve ser uma coleção de nomes de colunas.")
+    else:
+        cfg.excluded = tuple(cfg.excluded)
     if forbidden not in cfg.excluded:
         raise ValueError(f"Vazamento: {forbidden} deve ser excluída para prever {cfg.target}.")
     features = [c for c in FEATURES if c not in cfg.excluded]
+    if forbidden in features or cfg.target in features:
+        raise ValueError(f"Vazamento: {forbidden} ou o alvo apareceu entre os preditores.")
     expected = set(FEATURES) - ({"engine_efficiency"} if not cfg.use_efficiency else set())
     if set(features) != expected or any(c not in df for c in features):
         raise ValueError("Preditores navais obrigatórios ausentes ou excluídos indevidamente.")
@@ -207,6 +228,14 @@ def _run_naval(df, config=None, progress=None, cancelled=None):
         return cell_cv_indices(cell_labels(frame, cfg.cell_columns), k=k, seed=seed)
     folds = [(r, i, a, b) for r in range(cfg.repeats)
              for i, (a, b) in enumerate(splits(dev, cfg.outer_folds, cfg.seed+r))]
+    # Estas condições são verificadas em tempo de execução (não só nos testes).
+    train_ids, test_ids = set(map(int, tr)), set(map(int, te))
+    if train_ids & test_ids or train_ids | test_ids != set(range(len(source))):
+        raise AssertionError("Protocolo inválido: desenvolvimento e teste se interceptam.")
+    for _, _, a, b in folds:
+        left, right = set(map(int, tr[a])), set(map(int, tr[b]))
+        if left & right or (left | right) - train_ids or not left or not right:
+            raise AssertionError("Protocolo inválido: dobra externa contaminada.")
     cache, reduction_cache = {}, {}
     def spec(scenario):
         fraction, kpca = SCENARIOS[scenario]
@@ -356,13 +385,19 @@ def _run_naval(df, config=None, progress=None, cancelled=None):
                     **{m: float(np.mean([s[m] for s in scores])) for m in ("RMSE", "MAE", "R2")},
                     **{m+"_std": float(np.std([s[m] for s in scores])) for m in ("RMSE", "MAE", "R2")}))
     ranking = rank_results(rows)
-    # Choose the validation winner, then unlock final test exactly once.
+    # O teste final é liberado apenas depois de escolher um vencedor por CV.
+    # Registramos TENTATIVAS independentemente do sucesso, para não mascarar
+    # uma avaliação mal-sucedida como se nunca tivesse sido acessada.
     test, predictions, sensitivity = None, None, []
+    final_test_attempts = 0
+    final_test_successes = 0
     if ranking and not interrupted:
         winner = ranking[0]
         try:
+            final_test_attempts += 1
             pred, evidence = search(dev, final, winner["scenario"], winner["model"])
             test = dict(scenario=winner["scenario"], model=winner["model"], metrics=reg_metrics(final[cfg.target], pred), **evidence)
+            final_test_successes += 1
             predictions = dict(actual=final[cfg.target].tolist(), predicted=pred.tolist(),
                                distance=final.distance.tolist(),
                                cells=cell_labels(final, cfg.cell_columns).tolist(), indices=te.tolist())
@@ -392,7 +427,9 @@ def _run_naval(df, config=None, progress=None, cancelled=None):
     duration = time.perf_counter()-started
     protocol = dict(requested=asdict(original), effective=asdict(cfg), features=features,
                     final_train_indices=tr.tolist(), final_test_indices=te.tolist(),
-                    final_test_synthetic=0, final_test_evaluations=int(test is not None),
+                    final_test_synthetic=0, final_test_evaluations=final_test_successes,
+                    final_test_attempts=final_test_attempts,
+                    split_invariants_verified=True,
                     sampler_scope="treino de cada dobra interna/externa; E3-orig é diagnóstico contaminado")
     provenance = manifest(source, protocol, [{"repeat": r, "fold": i, "train": tr[a].tolist(), "validation": tr[b].tolist()} for r, i, a, b in folds], test["metrics"] if test else {})
     expected_pairs = sum(2 if s == 'DIST' else len(cfg.models) for s in cfg.scenarios)

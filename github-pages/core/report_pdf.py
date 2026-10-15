@@ -66,18 +66,23 @@ def naval_pdf(result):
         story.append(drawing)
         story.append(P(f"O que mostra: {label}. {len(x)} observações desta execução. Como foi calculado: pares dos vetores registrados no treino/teste identificado no título. Em termos simples: compare tendência, dispersão e valores extremos; este gráfico isolado não demonstra ganho preditivo. Unidades não confirmadas e observações dependentes limitam interpretações físicas.", SMALL))
     cfg, prov = result["config"]["effective"], result["manifest"]
+    is_artificial_demo = 'DADOS_ARTIFICIAIS' in str(cfg.get('filename', '')).upper()
     from reportlab.platypus.tableofcontents import TableOfContents
     title("Laboratório Científico Naval - Artigo 3")
     story.append(P("protocolo do Artigo 3 adaptado a dados navais"))
+    if is_artificial_demo:
+        story.append(P("DEMONSTRAÇÃO COM DADOS ARTIFICIAIS — não são resultados do navio original.", H2))
     story.append(P(f"Arquivo: {cfg['filename']}; perfil: {result.get('profile', cfg['mode'])}; status: {result.get('status', 'concluído')}."))
     story.append(P(f"Execução: {prov['timestamp']}; commit: {prov['git_commit']}; idioma: português; ambiente: {prov['hardware']['platform']}."))
     story.append(P(f"SHA-256 da tabela: {result['dataset_sha256']}"))
     story.append(P(f"Unidades: {cfg['units']}. Estudo exploratório; não estabelece generalização para embarcações novas ou para o futuro."))
     story.append(PageBreak())
     title("Resumo executivo")
+    if is_artificial_demo:
+        story.append(P("DADOS ARTIFICIAIS: esta execução valida o fluxo computacional, não a aplicação ao navio.", H2))
     story.append(P("Pergunta: o aumento sintético com SAE e a redução KPCA diminuem o erro de previsão do consumo em relação aos dados originais? Um resultado sem ganho demonstrado é válido."))
     story.append(P(f"Dados: {result['audit']['rows']} registros; arquivo {cfg['filename']}. Perfil {result.get('profile', cfg['mode'])}, {cfg['outer_folds']} dobras externas, {cfg['inner_folds']} internas, {cfg['repeats']} repetição(ões). {cfg['units']}."))
-    story.append(P(f"Formulação: prever {cfg['target']}; eficiência {'habilitada (confirmar disponibilidade prévia; caso contrário retrospectiva)' if cfg.get('use_efficiency', True) else 'excluída: previsão pré-viagem'}. O teste final real foi separado antes dos ajustes."))
+    story.append(P(f"Formulação: prever {cfg['target']}; eficiência {'habilitada (confirmar disponibilidade prévia; caso contrário retrospectiva)' if cfg.get('use_efficiency', True) else 'excluída: previsão pré-viagem'}. O conjunto de teste final reservado foi separado antes dos ajustes."))
     if result['ranking']:
         best = result['ranking'][0]
         story.append(P(f"Menor RMSE de validação: {best['scenario']} / {best['model']}, RMSE={best['RMSE']:.5f}, desvio={best['RMSE_std']:.5f}, MAE={best['MAE']:.5f}, R²={best['R2']:.5f}. Estabilidade e tempo são mostrados, mas não substituem o menor RMSE."))
@@ -85,13 +90,13 @@ def naval_pdf(result):
         story.append(P("Nenhum candidato com todas as dobras concluídas está elegível. Não há vencedor confirmado."))
     if result['test']:
         summary_metrics = '; '.join(f'{k}={v:.5f}' for k,v in result['test']['metrics'].items())
-        story.append(P(f"Teste final do vencedor, consultado uma vez: {summary_metrics}. São observações reais reservadas, nunca sintéticas."))
+        story.append(P(f"Teste final do vencedor, consultado uma vez: {summary_metrics}. São observações originais da tabela de entrada, nunca linhas sintetizadas pelo algoritmo."))
     else:
         story.append(P("Teste final não avaliado nesta execução. Consulte interrupções e falhas."))
     summary_comparisons = sorted(result['comparisons'], key=lambda c: (c['scenario'] != 'E3', c['model'] != cfg['models'][0], c['scenario']))
     for comparison in summary_comparisons[:3]:
         relative = f"{comparison['delta_percent']:.4f}%" if comparison.get('delta_percent') is not None else 'N/A'
-        story.append(P(f"{comparison['scenario']} / {comparison['model']}: E1 RMSE={comparison.get('baseline_rmse')}; ganho RMSE={comparison['delta_rmse']:.5f}; ganho relativo={relative}; melhora em {comparison.get('improved_pairs')}/{comparison.get('fold_pairs')} pares ({comparison['fraction_improved']:.0%}). {comparison['conclusion']}."))
+        story.append(P(f"{comparison['scenario']} / {comparison['model']}: E1 RMSE={float(comparison['baseline_rmse']):.5f}; ganho RMSE={comparison['delta_rmse']:.5f}; ganho relativo={relative}; melhora em {comparison.get('improved_pairs')}/{comparison.get('fold_pairs')} pares ({comparison['fraction_improved']:.0%}). {comparison['conclusion']}."))
     story.append(P("Conclusão: a regra de 80% é heurística descritiva pré-declarada, não teste de significância nem prova estatística. Dobras repetidas compartilham observações. E3-orig é diagnóstico contaminado e nunca determina o vencedor."))
     story.append(P("Limites decisivos: unidades e origem incompletas, ausência de ID/data, possível dominância da distância e coerência física apenas heurística. N-FAST é demonstrativo e não equivale ao completo. Próximo passo: confirmar metadados, examinar DIST e controles, depois executar a validação local completa."))
     story.append(PageBreak())
@@ -146,7 +151,7 @@ def naval_pdf(result):
         if key in result["audit"]:
             story.append(P(f"{key}: {result['audit'][key]}"))
     title("Protocolo e partições")
-    story.append(P("Teste final real: 20%, estratificado por célula. CV externa estratificada, com CV interna e aumento refeito apenas no treino de cada dobra. Pré-processador e vocabulário ajustados somente no treino. E3-orig é a exceção deliberadamente contaminada, apresentada separadamente."))
+    story.append(P("Teste final reservado: 20%, estratificado por célula. CV externa estratificada, com CV interna e aumento refeito apenas no treino de cada dobra. Pré-processador e vocabulário ajustados somente no treino. E3-orig é a exceção deliberadamente contaminada, apresentada separadamente."))
     story.append(P(f"Semente: {cfg['seed']}; repetições: {cfg['repeats']}; dobras externas/internas: {cfg['outer_folds']}/{cfg['inner_folds']}; sorteios: {cfg['draws']}; teste avaliado {result['config']['final_test_evaluations']} vez(es); sintéticos no teste: 0."))
     story.append(P("Asserções de separação: " + str(all(set(d['train_indices']).isdisjoint(d['validation_indices']) for d in result['folds'])) + "; diagnóstico E3-orig mantém dependências de origem apesar de índices disjuntos. Testes de software são registrados no repositório, não inferidos deste relatório."))
     title("Sparse Autoencoder e qualidade sintética")

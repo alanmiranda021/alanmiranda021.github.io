@@ -61,6 +61,18 @@ class SAESampler(BaseEstimator):
     def fit_resample(self, X, y):
         if not isinstance(X, pd.DataFrame):
             raise ValueError("SAESampler naval exige DataFrame com nomes de colunas.")
+        # Defesa em profundidade: o gerador também pode ser chamado fora da UI.
+        # Nenhuma variável-alvo nem seu proxy de carbono/combustível é preditor.
+        forbidden = ("CO2_emissions" if self.target == "fuel_consumption"
+                     else "fuel_consumption" if self.target == "CO2_emissions" else None)
+        if self.target not in ("fuel_consumption", "CO2_emissions"):
+            raise ValueError("SAESampler naval aceita somente os dois alvos declarados.")
+        if self.target in X.columns or (forbidden and forbidden in X.columns):
+            raise ValueError(f"Vazamento no gerador: X não pode conter {self.target} nem {forbidden}.")
+        if not X.columns.is_unique:
+            raise ValueError("Nomes de colunas duplicados impedem auditoria de vazamento.")
+        if len(y) != len(X):
+            raise ValueError("X e y precisam ter o mesmo número de linhas.")
         if not 0 < self.fraction <= 1 or self.generator not in ("sae", "gaussian"):
             raise ValueError("Fração ou gerador inválido.")
         if not self.hidden_grid or not self.noise_grid or any(s <= 0 for s in self.noise_grid):

@@ -149,6 +149,7 @@ def test_nested_naval_and_pdf(naval_data, monkeypatch):
 
 
 def test_naval_ui_and_stale_result(naval_data):
+    pytest.importorskip("streamlit", reason="Teste da UI exige Streamlit instalado")
     from streamlit.testing.v1 import AppTest
     code = '''
 import pandas as pd

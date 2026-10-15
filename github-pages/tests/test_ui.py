@@ -1,4 +1,6 @@
 from pathlib import Path
+import pytest
+pytest.importorskip("streamlit", reason="UI exige Streamlit instalado")
 from streamlit.testing.v1 import AppTest
 
 
