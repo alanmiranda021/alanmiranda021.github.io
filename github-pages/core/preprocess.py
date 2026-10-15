@@ -30,6 +30,10 @@ class Winsorizer(BaseEstimator, TransformerMixin):
     def transform(self, X):
         return np.clip(np.asarray(X, dtype=float), self.lo_, self.hi_)
 
+    def get_feature_names_out(self, input_features=None):
+        return np.asarray(input_features if input_features is not None else
+                          [f"x{i}" for i in range(len(self.lo_))], dtype=object)
+
 
 def outlier_report(df: pd.DataFrame, k=1.5) -> pd.DataFrame:
     rows = []
@@ -67,8 +71,11 @@ def smooth_columns(df, cols, method="Média móvel", window=5):
     return out
 
 
-def build_preprocessor(num_cols, cat_cols, scaler="Z-score (Standard)", winsor=True, k=1.5, pca=False):
-    steps = [("imp", SimpleImputer(strategy="median"))]
+def build_preprocessor(num_cols, cat_cols, scaler="Z-score (Standard)", winsor=True, k=1.5, pca=False,
+                       kpca=False, kpca_gamma=.1, kpca_components=5):
+    if pca and kpca:
+        raise ValueError("Escolha PCA ou KPCA, não ambos no pré-processamento.")
+    steps = [("imp", SimpleImputer(strategy="median", keep_empty_features=True))]
     if winsor:
         steps.append(("win", Winsorizer(k)))
     if SCALERS[scaler]:
@@ -77,6 +84,11 @@ def build_preprocessor(num_cols, cat_cols, scaler="Z-score (Standard)", winsor=T
         steps.append(("pca", PCA(n_components=0.95, svd_solver="full")))
     tfs = [("num", Pipeline(steps), list(num_cols))]
     if cat_cols:
-        tfs.append(("cat", Pipeline([("imp", SimpleImputer(strategy="most_frequent")),
-                                     ("oh", OneHotEncoder(handle_unknown="ignore"))]), list(cat_cols)))
-    return ColumnTransformer(tfs)
+        tfs.append(("cat", Pipeline([("imp", SimpleImputer(strategy="most_frequent", keep_empty_features=True)),
+                                     ("oh", OneHotEncoder(handle_unknown="ignore", sparse_output=False))]), list(cat_cols)))
+    pre = ColumnTransformer(tfs)
+    if kpca:
+        from core.reduction import ValidatedReduction
+        return Pipeline([("pre", pre), ("kpca", ValidatedReduction("kpca", kpca_components,
+                         kpca_gamma, require_dim_reduction=True))])
+    return pre

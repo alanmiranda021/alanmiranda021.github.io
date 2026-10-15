@@ -46,7 +46,10 @@ def _read_csv_robust(raw: bytes) -> pd.DataFrame:
     return df
 
 
-def load_table(name: str, raw: bytes) -> pd.DataFrame:
+def load_table(name: str, raw: bytes, variable=None, orientation="rows") -> pd.DataFrame:
+    from core.data_inspection import MAX_UPLOAD_BYTES
+    if len(raw) > MAX_UPLOAD_BYTES:
+        raise ValueError("Arquivo excede o limite de 100 MiB.")
     name = name.lower()
     if name.endswith((".xlsx", ".xlsm", ".xls")):
         df = pd.read_excel(io.BytesIO(raw))
@@ -57,6 +60,9 @@ def load_table(name: str, raw: bytes) -> pd.DataFrame:
     if name.endswith((".csv", ".txt", ".tsv")):
         return _read_csv_robust(raw)
     if name.endswith(".mat"):
+        if variable is not None:
+            from core.data_inspection import mat_to_table
+            return mat_to_table(raw, variable, orientation)
         return _load_mat(raw)
     raise ValueError(f"Formato não suportado: {name}")
 
@@ -135,7 +141,9 @@ def _load_mat(raw: bytes) -> pd.DataFrame:
             arrs = {k: np.array(v).T for k, v in h.items() if isinstance(v, h5py.Dataset) and v.ndim == 2}
         if not arrs:
             raise ValueError("Este .mat v7.3 guarda uma `table`. No MATLAB: writetable(T,'saida.csv') e envie o CSV.")
-        key = max(arrs, key=lambda k: arrs[k].size)
+        if len(arrs) != 1:
+            raise ValueError("MAT contém várias matrizes; selecione a variável explicitamente.")
+        key = next(iter(arrs))
         return pd.DataFrame(arrs[key], columns=[f"x{i+1}" for i in range(arrs[key].shape[1])])
 
     if "__function_workspace__" in m:  # arquivo contém objetos MATLAB (ex.: table)
@@ -144,10 +152,48 @@ def _load_mat(raw: bytes) -> pd.DataFrame:
         except Exception as e:
             raise ValueError(f"Não consegui ler a `table` deste .mat ({e}). "
                              "No MATLAB rode: writetable(suaTabela,'saida.csv') e envie o CSV.")
+    # Struct escalar com um vetor por coluna: conserva nomes e categorias.
+    # Não escolhe entre múltiplas tabelas e não converte structs arbitrários.
+    tables = []
+    for name, value in m.items():
+        if name.startswith("__") or not isinstance(value, np.ndarray) or value.size != 1 or not value.dtype.names:
+            continue
+        columns = {}
+        for field in value.dtype.names:
+            arr = np.asarray(value.flat[0][field]).squeeze()
+            if arr.ndim > 1:
+                break
+            arr = np.atleast_1d(arr)
+            if arr.dtype.kind == 'O':
+                items = []
+                for item in arr:
+                    nested = np.asarray(item).squeeze()
+                    if nested.size != 1:
+                        break
+                    items.append(nested.item())
+                else:
+                    columns[field] = items
+                    continue
+                break
+            columns[field] = arr
+        else:
+            lengths = {len(col) for col in columns.values()}
+            if len(columns) >= 2 and len(lengths) == 1 and next(iter(lengths)) > 0:
+                table = pd.DataFrame(columns)
+                for column in table.select_dtypes(exclude='number'):
+                    table[column] = table[column].map(lambda item: item.rstrip() if isinstance(item,str) else item)
+                table.attrs['source'] = dict(variable=name, format='MAT struct colunar')
+                tables.append(table)
+    if len(tables) == 1:
+        return tables[0]
+    if len(tables) > 1:
+        raise ValueError("MAT contém várias tabelas; selecione ou exporte uma tabela explicitamente.")
     cand = {k: v for k, v in m.items()
             if not k.startswith("__") and isinstance(v, np.ndarray) and v.ndim == 2 and v.dtype.kind in "fiu"}
     if not cand:
         raise ValueError("Nenhuma matriz numérica 2D encontrada neste .mat.")
-    key = max(cand, key=lambda k: cand[k].size)
+    if len(cand) != 1:
+        raise ValueError("MAT contém várias matrizes; selecione a variável explicitamente.")
+    key = next(iter(cand))
     arr = cand[key]
     return pd.DataFrame(arr, columns=[f"x{i+1}" for i in range(arr.shape[1])])

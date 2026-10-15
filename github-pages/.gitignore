@@ -1,5 +1,13 @@
-.venv/
+outputs/
 __pycache__/
+.pytest_cache/
+*.pyc
+*.mat
+reports/
+experiments_output/
+docs/article3-source.pdf
+.venv/
 *.py[cod]
 .streamlit/secrets.toml
 relatorios/
+*.joblib
