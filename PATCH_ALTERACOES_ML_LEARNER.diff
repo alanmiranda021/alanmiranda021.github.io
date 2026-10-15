@@ -1,0 +1,538 @@
+--- a/github-pages/core/exp_artigo3.py
++++ b/github-pages/core/exp_artigo3.py
+@@ -65,6 +65,14 @@
+ 
+     def effective(self):
+         cfg = NavalConfig(**asdict(self))
++        # API pública pode receber uma string. Não interpretar string como
++        # iterável de letras, nem procurar colunas proibidas por substring.
++        if isinstance(cfg.excluded, str):
++            cfg.excluded = (cfg.excluded,)
++        elif cfg.excluded is None:
++            raise ValueError("'excluded' deve ser uma coleção de nomes de colunas.")
++        else:
++            cfg.excluded = tuple(cfg.excluded)
+         if cfg.mode not in ("rapido", "mvp", "completo"):
+             raise ValueError("Modo deve ser rapido, mvp ou completo.")
+         if cfg.mode == "rapido":
+@@ -85,14 +93,27 @@
+ 
+ 
+ def validate_naval(df, cfg):
++    if not isinstance(df, pd.DataFrame):
++        raise ValueError("Entrada naval deve ser um DataFrame.")
++    if not df.columns.is_unique:
++        raise ValueError("Nomes de colunas duplicados impedem auditoria de vazamento.")
+     if df.empty:
+         raise ValueError("Tabela vazia.")
+     if cfg.target not in ("fuel_consumption", "CO2_emissions") or cfg.target not in df:
+         raise ValueError("Alvo naval ausente ou não suportado.")
+     forbidden = "CO2_emissions" if cfg.target == "fuel_consumption" else "fuel_consumption"
++    # Defesa independente de NavalConfig.effective() em chamadas diretas.
++    if isinstance(cfg.excluded, str):
++        cfg.excluded = (cfg.excluded,)
++    elif cfg.excluded is None:
++        raise ValueError("'excluded' deve ser uma coleção de nomes de colunas.")
++    else:
++        cfg.excluded = tuple(cfg.excluded)
+     if forbidden not in cfg.excluded:
+         raise ValueError(f"Vazamento: {forbidden} deve ser excluída para prever {cfg.target}.")
+     features = [c for c in FEATURES if c not in cfg.excluded]
++    if forbidden in features or cfg.target in features:
++        raise ValueError(f"Vazamento: {forbidden} ou o alvo apareceu entre os preditores.")
+     expected = set(FEATURES) - ({"engine_efficiency"} if not cfg.use_efficiency else set())
+     if set(features) != expected or any(c not in df for c in features):
+         raise ValueError("Preditores navais obrigatórios ausentes ou excluídos indevidamente.")
+@@ -207,6 +228,14 @@
+         return cell_cv_indices(cell_labels(frame, cfg.cell_columns), k=k, seed=seed)
+     folds = [(r, i, a, b) for r in range(cfg.repeats)
+              for i, (a, b) in enumerate(splits(dev, cfg.outer_folds, cfg.seed+r))]
++    # Estas condições são verificadas em tempo de execução (não só nos testes).
++    train_ids, test_ids = set(map(int, tr)), set(map(int, te))
++    if train_ids & test_ids or train_ids | test_ids != set(range(len(source))):
++        raise AssertionError("Protocolo inválido: desenvolvimento e teste se interceptam.")
++    for _, _, a, b in folds:
++        left, right = set(map(int, tr[a])), set(map(int, tr[b]))
++        if left & right or (left | right) - train_ids or not left or not right:
++            raise AssertionError("Protocolo inválido: dobra externa contaminada.")
+     cache, reduction_cache = {}, {}
+     def spec(scenario):
+         fraction, kpca = SCENARIOS[scenario]
+@@ -356,13 +385,19 @@
+                     **{m: float(np.mean([s[m] for s in scores])) for m in ("RMSE", "MAE", "R2")},
+                     **{m+"_std": float(np.std([s[m] for s in scores])) for m in ("RMSE", "MAE", "R2")}))
+     ranking = rank_results(rows)
+-    # Choose the validation winner, then unlock final test exactly once.
++    # O teste final é liberado apenas depois de escolher um vencedor por CV.
++    # Registramos TENTATIVAS independentemente do sucesso, para não mascarar
++    # uma avaliação mal-sucedida como se nunca tivesse sido acessada.
+     test, predictions, sensitivity = None, None, []
++    final_test_attempts = 0
++    final_test_successes = 0
+     if ranking and not interrupted:
+         winner = ranking[0]
+         try:
++            final_test_attempts += 1
+             pred, evidence = search(dev, final, winner["scenario"], winner["model"])
+             test = dict(scenario=winner["scenario"], model=winner["model"], metrics=reg_metrics(final[cfg.target], pred), **evidence)
++            final_test_successes += 1
+             predictions = dict(actual=final[cfg.target].tolist(), predicted=pred.tolist(),
+                                distance=final.distance.tolist(),
+                                cells=cell_labels(final, cfg.cell_columns).tolist(), indices=te.tolist())
+@@ -392,7 +427,9 @@
+     duration = time.perf_counter()-started
+     protocol = dict(requested=asdict(original), effective=asdict(cfg), features=features,
+                     final_train_indices=tr.tolist(), final_test_indices=te.tolist(),
+-                    final_test_synthetic=0, final_test_evaluations=int(test is not None),
++                    final_test_synthetic=0, final_test_evaluations=final_test_successes,
++                    final_test_attempts=final_test_attempts,
++                    split_invariants_verified=True,
+                     sampler_scope="treino de cada dobra interna/externa; E3-orig é diagnóstico contaminado")
+     provenance = manifest(source, protocol, [{"repeat": r, "fold": i, "train": tr[a].tolist(), "validation": tr[b].tolist()} for r, i, a, b in folds], test["metrics"] if test else {})
+     expected_pairs = sum(2 if s == 'DIST' else len(cfg.models) for s in cfg.scenarios)
+--- a/github-pages/core/augment.py
++++ b/github-pages/core/augment.py
+@@ -61,6 +61,18 @@
+     def fit_resample(self, X, y):
+         if not isinstance(X, pd.DataFrame):
+             raise ValueError("SAESampler naval exige DataFrame com nomes de colunas.")
++        # Defesa em profundidade: o gerador também pode ser chamado fora da UI.
++        # Nenhuma variável-alvo nem seu proxy de carbono/combustível é preditor.
++        forbidden = ("CO2_emissions" if self.target == "fuel_consumption"
++                     else "fuel_consumption" if self.target == "CO2_emissions" else None)
++        if self.target not in ("fuel_consumption", "CO2_emissions"):
++            raise ValueError("SAESampler naval aceita somente os dois alvos declarados.")
++        if self.target in X.columns or (forbidden and forbidden in X.columns):
++            raise ValueError(f"Vazamento no gerador: X não pode conter {self.target} nem {forbidden}.")
++        if not X.columns.is_unique:
++            raise ValueError("Nomes de colunas duplicados impedem auditoria de vazamento.")
++        if len(y) != len(X):
++            raise ValueError("X e y precisam ter o mesmo número de linhas.")
+         if not 0 < self.fraction <= 1 or self.generator not in ("sae", "gaussian"):
+             raise ValueError("Fração ou gerador inválido.")
+         if not self.hidden_grid or not self.noise_grid or any(s <= 0 for s in self.noise_grid):
+--- a/github-pages/core/report_pdf.py
++++ b/github-pages/core/report_pdf.py
+@@ -66,18 +66,23 @@
+         story.append(drawing)
+         story.append(P(f"O que mostra: {label}. {len(x)} observações desta execução. Como foi calculado: pares dos vetores registrados no treino/teste identificado no título. Em termos simples: compare tendência, dispersão e valores extremos; este gráfico isolado não demonstra ganho preditivo. Unidades não confirmadas e observações dependentes limitam interpretações físicas.", SMALL))
+     cfg, prov = result["config"]["effective"], result["manifest"]
++    is_artificial_demo = 'DADOS_ARTIFICIAIS' in str(cfg.get('filename', '')).upper()
+     from reportlab.platypus.tableofcontents import TableOfContents
+     title("Laboratório Científico Naval - Artigo 3")
+     story.append(P("protocolo do Artigo 3 adaptado a dados navais"))
++    if is_artificial_demo:
++        story.append(P("DEMONSTRAÇÃO COM DADOS ARTIFICIAIS — não são resultados do navio original.", H2))
+     story.append(P(f"Arquivo: {cfg['filename']}; perfil: {result.get('profile', cfg['mode'])}; status: {result.get('status', 'concluído')}."))
+     story.append(P(f"Execução: {prov['timestamp']}; commit: {prov['git_commit']}; idioma: português; ambiente: {prov['hardware']['platform']}."))
+     story.append(P(f"SHA-256 da tabela: {result['dataset_sha256']}"))
+     story.append(P(f"Unidades: {cfg['units']}. Estudo exploratório; não estabelece generalização para embarcações novas ou para o futuro."))
+     story.append(PageBreak())
+     title("Resumo executivo")
++    if is_artificial_demo:
++        story.append(P("DADOS ARTIFICIAIS: esta execução valida o fluxo computacional, não a aplicação ao navio.", H2))
+     story.append(P("Pergunta: o aumento sintético com SAE e a redução KPCA diminuem o erro de previsão do consumo em relação aos dados originais? Um resultado sem ganho demonstrado é válido."))
+     story.append(P(f"Dados: {result['audit']['rows']} registros; arquivo {cfg['filename']}. Perfil {result.get('profile', cfg['mode'])}, {cfg['outer_folds']} dobras externas, {cfg['inner_folds']} internas, {cfg['repeats']} repetição(ões). {cfg['units']}."))
+-    story.append(P(f"Formulação: prever {cfg['target']}; eficiência {'habilitada (confirmar disponibilidade prévia; caso contrário retrospectiva)' if cfg.get('use_efficiency', True) else 'excluída: previsão pré-viagem'}. O teste final real foi separado antes dos ajustes."))
++    story.append(P(f"Formulação: prever {cfg['target']}; eficiência {'habilitada (confirmar disponibilidade prévia; caso contrário retrospectiva)' if cfg.get('use_efficiency', True) else 'excluída: previsão pré-viagem'}. O conjunto de teste final reservado foi separado antes dos ajustes."))
+     if result['ranking']:
+         best = result['ranking'][0]
+         story.append(P(f"Menor RMSE de validação: {best['scenario']} / {best['model']}, RMSE={best['RMSE']:.5f}, desvio={best['RMSE_std']:.5f}, MAE={best['MAE']:.5f}, R²={best['R2']:.5f}. Estabilidade e tempo são mostrados, mas não substituem o menor RMSE."))
+@@ -85,13 +90,13 @@
+         story.append(P("Nenhum candidato com todas as dobras concluídas está elegível. Não há vencedor confirmado."))
+     if result['test']:
+         summary_metrics = '; '.join(f'{k}={v:.5f}' for k,v in result['test']['metrics'].items())
+-        story.append(P(f"Teste final do vencedor, consultado uma vez: {summary_metrics}. São observações reais reservadas, nunca sintéticas."))
++        story.append(P(f"Teste final do vencedor, consultado uma vez: {summary_metrics}. São observações originais da tabela de entrada, nunca linhas sintetizadas pelo algoritmo."))
+     else:
+         story.append(P("Teste final não avaliado nesta execução. Consulte interrupções e falhas."))
+     summary_comparisons = sorted(result['comparisons'], key=lambda c: (c['scenario'] != 'E3', c['model'] != cfg['models'][0], c['scenario']))
+     for comparison in summary_comparisons[:3]:
+         relative = f"{comparison['delta_percent']:.4f}%" if comparison.get('delta_percent') is not None else 'N/A'
+-        story.append(P(f"{comparison['scenario']} / {comparison['model']}: E1 RMSE={comparison.get('baseline_rmse')}; ganho RMSE={comparison['delta_rmse']:.5f}; ganho relativo={relative}; melhora em {comparison.get('improved_pairs')}/{comparison.get('fold_pairs')} pares ({comparison['fraction_improved']:.0%}). {comparison['conclusion']}."))
++        story.append(P(f"{comparison['scenario']} / {comparison['model']}: E1 RMSE={float(comparison['baseline_rmse']):.5f}; ganho RMSE={comparison['delta_rmse']:.5f}; ganho relativo={relative}; melhora em {comparison.get('improved_pairs')}/{comparison.get('fold_pairs')} pares ({comparison['fraction_improved']:.0%}). {comparison['conclusion']}."))
+     story.append(P("Conclusão: a regra de 80% é heurística descritiva pré-declarada, não teste de significância nem prova estatística. Dobras repetidas compartilham observações. E3-orig é diagnóstico contaminado e nunca determina o vencedor."))
+     story.append(P("Limites decisivos: unidades e origem incompletas, ausência de ID/data, possível dominância da distância e coerência física apenas heurística. N-FAST é demonstrativo e não equivale ao completo. Próximo passo: confirmar metadados, examinar DIST e controles, depois executar a validação local completa."))
+     story.append(PageBreak())
+@@ -146,7 +151,7 @@
+         if key in result["audit"]:
+             story.append(P(f"{key}: {result['audit'][key]}"))
+     title("Protocolo e partições")
+-    story.append(P("Teste final real: 20%, estratificado por célula. CV externa estratificada, com CV interna e aumento refeito apenas no treino de cada dobra. Pré-processador e vocabulário ajustados somente no treino. E3-orig é a exceção deliberadamente contaminada, apresentada separadamente."))
++    story.append(P("Teste final reservado: 20%, estratificado por célula. CV externa estratificada, com CV interna e aumento refeito apenas no treino de cada dobra. Pré-processador e vocabulário ajustados somente no treino. E3-orig é a exceção deliberadamente contaminada, apresentada separadamente."))
+     story.append(P(f"Semente: {cfg['seed']}; repetições: {cfg['repeats']}; dobras externas/internas: {cfg['outer_folds']}/{cfg['inner_folds']}; sorteios: {cfg['draws']}; teste avaliado {result['config']['final_test_evaluations']} vez(es); sintéticos no teste: 0."))
+     story.append(P("Asserções de separação: " + str(all(set(d['train_indices']).isdisjoint(d['validation_indices']) for d in result['folds'])) + "; diagnóstico E3-orig mantém dependências de origem apesar de índices disjuntos. Testes de software são registrados no repositório, não inferidos deste relatório."))
+     title("Sparse Autoencoder e qualidade sintética")
+--- a/github-pages/tests/test_naval_leakage_guard.py
++++ b/github-pages/tests/test_naval_leakage_guard.py
+@@ -0,0 +1,72 @@
++"""Bloqueio de vazamento CO2_emissions <-> fuel_consumption na camada de execução (sem UI)."""
++import numpy as np
++import pandas as pd
++import pytest
++
++import core.exp_artigo3 as exp
++from core.exp_artigo3 import NavalConfig, run_naval, validate_naval
++
++
++@pytest.fixture
++def data():
++    rng = np.random.default_rng(0)
++    rows = []
++    for ship in "ABCD":
++        for route in "wxyz":
++            for _ in range(20):
++                dist = rng.uniform(50, 500)
++                fuel = dist * rng.uniform(.8, 1.2) + 5
++                rows.append(dict(ship_type=ship, route_id=route, distance=dist,
++                                 fuel_type=rng.choice(["Diesel", "HFO"]),
++                                 weather_conditions=rng.choice(["Calm", "Moderate", "Stormy"]),
++                                 engine_efficiency=rng.uniform(70, 95),
++                                 fuel_consumption=fuel, CO2_emissions=fuel * rng.uniform(2.5, 3.0)))
++    return pd.DataFrame(rows)
++
++
++@pytest.mark.parametrize("target,forbidden", [("fuel_consumption", "CO2_emissions"),
++                                              ("CO2_emissions", "fuel_consumption")])
++@pytest.mark.parametrize("excluded", [(), ("engine_efficiency",), [], ("ship_type",)])
++def test_run_naval_rejects_forbidden_combination(data, target, forbidden, excluded):
++    with pytest.raises(ValueError, match="Vazamento"):
++        run_naval(data, NavalConfig(target=target, excluded=excluded))
++
++
++def test_excluded_as_plain_string_is_not_substring_matched(data):
++    with pytest.raises(ValueError, match="Vazamento"):
++        run_naval(data, NavalConfig(excluded="xCO2_emissions_not"))
++    cfg = NavalConfig(excluded="CO2_emissions").effective()
++    validate_naval(data, cfg)
++    assert cfg.excluded == ("CO2_emissions",)
++
++
++def test_forbidden_column_in_features_is_caught(data, monkeypatch):
++    monkeypatch.setattr(exp, "FEATURES", (*exp.FEATURES, "CO2_emissions"))
++    with pytest.raises(ValueError, match="Vazamento|obrigatórios"):
++        validate_naval(data, NavalConfig().effective())
++
++
++def test_valid_config_passes_validation_and_features_are_clean(data):
++    feats = validate_naval(data, NavalConfig().effective())
++    assert "CO2_emissions" not in feats and "fuel_consumption" not in feats
++    feats2 = validate_naval(data, NavalConfig(target="CO2_emissions", excluded=("fuel_consumption",)).effective())
++    assert "fuel_consumption" not in feats2 and "CO2_emissions" not in feats2
++
++
++def test_forbidden_never_reaches_preprocessing_during_real_run(data, monkeypatch):
++    seen = []
++    orig = exp.build_preprocessor
++
++    def spy(numeric, cats, *a, **k):
++        seen.append(set(numeric) | set(cats))
++        return orig(numeric, cats, *a, **k)
++
++    monkeypatch.setattr(exp, "build_preprocessor", spy)
++    from sklearn.linear_model import Ridge
++    monkeypatch.setattr(exp, 'naval_model', lambda name, seed: (Ridge(), {'alpha': [1.]}))
++    result = run_naval(data, NavalConfig(mode="rapido", scenarios=("E1", "DIST"), budget_seconds=120,
++                                        models=("Ridge-test",), draws=1, outer_folds=2, inner_folds=2,
++                                        hidden_grid=(3,), gamma_grid=(1.,), components_grid=(5,)))
++    assert result['test'] is not None, result['failures']
++    assert seen, "pré-processador não foi chamado"
++    assert all("CO2_emissions" not in cols and "fuel_consumption" not in cols for cols in seen)
+--- a/github-pages/tests/test_scientific_integrity.py
++++ b/github-pages/tests/test_scientific_integrity.py
+@@ -0,0 +1,115 @@
++"""Regressões científicas: API sem UI, seleção e isolamento do holdout."""
++import numpy as np
++import pandas as pd
++import pytest
++from sklearn.linear_model import Ridge
++from core.augment import SAESampler
++from core.exp_artigo3 import NavalConfig, run_naval
++
++
++def artificial_table():
++    rng = np.random.default_rng(17)
++    n = 98
++    distance = rng.uniform(10, 100, size=n)
++    fuel = 10*distance + rng.normal(0, 25, n)
++    return pd.DataFrame({
++        'ship_type': ['A']*42 + ['B']*56,
++        'route_id': ['R'+str(i % 2) for i in range(n)],
++        'distance': distance,
++        'fuel_type': ['Diesel' if i % 2 else 'HFO' for i in range(n)],
++        'weather_conditions': [['rain','sun','wind'][i%3] for i in range(n)],
++        'engine_efficiency': rng.uniform(70, 95, n),
++        'fuel_consumption': fuel,
++        'CO2_emissions': fuel*2.7,
++    })
++
++
++@pytest.mark.parametrize('target,proxy', [
++    ('fuel_consumption','CO2_emissions'),
++    ('CO2_emissions','fuel_consumption'),
++])
++def test_calling_executor_directly_rejects_leakage(target, proxy):
++    df = artificial_table()
++    with pytest.raises(ValueError, match='Vazamento'):
++        run_naval(df, NavalConfig(target=target, excluded=()))
++    with pytest.raises(ValueError, match='Vazamento'):
++        SAESampler(target=target).fit_resample(df.drop(columns=target), df[target])
++    with pytest.raises(ValueError, match='Vazamento'):
++        SAESampler(target=target).fit_resample(df.drop(columns=proxy), df[target])
++
++
++def test_reject_ambiguous_columns_in_direct_api():
++    df = artificial_table()
++    df['distance_copy'] = df.distance
++    df.columns = [*df.columns[:-1], 'distance']
++    with pytest.raises(ValueError, match='duplicados'):
++        run_naval(df)
++
++
++def test_final_holdout_not_used_to_fit_or_generate(monkeypatch):
++    import core.exp_artigo3 as core
++    data = artificial_table()
++    source = data.copy(deep=True)
++    monkeypatch.setattr(core, 'naval_model', lambda name, seed: (Ridge(), {'alpha': [1.]}))
++    fitted_indices = []
++    original = SAESampler.fit_resample
++    def spy(self, X, y):
++        fitted_indices.append(set(X.index))
++        return original(self, X, y)
++    monkeypatch.setattr(SAESampler, 'fit_resample', spy)
++    result = run_naval(data, NavalConfig(scenarios=('E1','E3','DIST'),
++        models=('Ridge-test',), hidden_grid=(3,), maxiter=10, draws=1,
++        outer_folds=2, inner_folds=2, budget_seconds=300))
++    assert result['test'] is not None, result['failures']
++    assert result['status'].startswith('concluído'), result['failures']
++    cfg = result['config']
++    train, final = set(cfg['final_train_indices']), set(cfg['final_test_indices'])
++    assert not train & final and train | final == set(range(len(data)))
++    assert cfg['split_invariants_verified']
++    assert cfg['final_test_synthetic'] == 0
++    assert cfg['final_test_attempts'] == cfg['final_test_evaluations'] == 1
++    assert fitted_indices and all(f <= train and f.isdisjoint(final) for f in fitted_indices)
++    assert all(set(d['train_indices']).isdisjoint(d['validation_indices']) for d in result['folds'])
++    assert all((set(d['train_indices']) | set(d['validation_indices'])) <= train for d in result['folds'])
++    assert 'CO2_emissions' not in cfg['features']
++    pd.testing.assert_frame_equal(source, data)
++
++
++def test_test_attempt_counter_tracks_failed_final_fit(monkeypatch):
++    import core.exp_artigo3 as core
++    data = artificial_table()
++    monkeypatch.setattr(core, 'naval_model', lambda name, seed: (Ridge(), {'alpha': [1.]}))
++    from core.augment import cell_labels
++    from sklearn.model_selection import train_test_split
++    labels = cell_labels(data, ('ship_type',))
++    _, final_ids = train_test_split(np.arange(len(data)), test_size=.2, stratify=labels, random_state=42)
++    final_y = data.iloc[final_ids].fuel_consumption.to_numpy()
++    original = core.reg_metrics
++    def failing_metric(y_true, y_pred):
++        if np.array_equal(np.asarray(y_true), final_y):
++            raise RuntimeError('final indisponível')
++        return original(y_true, y_pred)
++    monkeypatch.setattr(core, 'reg_metrics', failing_metric)
++    result = run_naval(data, NavalConfig(scenarios=('E1','DIST'), models=('Ridge-test',),
++        draws=1, outer_folds=2, inner_folds=2, budget_seconds=120))
++    assert result['config']['final_test_attempts'] == 1
++    assert result['config']['final_test_evaluations'] == 0
++    assert result['test'] is None
++    assert result['status'] == 'parcial'
++
++
++def test_artificial_pdf_marks_dataset_origin(monkeypatch):
++    import io
++    import core.exp_artigo3 as core
++    from pypdf import PdfReader
++    from core.report_pdf import naval_pdf
++    monkeypatch.setattr(core, 'naval_model', lambda name, seed: (Ridge(), {'alpha': [1.]}))
++    result = run_naval(artificial_table(), NavalConfig(
++        filename='DADOS_ARTIFICIAIS_NAO_REAIS', scenarios=('E1', 'DIST'),
++        models=('Ridge-test',), outer_folds=2, inner_folds=2, draws=1))
++    document = PdfReader(io.BytesIO(naval_pdf(result)))
++    assert 'DEMONSTRAÇÃO COM DADOS ARTIFICIAIS' in document.pages[0].extract_text()
++    assert 'DADOS ARTIFICIAIS' in document.pages[1].extract_text()
++    assert 'Resumo executivo' in document.pages[1].extract_text()
++    assert 'Sumário' in document.pages[2].extract_text()
++    assert 'observações reais reservadas' not in document.pages[1].extract_text()
+--- a/github-pages/tests/test_naval.py
++++ b/github-pages/tests/test_naval.py
+@@ -149,6 +149,7 @@
+ 
+ 
+ def test_naval_ui_and_stale_result(naval_data):
++    pytest.importorskip("streamlit", reason="Teste da UI exige Streamlit instalado")
+     from streamlit.testing.v1 import AppTest
+     code = '''
+ import pandas as pd
+--- a/github-pages/tests/test_ui.py
++++ b/github-pages/tests/test_ui.py
+@@ -1,4 +1,6 @@
+ from pathlib import Path
++import pytest
++pytest.importorskip("streamlit", reason="UI exige Streamlit instalado")
+ from streamlit.testing.v1 import AppTest
+ 
+ 
+--- a/github-pages/scripts/verify_naval_release.py
++++ b/github-pages/scripts/verify_naval_release.py
+@@ -0,0 +1,120 @@
++#!/usr/bin/env python3
++"""Portão de aceitação executável do laboratório naval.
++
++Sem --input, usa dados ARTIFICIAIS e identifica o PDF como demonstrativo.
++Com --input, lê o arquivo real fornecido, calcula hash do arquivo e valida o esquema.
++Não publica no Git nem afirma que navegador/Stlite ou unidades foram validados.
++"""
++import argparse
++import hashlib
++import io
++import json
++import sys
++from pathlib import Path
++
++import numpy as np
++import pandas as pd
++from pypdf import PdfReader
++
++PROJECT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(PROJECT))
++from core.exp_artigo3 import NavalConfig, run_naval, validate_naval
++from core.experiment_tracking import json_bytes
++from core.io import load_table
++from core.report_pdf import naval_pdf
++
++SCHEMA = {'ship_type', 'route_id', 'distance', 'fuel_type', 'weather_conditions',
++          'engine_efficiency', 'fuel_consumption', 'CO2_emissions'}
++
++
++def artificial_table():
++    rng = np.random.default_rng(17)
++    n = 98
++    x = rng.uniform(10, 100, n)
++    fuel = 10*x+rng.normal(0, 25, n)
++    return pd.DataFrame(dict(ship_type=['A']*42+['B']*56,
++        route_id=['R'+str(i%2) for i in range(n)], distance=x,
++        fuel_type=['Diesel' if i%2 else 'HFO' for i in range(n)],
++        weather_conditions=[['sun','rain','wind'][i%3] for i in range(n)],
++        engine_efficiency=rng.uniform(70,95,n), fuel_consumption=fuel,
++        CO2_emissions=2.7*fuel))
++
++
++def main():
++    parser = argparse.ArgumentParser(description='Validar fluxo naval + PDF + integridade científica')
++    parser.add_argument('--input', type=Path, help='Arquivo naval real .mat ou .csv')
++    parser.add_argument('--out', type=Path, default=PROJECT/'verification')
++    parser.add_argument('--budget', type=float, default=300)
++    args = parser.parse_args()
++    args.out.mkdir(exist_ok=True, parents=True)
++    real = args.input is not None
++    if real:
++        raw = args.input.read_bytes()
++        df = load_table(args.input.name, raw)
++        source_name = args.input.name
++        sha = hashlib.sha256(raw).hexdigest()
++        if args.input.suffix.lower() == '.mat' and (df.shape != (1440,8) or set(df) != SCHEMA):
++            raise ValueError('O MAT não corresponde às 1440 linhas/8 colunas esperadas da auditoria.')
++    else:
++        df, sha, source_name = artificial_table(), '', 'DADOS_ARTIFICIAIS_NAO_REAIS'
++    config = NavalConfig(mode='rapido', use_efficiency=False, filename=source_name,
++        source_sha256=sha, scenarios=('E1','E3','DIST'), models=('SVR (RBF)',),
++        outer_folds=2, inner_folds=2, hidden_grid=(3,), draws=1,
++        maxiter=10, budget_seconds=args.budget)
++    validate_naval(df, config.effective())
++    result = run_naval(df, config)
++    data = naval_pdf(result)
++    pdf_path = args.out/('resultado_real_naval.pdf' if real else 'resultado_ARTIFICIAL_demonstrativo.pdf')
++    pdf_path.write_bytes(data)
++    pages = PdfReader(io.BytesIO(data)).pages
++    cfg = result['config']
++    train, test = set(cfg['final_train_indices']), set(cfg['final_test_indices'])
++    checks = {
++        'schema': SCHEMA <= set(df),
++        'disjoint_holdout': not (train & test) and train | test == set(range(len(df))),
++        'external_folds_within_development': all(
++            (set(d['train_indices']) | set(d['validation_indices'])) <= train
++            and not set(d['train_indices']) & set(d['validation_indices'])
++            for d in result['folds']),
++        'no_co2_predictor': 'CO2_emissions' not in cfg['features'],
++        'no_synthetic_holdout': cfg['final_test_synthetic'] == 0,
++        'one_final_test_attempt': cfg['final_test_attempts'] == 1,
++        'one_final_test_evaluation': cfg['final_test_evaluations'] == 1,
++        'all_requested_scenarios_present': {'E1','E3','DIST'} <= {r['scenario'] for r in result['validation']},
++        'complete_validation': all(r['complete'] for r in result['validation']) and len(result['validation']) == 4,
++        'pdf_valid_header': data[:4] == b'%PDF',
++        'pdf_executive_summary_page': len(pages) >= 3 and 'Resumo executivo' in (pages[1].extract_text() or ''),
++        'pdf_summary_followed_by_toc': len(pages) >= 3 and 'Sumário' in (pages[2].extract_text() or ''),
++        'pdf_mentions_run_hash': result['dataset_sha256'] in '\n'.join(p.extract_text() or '' for p in pages),
++    }
++    outcome = {
++        'kind': 'dataset_fornecido' if real else 'DEMONSTRATIVO_ARTIFICIAL',
++        'input_filename': source_name, 'file_sha256': sha or None,
++        'dataset_sha256': result['dataset_sha256'], 'status': result['status'],
++        'failures': result['failures'], 'checks': checks, 'pdf_pages': len(pages),
++        'test': result['test'], 'validation': result['validation'],
++        'manifest': result['manifest'], 'configuration': cfg,
++        'note': ('Execução com arquivo fornecido; física e representatividade ainda exigem verificação externa.'
++                 if real else 'Dados 100% artificiais: não comprovam resultados do dataset naval original.'),
++    }
++    (args.out/'evidencias_execucao.json').write_bytes(json_bytes(outcome))
++    approved = all(checks.values()) and result['status'].startswith('concluído')
++    documentation = [
++        '# Resultado do portão de aceitação do ML Learner', '',
++        f'**Fonte:** {outcome["kind"]}. **Status:** {result["status"]}.',
++        f'**PDF:** `{pdf_path.name}` ({len(pages)} páginas).',
++        f'**Hash SHA-256 da tabela:** `{result["dataset_sha256"]}`.', '',
++        '| Verificação | Resultado |', '| --- | --- |',
++        *[f'| {name} | {"PASSOU" if state else "FALHOU"} |' for name,state in checks.items()], '',
++        f'**Veredito do portão local:** {"APROVADO" if approved else "REPROVADO/PARCIAL"}.', '',
++        'Este verificador não testa o Stlite em navegador. Não substitui a suíte pytest,',
++        'o arquivo MAT original, a revisão de plausibilidade física ou o Git remoto.',
++        'As métricas estão no JSON e PDF, nunca são valores presumidos.',
++    ]
++    (args.out/'RELATORIO_VERIFICACAO.md').write_text('\n'.join(documentation)+'\n',encoding='utf-8')
++    print('\n'.join(documentation))
++    return 0 if approved else 1
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- a/github-pages/LEIAME.md
++++ b/github-pages/LEIAME.md
+@@ -87,7 +87,33 @@
+ 
+ SAE é NumPy com penalidade KL, não depende de PyTorch, mas está restrito ao modo
+ local. Sua geração em atributos tabulares difere da síntese de sinais do artigo;
+-`article3_reproduction` está bloqueado. No navegador, E1–E4 com SAE e SHAP
+-ficam indisponíveis. MAT v7.3 depende de h5py local. Não há promessa de acurácia.
++`article3_reproduction` está bloqueado. No navegador, o protocolo científico **genérico** E1–E4 com SAE e SHAP
++continua indisponível. **O laboratório naval** permite especificamente o
++perfil N-FAST demonstrativo E1/E3/DIST com SAE leve em Stlite; execução
++completa E1–E4/E4b, E3-orig e sensibilidade exigem Python local. MAT v7.3 depende de h5py local. Não há promessa de acurácia.
+ O pipeline científico exportado continua ajustado apenas no treino reservado;
+ o teste externo é preservado. Nunca carregue joblib de origem desconhecida.
++
++## Verificação de entrega (sem inventar dados do navio)
++
++Instale as dependências de teste e execute da pasta `github-pages`:
++
++```powershell
++python -m pip install -r requirements-dev.txt
++python -m pytest -q tests
++python scripts/verify_naval_release.py --out verification
++```
++
++**Atenção:** sem `--input`, o verificador usa uma tabela **ARTIFICIAL**,
++identifica o PDF como demonstração e gera `verification/evidencias_execucao.json`
++e `verification/RELATORIO_VERIFICACAO.md`. Com os dados originais, use:
++
++```powershell
++python scripts/verify_naval_release.py --input "C:\dados\Dados_navio_nig(1).mat" --out verification-real --budget 600
++```
++
++Os arquivos do MAT real não são incluídos neste repositório; confirme
++permissões, dimensões, conteúdo e unidades. Testes UI exigem Streamlit instalado;
++o navegador Stlite requer verificação manual em HTTP e rede ativa. O verificador
++local não efetua commit, push ou validação de interface WebAssembly. Veja
++`docs/RELATORIO_CORRECOES_AUDITORIA.md`.
