@@ -960,6 +960,18 @@ Os PDFs de backtest chamam a Série B Python existente, com RPM/D fixos e Va=J·
 
 Foram aprovados 36 testes Python, testes reais de Worker/Pyodide e Edge/Playwright, incluindo escolha de uma categoria ausente do top global 1 e transferência exata para a simulação. Os PDFs foram lidos por pypdf, verificando anexo, operadores vetoriais e igualdade de KT/KQ no J operacional. O [relatório desta atualização](Relatorio_Comparacao_Pas_PDF.md) documenta uso, contratos, situações, métodos e comandos. O pypdf é opcional para validar relatórios; não é dependência do navegador ou do cálculo.
 
+## 28.3. Orquestrador automático FOC: Sprints 0/1
+
+`projects/propulsao_auto.py` incorpora o protótipo recebido; `propulsao_auto_nucleo.py` implementa o modo automático mantendo a função pública `otimizar`. O CONFIG de entrada é preservado e registrado. Na cópia efetiva, o objetivo passa a FOC, as pás solicitadas são Z=2–7 e o modo de motor é estrito, com alterações de modo explícitas no JSON. Um motor alvo fica incorporado no catálogo efetivo; sem alvo utiliza-se o catálogo completo da configuração. Velocidade, margens, domínio geométrico e equações não mudam.
+
+`calibrar_motor` mantém seis retornos e seu beam de refinamento, mas acrescenta reservatórios científicos separados no estado, antes dos cortes de apresentação: até cinco viáveis e cinco diagnósticos por Z. O orquestrador conserva melhores globais e por Z, inclusive em rodadas vazias, escolhendo FOC finito apenas entre aprovados. Diagnósticos continuam sem aprovação. O modelo de SFOC permanece genérico e não atribui economia específica de fabricante.
+
+A parada por estagnação só se habilita após verificar a execução integral da malha ampla inicial do perfil rápido/completo, para todos os Z admissíveis. Isso não certifica cobertura dos blocos globais finos: o JSON declara `global_discreta_concluida=false`, e o nível profundo permanece indisponível até Sprint 2. Cache, avaliações únicas, checkpoint e nova ação Worker ainda não foram implementados. Os resultados deixam esses contadores como `null`, sem inventar cobertura.
+
+O CLI aceita `--max-rodadas`, `--paciencia`, `--analisar-alternativas` e JSON UTF-8 estrito. Cenários hipotéticos ficam desligados por padrão. Foram registrados 36 testes anteriores, 46 testes após a primeira implementação e 12 testes automáticos específicos após acrescentar dois cenários, totalizando 48 testes disponíveis. Worker, navegador e execução real do CLI com fixture artificial aprovada foram verificados. Os hashes no Pyodide também resolvem os módulos carregados diretamente no diretório virtual, preservando os nomes lógicos do projeto.
+
+Consulte o [relatório dos Sprints 0/1](Relatorio_Auto_Sprints_0_1.md). Os protótipos originais, manifesto e fixture estão preservados em `baselines/auto_sprint0`; os logs e a execução real do CLI são evidências complementares. Esta entrega deve ser revisada antes de avançar à cobertura profunda.
+
 <!-- ANEXOS_GERADOS_PROPULSAO -->
 
 ## 29. Manifesto das transcrições integrais
@@ -974,7 +986,7 @@ Os hashes brutos identificam os bytes lidos. Os hashes LF identificam o texto in
 | `naval-backtest.js` | 15294 | 93 | sim | `330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612` | `330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612` |
 | `naval-backtest-worker.js` | 9575 | 119 | sim | `0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e` | `0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e` |
 | `projects/propulsao.py` | 57753 | 1006 | sim | `4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4` | `4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4` |
-| `projects/propulsao_busca.py` | 12820 | 232 | sim | `c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c` | `c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c` |
+| `projects/propulsao_busca.py` | 14760 | 258 | sim | `cf1524c190096b6d9560db351fea5146e26b421f8cb44b0162a5ddca29735db9` | `cf1524c190096b6d9560db351fea5146e26b421f8cb44b0162a5ddca29735db9` |
 | `projects/motores.csv` | 8297 | 57 | sim | `1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e` | `0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8` |
 | `projects/requirements-propulsao.txt` | 48 | 4 | sim | `6aabe26fb66dc06fccf7c796f6ab35655cbbeb96ad5d03fd682d45240bb28e7a` | `6aabe26fb66dc06fccf7c796f6ab35655cbbeb96ad5d03fd682d45240bb28e7a` |
 | `projects/CATALOGO_MOTORES.md` | 2528 | 23 | sim | `50c953b3bbd43fa79320f5320216e54d6409f1ece105b6058ad77add0810fcbc` | `50c953b3bbd43fa79320f5320216e54d6409f1ece105b6058ad77add0810fcbc` |
@@ -985,10 +997,10 @@ Os hashes brutos identificam os bytes lidos. Os hashes LF identificam o texto in
 | `projects/test_propulsao_busca.py` | 2123 | 54 | sim | `76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26` | `76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26` |
 | `projects/test_propulsao_diagnostico.py` | 6493 | 126 | sim | `01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca` | `01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca` |
 | `projects/test_propulsao_calibracao.py` | 4432 | 86 | sim | `7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96` | `7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96` |
-| `projects/test_propulsao_worker.cjs` | 8244 | 130 | sim | `75f9bcb567fd6d96160e3ff17224e7337f49994bd2c6ad37b0d35381ea554bac` | `75f9bcb567fd6d96160e3ff17224e7337f49994bd2c6ad37b0d35381ea554bac` |
+| `projects/test_propulsao_worker.cjs` | 8451 | 131 | sim | `b132f8372974e56f228fdad5e5269cbfd0bb59326e9af080b210b585f5b13deb` | `b132f8372974e56f228fdad5e5269cbfd0bb59326e9af080b210b585f5b13deb` |
 | `projects/test_propulsao_browser.cjs` | 9666 | 125 | sim | `9dfdbf858a236d09f5140c6ea770bfe9c8e9ed4e705df9f09b936500e35d80df` | `9dfdbf858a236d09f5140c6ea770bfe9c8e9ed4e705df9f09b936500e35d80df` |
-| `projects/gerar_manual_propulsao.py` | 7525 | 133 | sim | `82104779dc43e3f0149c6689438883baff42e227408eda14d4004592feb8cfc8` | `82104779dc43e3f0149c6689438883baff42e227408eda14d4004592feb8cfc8` |
-| `projects/propulsao_auditoria.py` | 9858 | 172 | sim | `e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b` | `e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b` |
+| `projects/gerar_manual_propulsao.py` | 7917 | 139 | sim | `941513da9174442d16b9c60b64f5919f0d221731daeacdfa23282f0bc4a01410` | `941513da9174442d16b9c60b64f5919f0d221731daeacdfa23282f0bc4a01410` |
+| `projects/propulsao_auditoria.py` | 10149 | 176 | sim | `9b922487b9593dc238a4440622ba3d8037cdd384f9a4020b99985be60b875bbb` | `9b922487b9593dc238a4440622ba3d8037cdd384f9a4020b99985be60b875bbb` |
 | `projects/test_propulsao_auditoria.py` | 7439 | 142 | sim | `4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9` | `4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9` |
 | `projects/registrar_baseline_p0.py` | 2359 | 52 | sim | `92cb1c90a741aa9f97918860e64dac2053073ea31aacb3e5291d6b5a5439363f` | `92cb1c90a741aa9f97918860e64dac2053073ea31aacb3e5291d6b5a5439363f` |
 | `projects/comparar_baseline_p0.py` | 9439 | 73 | sim | `fcfc9e356d6cc420817fbd5abb76a14bdfcb50fa97e43dd4f0f480812638d7f5` | `fcfc9e356d6cc420817fbd5abb76a14bdfcb50fa97e43dd4f0f480812638d7f5` |
@@ -1000,6 +1012,14 @@ Os hashes brutos identificam os bytes lidos. Os hashes LF identificam o texto in
 | `projects/test_propulsao_pas.py` | 3057 | 60 | sim | `c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a` | `c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a` |
 | `projects/validar_pdf_propulsao.py` | 1822 | 42 | sim | `f116778d0debe7e97f8575afab4e7c2a4646ccaa49579bbfca29334f84bedec5` | `f116778d0debe7e97f8575afab4e7c2a4646ccaa49579bbfca29334f84bedec5` |
 | `projects/Relatorio_Comparacao_Pas_PDF.md` | 7784 | 76 | sim | `a7b867b825ac9b2adccf39e470d1928e9b8223e248e237023ef82b76858db8e9` | `a7b867b825ac9b2adccf39e470d1928e9b8223e248e237023ef82b76858db8e9` |
+| `projects/propulsao_auto.py` | 7054 | 163 | sim | `b5260e5c794dc04f344e7c34c51c176815b00300ce1951e8c6f3321db062e50b` | `b5260e5c794dc04f344e7c34c51c176815b00300ce1951e8c6f3321db062e50b` |
+| `projects/propulsao_auto_nucleo.py` | 7168 | 105 | sim | `14a680da884904066e8d66609f1621f15def94959d104b5ae00d8ffa0adb5159` | `14a680da884904066e8d66609f1621f15def94959d104b5ae00d8ffa0adb5159` |
+| `projects/test_propulsao_auto.py` | 7203 | 132 | sim | `a3930802bdb1279d935389333d1740d68775c6e2f53810cf6bd0b2d6195fd1be` | `a3930802bdb1279d935389333d1740d68775c6e2f53810cf6bd0b2d6195fd1be` |
+| `projects/Relatorio_Auto_Sprints_0_1.md` | 5730 | 50 | sim | `360afabd9b0e6509bb8c29b631861f5f0d9337e752099e3f249af6d7b7afd4eb` | `360afabd9b0e6509bb8c29b631861f5f0d9337e752099e3f249af6d7b7afd4eb` |
+| `projects/baselines/auto_sprint0/propulsao_auto.py` | 8970 | 203 | sim | `569b0978b58c08c65f212a5a829c34e110d00d4711c66c3798facfb5fa060803` | `569b0978b58c08c65f212a5a829c34e110d00d4711c66c3798facfb5fa060803` |
+| `projects/baselines/auto_sprint0/test_propulsao_auto.py` | 2132 | 51 | sim | `9d4137e14b83edf75cee570c030ba821f386c30c3afccee31abca31dd7107d8c` | `9d4137e14b83edf75cee570c030ba821f386c30c3afccee31abca31dd7107d8c` |
+| `projects/baselines/auto_sprint0/manifesto.json` | 6034 | 214 | não | `407c1c2b8e758712b43e9c83e7e687245e923a2278fd00aa262a9dde88501698` | `e31269c84c4a3533c928a52b742b4a6260bedefbbe14f282355674b12a19a516` |
+| `projects/baselines/auto_sprint0/caso_artificial_aprovado.json` | 4636 | 225 | não | `8cc5cbb3856dc61b74b04c88efa6fce99a3b3d372b329e088971321c0ba2f9d0` | `ea414ffda084b3baf90b067ee268acc446689efc4998a39633d2d871cbe147e5` |
 | `publicado/naval.html` | 29296 | 182 | sim | `409f69afe0dee13cac438880044756d9876d85e6863da2f17af8eb63bf2d86a7` | `409f69afe0dee13cac438880044756d9876d85e6863da2f17af8eb63bf2d86a7` |
 | `publicado/i18n.css` | 1979 | 18 | sim | `ac0d20d1de3b7b4392ee23f6969a300b28f8a5796911da221b77d92c374fc61f` | `eabff46eb30329533a9a9cd4c4f9f4a5531e0d6e6ae783026b46c470d4b4c213` |
 | `publicado/i18n.js` | 7298 | 115 | sim | `a2573808fd22645a81111312f003293a2fa988352130e62d391419acdf77bb29` | `4681989337471f729c930e57a9db7a47f5147657503d437d507df8cfae2dd0ed` |
@@ -1183,7 +1203,9 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 | 28 | `backtest_perfil(cfg, perfil='completo', progresso=None, tamanho_lote=8000, diagnostico_destino=None, auditoria=None)` |
 | 72 | `merge(previous, frame, exploratory=False)` |
 | 104 | `calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None, diagnostico_destino=None, auditoria=None)` |
-| 229 | `json_records(frame)` |
+| 184 | `scientific_key(row, feasible)` |
+| 186 | `observe(frame, status)` |
+| 255 | `json_records(frame)` |
 
 ### `minimal.js`
 
@@ -1261,12 +1283,12 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 
 | Linha | Assinatura |
 |---:|---|
-| 31 | `digest(value)` |
-| 35 | `normalized(path)` |
-| 39 | `cell(value)` |
-| 43 | `config_leaves(node, prefix='CONFIG')` |
-| 51 | `generate(published=None)` |
-| 109 | `verify(compare_sources=False)` |
+| 37 | `digest(value)` |
+| 41 | `normalized(path)` |
+| 45 | `cell(value)` |
+| 49 | `config_leaves(node, prefix='CONFIG')` |
+| 57 | `generate(published=None)` |
+| 115 | `verify(compare_sources=False)` |
 
 ### `projects/propulsao_auditoria.py`
 
@@ -1279,7 +1301,7 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 | 76 | `resumo_pas(self, cfg, anteriores=None)` |
 | 114 | `diagnosticar_viabilidade(candidato, config)` |
 | 146 | `hashes_fontes(extra=None)` |
-| 162 | `historico_csv(historico)` |
+| 166 | `historico_csv(historico)` |
 
 ### `projects/test_propulsao_auditoria.py`
 
@@ -1334,6 +1356,84 @@ As linhas referem-se aos arquivos originais, não à numeração deste Markdown.
 | Linha | Assinatura |
 |---:|---|
 | 8 | `validar(path)` |
+
+### `projects/propulsao_auto.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 20 | `_melhor_linha(approved, ranking)` |
+| 25 | `_chave(linha, objetivo)` |
+| 30 | `_melhorou(nova, antiga, tolerancia)` |
+| 44 | `_viavel(cfg, motor)` |
+| 49 | `_passos(inicio, fim, passo)` |
+| 54 | `_alavancas(cfg)` |
+| 57 | `velocidade(c, v)` |
+| 60 | `rotacao(c, v)` |
+| 63 | `mar(c, v)` |
+| 66 | `operacional(c, v)` |
+| 69 | `ta_d(c, v)` |
+| 87 | `sugerir_ajustes(cfg, motor=None)` |
+| 109 | `resumo(resultado)` |
+| 135 | `main(argv=None)` |
+
+### `projects/propulsao_auto_nucleo.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 13 | `chave(row, feasible)` |
+| 17 | `selecionar(rows, feasible)` |
+| 23 | `otimizar(cfg, motor=None, nivel='completo', paciencia=2, max_rodadas=12, tolerancia=0.001, progresso=None, rodada_cb=None, analisar_alternativas=False, cancelar=None)` |
+
+### `projects/test_propulsao_auto.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 11 | `config()` |
+| 17 | `row(foc=5, feasible=True, violation=0, z=5)` |
+| 22 | `fake(self, sequence, covered=True)` |
+| 23 | `run(cfg, motor, nivel, state, progresso)` |
+| 35 | `test_approved_case_stops_by_stagnation_and_keeps_inputs(self)` |
+| 49 | `test_best_never_worsens_across_rounds(self)` |
+| 54 | `test_infeasible_case_reports_binding_rpm_and_fix(self)` |
+| 62 | `test_invalid_level_rejected(self)` |
+| 66 | `test_no_stagnation_before_declared_coverage(self)` |
+| 73 | `test_invalid_parameters_and_input_error(self)` |
+| 80 | `test_nan_inf_not_selected_and_strict_json(self)` |
+| 86 | `test_cancel_before_round_preserves_input(self)` |
+| 93 | `test_no_candidates_and_no_approved_status(self)` |
+| 99 | `test_real_top_one_keeps_both_scientific_reservoirs(self)` |
+| 112 | `test_hypothetical_alternatives_are_opt_in_and_immutable(self)` |
+| 123 | `test_deterministic_ties_and_explicit_target(self)` |
+
+### `projects/baselines/auto_sprint0/propulsao_auto.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 19 | `_melhor_linha(approved, ranking)` |
+| 24 | `_chave(linha, objetivo)` |
+| 29 | `_melhorou(nova, antiga, tolerancia)` |
+| 37 | `otimizar(cfg, motor=None, nivel='completo', paciencia=2, max_rodadas=12, tolerancia=0.001, progresso=None, rodada_cb=None)` |
+| 90 | `_viavel(cfg, motor)` |
+| 98 | `_passos(inicio, fim, passo)` |
+| 103 | `_alavancas(cfg)` |
+| 106 | `velocidade(c, v)` |
+| 109 | `rotacao(c, v)` |
+| 112 | `mar(c, v)` |
+| 115 | `operacional(c, v)` |
+| 118 | `ta_d(c, v)` |
+| 136 | `sugerir_ajustes(cfg, motor=None)` |
+| 156 | `resumo(resultado)` |
+| 181 | `main(argv=None)` |
+
+### `projects/baselines/auto_sprint0/test_propulsao_auto.py`
+
+| Linha | Assinatura |
+|---:|---|
+| 7 | `config()` |
+| 17 | `test_approved_case_stops_by_stagnation_and_keeps_inputs(self)` |
+| 28 | `test_best_never_worsens_across_rounds(self)` |
+| 33 | `test_infeasible_case_reports_binding_rpm_and_fix(self)` |
+| 45 | `test_invalid_level_rejected(self)` |
 
 ### `publicado/i18n.js`
 
@@ -3151,7 +3251,7 @@ if __name__ == "__main__":
 
 ### 32.7. `projects/propulsao_busca.py`
 
-<!-- SOURCE projects/propulsao_busca.py SHA256_LF c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c FINAL_LF 1 -->
+<!-- SOURCE projects/propulsao_busca.py SHA256_LF cf1524c190096b6d9560db351fea5146e26b421f8cb44b0162a5ddca29735db9 FINAL_LF 1 -->
 ````python
 """Search profiles with bounded batches and a global, deterministic ranking."""
 import copy
@@ -3333,6 +3433,26 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
             grids.append(local)
     objective = {'bhp':'BHP_kW','foc':'FOC_t_h'}[base['backtest']['objetivo']]
     keys = ['viol_total',objective,'Z','D','Ae/Ao','P/D']
+    # Scientific reservoirs are independent of the presentation top and of
+    # the legacy beam used for refinement. Observe candidates before batching cuts.
+    reservoirs = copy.deepcopy(estado.get('reservatorios', {})) if estado else {}
+    def scientific_key(row, feasible):
+        return ([] if feasible else [row['viol_total']]) + [row[objective],row['BHP_kW'],row['Z'],row['D'],row['Ae/Ao'],row['P/D'],str(row.get('Motores',''))]
+    def observe(frame, status):
+        if auditoria:
+            auditoria(frame,status)
+        if status not in ('VIAVEL','RPM_MOTOR','POTENCIA_MOTOR','RPM_E_POTENCIA_MOTOR') or frame.empty:
+            return
+        for z,part in frame.groupby('Z'):
+            pool = reservoirs.setdefault(str(int(z)),dict(viaveis=[],diagnosticos=[]))
+            for feasible,name in ((True,'viaveis'),(False,'diagnosticos')):
+                eligible=part[(part['cabe_motor']==feasible) & p.np.isfinite(part[objective]) & p.np.isfinite(part['BHP_kW']) & p.np.isfinite(part['viol_total'])]
+                rows=pool[name]+json_records(eligible)
+                rows.sort(key=lambda row:scientific_key(row,feasible))
+                unique={}
+                for row in rows:
+                    unique.setdefault(tuple(row[key] for key in ('Z','D','Ae/Ao','P/D')),row)
+                pool[name]=list(unique.values())[:5]
     frames = []
     if estado and estado['ranking']:
         frames.append(pd.DataFrame(estado['ranking']))
@@ -3352,7 +3472,7 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
         for grid in grids:
             part = os.path.join(temporary,'parte.csv') if diagnostico_destino else None
             callback = (lambda done,size: progresso(completed+done,total)) if progresso else None
-            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part,auditoria=auditoria)
+            g,f,steps,resistance,effective = backtest_perfil(grid,'personalizado',callback,diagnostico_destino=part,auditoria=observe)
             frames.extend([g,f])
             for name,count in steps:
                 funnel[name] = funnel.get(name,0)+count
@@ -3365,6 +3485,7 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
                 first = False
     candidates = pd.concat(frames,ignore_index=True).drop_duplicates(['Z','D','Ae/Ao','P/D']).sort_values(keys,kind='stable')
     by_z = {str(z):json_records(candidates[candidates['Z']==z].head(5)) for z in valid_z}
+    approved = candidates[candidates['cabe_motor']].sort_values([objective,'Z','D','Ae/Ao','P/D'],kind='stable').head(base['backtest']['top']).reset_index(drop=True)
     candidates = candidates.head(base['backtest']['top']).reset_index(drop=True)
     next_cursor,next_resolution = cursor,resolution
     if stage == 'varredura global por blocos':
@@ -3373,12 +3494,17 @@ def calibrar_motor(cfg, motor=None, nivel='rapido', estado=None, progresso=None,
             next_cursor,next_resolution = 0,resolution+1
     state = dict(iteracao=iteration+1, avaliacoes=(estado['avaliacoes'] if estado else 0)+completed,
                  ranking=json_records(candidates), melhores_por_z=by_z, cursor_global=next_cursor,resolucao_global=next_resolution)
+    state['reservatorios'] = reservoirs
+    state['reservatorios_schema_version'] = 1
+    feasible_rows=[row for pool in reservoirs.values() for row in pool['viaveis']]
+    diagnostic_rows=[row for pool in reservoirs.values() for row in pool['diagnosticos']]
+    state['melhor_viavel'] = min(feasible_rows,key=lambda row:scientific_key(row,True)) if feasible_rows else None
+    state['melhor_diagnostico'] = min(diagnostic_rows,key=lambda row:scientific_key(row,False)) if diagnostic_rows else None
     base['calibracao'] = dict(motor=motor or None,nivel=nivel,iteracao=state['iteracao'],avaliacoes=state['avaliacoes'],
         etapa=stage,pas_permitidas=valid_z,pas_avaliadas=sorted(set(z for grid in grids for z in grid['helice']['z'])),
         bloco_global=cursor+1 if stage=='varredura global por blocos' else None,blocos_globais=tile_total if stage=='varredura global por blocos' else None,
         resolucao_global=resolution,malhas_rodada=[grid['helice'] for grid in grids],
         contagens='avaliações acumuladas podem repetir pontos; funil e diagnóstico CSV referem-se à última rodada')
-    approved = candidates[candidates['cabe_motor']].reset_index(drop=True)
     return approved,candidates,list(funnel.items()),resistance,base,state
 
 def json_records(frame):
@@ -3998,7 +4124,7 @@ if __name__=='__main__':unittest.main()
 
 ### 32.18. `projects/test_propulsao_worker.cjs`
 
-<!-- SOURCE projects/test_propulsao_worker.cjs SHA256_LF 75f9bcb567fd6d96160e3ff17224e7337f49994bd2c6ad37b0d35381ea554bac FINAL_LF 1 -->
+<!-- SOURCE projects/test_propulsao_worker.cjs SHA256_LF b132f8372974e56f228fdad5e5269cbfd0bb59326e9af080b210b585f5b13deb FINAL_LF 1 -->
 ````javascript
 /* Run with: node projects/test_propulsao_worker.cjs <path-to-pyodide-package> */
 const assert = require('node:assert/strict');
@@ -4071,6 +4197,7 @@ async function main() {
   assert.equal(record.config.helice.diametro.max,8);
   assert.equal(record.combinacoes_geradas,1);
   assert.equal(record.fontes_sha256['naval.js'].bytes_sha256,require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(__dirname,'..','naval.js'))).digest('hex'));
+  assert.equal(record.fontes_sha256['projects/propulsao_busca.py'].bytes_sha256,require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(__dirname,'propulsao_busca.py'))).digest('hex'));
   assert.ok(completed.result.limits.some(warning=>warning.includes('limite de D')));
   assert.ok(completed.result.curve.some(row=>row.status_envelope==='abaixo da faixa SFOC'&&row.FOC_t_h===null));
   const input=simulation.backtestInput(completed.result);
@@ -4267,7 +4394,7 @@ main().catch(error=>{console.error(error);process.exitCode=1;});
 
 ### 32.20. `projects/gerar_manual_propulsao.py`
 
-<!-- SOURCE projects/gerar_manual_propulsao.py SHA256_LF 82104779dc43e3f0149c6689438883baff42e227408eda14d4004592feb8cfc8 FINAL_LF 1 -->
+<!-- SOURCE projects/gerar_manual_propulsao.py SHA256_LF 941513da9174442d16b9c60b64f5919f0d221731daeacdfa23282f0bc4a01410 FINAL_LF 1 -->
 ````python
 """Atualiza anexos integrais do manual e verifica sua transcrição."""
 from pathlib import Path
@@ -4296,6 +4423,12 @@ FILES = [
     'projects/Relatorio_Entrega_P0.md',
     'naval-pdf.js', 'projects/test_propulsao_pas.py',
     'projects/validar_pdf_propulsao.py', 'projects/Relatorio_Comparacao_Pas_PDF.md',
+    'projects/propulsao_auto.py','projects/propulsao_auto_nucleo.py',
+    'projects/test_propulsao_auto.py','projects/Relatorio_Auto_Sprints_0_1.md',
+    'projects/baselines/auto_sprint0/propulsao_auto.py',
+    'projects/baselines/auto_sprint0/test_propulsao_auto.py',
+    'projects/baselines/auto_sprint0/manifesto.json',
+    'projects/baselines/auto_sprint0/caso_artificial_aprovado.json',
 ]
 
 
@@ -4407,7 +4540,7 @@ if __name__ == '__main__':
 
 ### 32.21. `projects/propulsao_auditoria.py`
 
-<!-- SOURCE projects/propulsao_auditoria.py SHA256_LF e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b FINAL_LF 1 -->
+<!-- SOURCE projects/propulsao_auditoria.py SHA256_LF 9b922487b9593dc238a4440622ba3d8037cdd384f9a4020b99985be60b875bbb FINAL_LF 1 -->
 ````python
 """P0: observação do funil legado, sem alterar critérios ou equações."""
 import csv
@@ -4558,10 +4691,14 @@ def hashes_fontes(extra=None):
     root = Path(__file__).resolve().parent.parent
     names = ['projects/propulsao.py', 'projects/propulsao_busca.py',
              'projects/propulsao_auditoria.py', 'projects/motores.csv',
+             'projects/propulsao_auto.py', 'projects/propulsao_auto_nucleo.py',
              'naval.js', 'naval-pdf.js', 'naval-backtest.js', 'naval-backtest-worker.js', 'naval.html', 'naval.css']
     result = {}
     for name in names:
         path = root/name
+        if not path.is_file() and name.startswith('projects/'):
+            # Pyodide loads the Python files directly in its working directory.
+            path = Path(__file__).resolve().parent/Path(name).name
         if path.is_file():
             raw = path.read_bytes()
             result[name] = dict(bytes_sha256=hashlib.sha256(raw).hexdigest(),
@@ -6415,7 +6552,1206 @@ python projects/validar_pdf_propulsao.py <arquivo.pdf>
 ````
 <!-- END_SOURCE projects/Relatorio_Comparacao_Pas_PDF.md -->
 
-### 32.33. `publicado/naval.html`
+### 32.33. `projects/propulsao_auto.py`
+
+<!-- SOURCE projects/propulsao_auto.py SHA256_LF b5260e5c794dc04f344e7c34c51c176815b00300ce1951e8c6f3321db062e50b FINAL_LF 1 -->
+````python
+"""Otimização FOC em uma chamada, com cobertura ampla declarada e incumbentes separados.
+Sprints 0/1: busca profunda, cache e checkpoint serão implementados separadamente.
+
+Uso:
+    python propulsao_auto.py                       # navio padrão do CONFIG
+    python propulsao_auto.py --config navio.json   # CONFIG próprio (JSON)
+    python propulsao_auto.py --motor 8G90ME-C10.5  # restringe a um motor
+"""
+import copy
+import json
+import math
+
+import propulsao as p
+import propulsao_busca as busca
+
+OBJETIVO = {'bhp': 'BHP_kW', 'foc': 'FOC_t_h'}
+WEB_API_VERSION = 4
+
+
+def _melhor_linha(approved, ranking):
+    frame = approved if len(approved) else ranking
+    return None if frame.empty else frame.iloc[0].to_dict()
+
+
+def _chave(linha, objetivo):
+    """Menor é melhor: primeiro a violação do motor, depois o objetivo."""
+    return (float(linha['viol_total']), float(linha[objetivo]))
+
+
+def _melhorou(nova, antiga, tolerancia):
+    if antiga is None:
+        return True
+    if nova[0] < antiga[0] - 1e-9:
+        return True
+    return nova[0] <= antiga[0] + 1e-9 and nova[1] < antiga[1] * (1 - tolerancia)
+
+
+from propulsao_auto_nucleo import otimizar
+
+
+# --------------------------------------------------------------------------
+# Consultor de viabilidade: o que precisa mudar para algum motor servir?
+# --------------------------------------------------------------------------
+def _viavel(cfg, motor):
+    approved, ranking, *_ = busca.calibrar_motor(cfg, motor, 'rapido')
+    return len(approved) > 0, (None if ranking.empty else float(ranking.iloc[0]['viol_total']))
+
+
+def _passos(inicio, fim, passo):
+    n = int(math.floor(abs(fim - inicio) / passo + 1e-9))
+    return [round(inicio + math.copysign(passo * i, fim - inicio), 6) for i in range(1, n + 1)]
+
+
+def _alavancas(cfg):
+    nv, mg, rs = cfg['navio'], cfg['margens'], cfg['restricoes']
+
+    def velocidade(c, v):
+        c['navio']['velocidade_nos'] = v
+
+    def rotacao(c, v):
+        c['margens']['rotacao'] = v
+
+    def mar(c, v):
+        c['margens']['mar'] = v
+
+    def operacional(c, v):
+        c['margens']['operacional'] = v
+
+    def ta_d(c, v):
+        c['restricoes']['ta_sobre_d_min'] = v
+        c['helice']['diametro']['max'] = None
+
+    return [
+        ('velocidade_nos', 'Velocidade de serviço (nós)', velocidade,
+         _passos(nv['velocidade_nos'], max(1.0, nv['velocidade_nos'] - 12), .5), nv['velocidade_nos']),
+        ('margens.rotacao', 'Margem de rotação (%)', rotacao,
+         _passos(mg['rotacao'], 0, 1), mg['rotacao']),
+        ('margens.mar', 'Margem de mar (%)', mar,
+         _passos(mg['mar'], 0, 5), mg['mar']),
+        ('margens.operacional', 'Margem operacional (%)', operacional,
+         _passos(mg['operacional'], 0, 5), mg['operacional']),
+        ('restricoes.ta_sobre_d_min', 'Ta/D mínimo (permite hélice maior)', ta_d,
+         _passos(rs['ta_sobre_d_min'], 1.0, .05), rs['ta_sobre_d_min']),
+    ]
+
+
+def sugerir_ajustes(cfg, motor=None):
+    """Primeira alteração isolada testada com aprovação na busca rápida.
+
+    Cada item: parametro, rotulo, de, para (None se mudar só isso não basta).
+    Não altera `cfg`. Cada teste é uma calibração rápida (~1 s).
+    """
+    saida = []
+    for chave, rotulo, aplicar, valores, atual in _alavancas(cfg):
+        achado = None
+        for valor in valores:
+            teste = copy.deepcopy(cfg)
+            aplicar(teste, valor)
+            ok, _ = _viavel(teste, motor)
+            if ok:
+                achado = valor
+                break
+        saida.append(dict(parametro=chave, rotulo=rotulo, de=atual, para=achado,
+                         hipotetico=True, status='encontrado' if achado is not None else 'nao_encontrado_na_busca_rapida',
+                         nota='Não prova mudança mínima nem impossibilidade; modifica uma hipótese física.'))
+    return saida
+
+
+def resumo(resultado):
+    """Texto curto para terminal ou interface."""
+    melhor, linhas = resultado['melhor'], []
+    if melhor is None:
+        return 'Nenhuma solução hidrodinâmica encontrada na cobertura executada; não é prova de impossibilidade.'
+    motor = melhor['motor_proximo']
+    linhas.append('Melhor: Z=%d  D=%.3f m  Ae/Ao=%.3f  P/D=%.3f' % (melhor['Z'], melhor['D'], melhor['Ae/Ao'], melhor['P/D']))
+    linhas.append('MCR=%.0f kW a %.2f rpm | FOC=%.3f t/h' % (melhor['MCR_kW'], melhor['RPM_MCR'], melhor['FOC_t_h']))
+    if resultado['status'] == 'aprovado':
+        linhas.append('Motor(es) aprovados: %s' % melhor['Motores'])
+    else:
+        linhas.append('Nenhuma aprovação encontrada na cobertura executada. Mais próximo: %s (%s; violação %.1f%%)' % (
+            motor, melhor['motivo_motor'], 100 * melhor['viol_total']))
+        if melhor['viol_rpm'] > 0:
+            linhas.append('  RPM_MCR %.2f fora de %g–%g rpm do motor.' % (melhor['RPM_MCR'], melhor['motor_n_min'], melhor['motor_n_max']))
+        if melhor['viol_kw'] > 0:
+            linhas.append('  MCR %.0f kW fora de %.0f–%.0f kW na rotação do layout.' % (melhor['MCR_kW'], melhor['motor_p_min_kw'], melhor['motor_p_max_kw']))
+        if resultado['ajustes']:
+            linhas.append('Primeira alteração isolada testada com aprovação na busca rápida (cenário hipotético):')
+        for item in resultado['ajustes']:
+            destino = 'nenhuma aprovação encontrada na busca rápida' if item['para'] is None else '%g → %g' % (item['de'], item['para'])
+            linhas.append('  - %s: %s' % (item['rotulo'], destino))
+    linhas.append('Parada: %s | rodadas: %d' % (resultado['parada'], len(resultado['historico'])))
+    return '\n'.join(linhas)
+
+
+def main(argv=None):
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('--config', help='arquivo JSON com o CONFIG (padrão: CONFIG do propulsao.py)')
+    ap.add_argument('--motor', help='modelo de motor específico (padrão: todo o catálogo)')
+    ap.add_argument('--nivel', choices=('rapido', 'completo'), default='completo')
+    ap.add_argument('--json', action='store_true', help='saída em JSON')
+    ap.add_argument('--max-rodadas',type=int,default=12)
+    ap.add_argument('--paciencia',type=int,default=2)
+    ap.add_argument('--analisar-alternativas',action='store_true',help='Executar cenários hipotéticos separados (opt-in).')
+    args = ap.parse_args(argv)
+    if args.config:
+        with open(args.config, encoding='utf-8') as handle:
+            cfg = json.load(handle)
+    else:
+        cfg = copy.deepcopy(p.CONFIG)
+    resultado = otimizar(cfg, args.motor, args.nivel, paciencia=args.paciencia,
+                         max_rodadas=args.max_rodadas, analisar_alternativas=args.analisar_alternativas)
+    if args.json:
+        import sys
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8')
+        print(json.dumps(resultado, ensure_ascii=False, indent=2, allow_nan=False))
+    else:
+        print(resumo(resultado))
+
+
+if __name__ == '__main__':
+    main()
+````
+<!-- END_SOURCE projects/propulsao_auto.py -->
+
+### 32.34. `projects/propulsao_auto_nucleo.py`
+
+<!-- SOURCE projects/propulsao_auto_nucleo.py SHA256_LF 14a680da884904066e8d66609f1621f15def94959d104b5ae00d8ffa0adb5159 FINAL_LF 1 -->
+````python
+"""Sprint 1: FOC, incumbentes separados e cobertura ampla explícita."""
+import copy
+import hashlib
+import json
+import math
+import propulsao as p
+import propulsao_busca as busca
+from propulsao_auditoria import hashes_fontes
+
+WEB_API_VERSION=4
+
+
+def chave(row,feasible):
+    return tuple(([] if feasible else [row['viol_total']])+[row['FOC_t_h'],row['BHP_kW'],row['Z'],row['D'],row['Ae/Ao'],row['P/D'],str(row.get('Motores',''))])
+
+
+def selecionar(rows,feasible):
+    valid=[row for row in rows if bool(row.get('cabe_motor'))==feasible and
+           all(isinstance(row.get(key),(int,float)) and math.isfinite(row[key]) for key in ('FOC_t_h','BHP_kW','viol_total'))]
+    return min(valid,key=lambda row:chave(row,feasible)) if valid else None
+
+
+def otimizar(cfg,motor=None,nivel='completo',paciencia=2,max_rodadas=12,tolerancia=1e-3,
+             progresso=None,rodada_cb=None,analisar_alternativas=False,cancelar=None):
+    if nivel not in ('rapido','completo'):
+        raise ValueError('Sprint 1 suporta rapido/completo; profundo requer cobertura global do Sprint 2.')
+    for name,value in (('paciencia',paciencia),('max_rodadas',max_rodadas)):
+        if isinstance(value,bool) or not isinstance(value,int) or value<1:
+            raise ValueError(name+' deve ser inteiro positivo.')
+    if not isinstance(tolerancia,(int,float)) or isinstance(tolerancia,bool) or not math.isfinite(tolerancia) or tolerancia<0:
+        raise ValueError('tolerancia deve ser finita e não negativa.')
+    original=copy.deepcopy(cfg);work=copy.deepcopy(cfg)
+    work['backtest']['objetivo']='foc';work['helice']['z']=[2,3,4,5,6,7]
+    work['restricoes']['motor']='estrito'
+    p.validar_config(work,limite_malha=None)
+    catalog=p.carregar_motores(work)
+    if motor and not any(row[0]==motor for row in catalog):
+        raise ValueError('Motor solicitado ausente do catálogo.')
+    if motor:
+        chosen=next(row for row in catalog if row[0]==motor)
+        work['motor']['catalogo_registrado']=[dict(zip(('modelo','n_min','n_max','p_max_kw','p_min_kw'),chosen))]
+        catalog=[chosen]
+    allowed=[z for z in work['helice']['z'] if max(work['helice']['ae_ao']['min'],p.AE_AO_POR_Z[z][0])<=min(work['helice']['ae_ao']['max'],p.AE_AO_POR_Z[z][1])]
+    expected=p.tamanho_malha(busca.configurar_perfil(work,nivel))
+    state=None;best_v=best_d=None;history=[];stale=0;covered=False;funnel=[];used=work
+    reason='orcamento';by_z={str(z):dict(admissivel=z in allowed,motivo=None if z in allowed else 'interseção AE/AO vazia',melhor_viavel=None,melhor_diagnostico=None) for z in range(2,8)}
+    for iteration in range(1,max_rodadas+1):
+        if cancelar and cancelar():reason='cancelado';break
+        before=best_v or best_d
+        approved,ranking,funnel,_,used,state=busca.calibrar_motor(work,motor,nivel,state,progresso)
+        rows=busca.json_records(approved)+busca.json_records(ranking)
+        for pool in state.get('reservatorios',{}).values():rows+=pool['viaveis']+pool['diagnosticos']
+        best_v=selecionar(rows+([best_v] if best_v else []),True)
+        best_d=selecionar(rows+([best_d] if best_d else []),False)
+        for z in range(2,8):
+            local=by_z[str(z)]
+            zrows=[row for row in rows if row['Z']==z]
+            local['melhor_viavel']=selecionar(zrows+([local['melhor_viavel']] if local['melhor_viavel'] else []),True)
+            local['melhor_diagnostico']=selecionar(zrows+([local['melhor_diagnostico']] if local['melhor_diagnostico'] else []),False)
+        metadata=used.get('calibracao',{})
+        # This certifies only the initial discrete broad profile, never the
+        # global fine tiles. Deep/global coverage is deliberately not claimed.
+        if iteration==1:
+            covered=(metadata.get('etapa')=='varredura ampla' and set(metadata.get('pas_avaliadas',[]))==set(allowed)
+                     and bool(funnel) and funnel[0][1]==expected)
+        current=best_v or best_d
+        significant=False;improved=False
+        if current:
+            feasible=best_v is not None
+            improved=(before is None or (bool(before['cabe_motor'])!=feasible and feasible) or chave(current,feasible)<chave(before,feasible))
+            significant=(before is None or (not bool(before['cabe_motor']) and feasible) or
+                         (not feasible and current['viol_total']<before['viol_total']-1e-9) or
+                         (bool(before['cabe_motor'])==feasible and current['viol_total']<=before['viol_total']+1e-9 and current['FOC_t_h']<before['FOC_t_h']*(1-tolerancia)))
+        stale=0 if significant else stale+1
+        entry=dict(rodada=iteration,etapa=metadata.get('etapa'),aprovados=len(approved),
+                   viol_total=current['viol_total'] if current else None,objetivo=current['FOC_t_h'] if current else None,
+                   melhorou=significant,melhoria_qualquer=improved,best_so_far=copy.deepcopy(current),
+                   best_viavel=copy.deepcopy(best_v),best_diagnostico=copy.deepcopy(best_d),
+                   avaliacoes=state.get('avaliacoes',0),cobertura_minima_concluida=covered)
+        history.append(entry)
+        if rodada_cb:rodada_cb(copy.deepcopy(entry))
+        if covered and stale>=paciencia:reason='estagnacao_pos_cobertura';break
+    if best_v:status='aprovado'
+    elif best_d:status='sem_aprovados_encontrados'
+    else:status='sem_hidrodinamica_encontrada'
+    if reason=='cancelado':status='interrompido'
+    effective=json.dumps(work,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False)
+    result=dict(status=status,melhor=best_v or best_d,melhor_viavel=best_v,melhor_diagnostico=best_d,
+                historico=history,funil=funnel,parada_codigo=reason,
+                parada=('estagnou após cobertura da malha ampla' if reason=='estagnacao_pos_cobertura' else reason),
+                config=used,config_original=original,config_efetiva=work,estado=state,ajustes=[],por_z=by_z,
+                objetivo='FOC_t_h',modo='auto_foc_'+nivel,config_hash=hashlib.sha256(effective.encode()).hexdigest(),
+                fontes_sha256=hashes_fontes(),versoes=dict(api=4,sprint=1),catalogo_escopo=motor or 'todo catálogo da configuração',
+                catalogo=[dict(zip(('modelo','n_min','n_max','p_max_kw','p_min_kw'),row)) for row in catalog],
+                alteracoes_modo=dict(objetivo_original=original['backtest']['objetivo'],objetivo_efetivo='foc',
+                    pas_originais=original['helice']['z'],pas_efetivas=work['helice']['z'],
+                    modo_motor_original=original['restricoes']['motor'],modo_motor_efetivo='estrito'),
+                sfoc_origem='Modelo genérico configurado; não representa economia específica de fabricante.',
+                cobertura=dict(tipo='malha_ampla_'+nivel,cobertura_minima_concluida=covered,
+                    global_discreta_concluida=False,pontos_previstos_ampla=expected,avaliacoes_totais=state.get('avaliacoes',0) if state else 0,
+                    avaliacoes_unicas=None,cache_hits=None))
+    if analisar_alternativas:
+        from propulsao_auto import sugerir_ajustes
+        result['ajustes']=sugerir_ajustes(original,motor)
+    return result
+````
+<!-- END_SOURCE projects/propulsao_auto_nucleo.py -->
+
+### 32.35. `projects/test_propulsao_auto.py`
+
+<!-- SOURCE projects/test_propulsao_auto.py SHA256_LF a3930802bdb1279d935389333d1740d68775c6e2f53810cf6bd0b2d6195fd1be FINAL_LF 1 -->
+````python
+import copy
+import json
+import unittest
+from unittest.mock import patch
+import pandas as pd
+import propulsao as p
+import propulsao_busca as busca
+import propulsao_auto as auto
+
+
+def config():
+    cfg=copy.deepcopy(p.CONFIG)
+    cfg['helice'].update(z=[4,5],diametro=dict(min=8,max=8,passo=.1),ae_ao=dict(min=.9,max=1.05,passo=.05),p_d=dict(min=1.2,max=1.4,passo=.05))
+    return cfg
+
+
+def row(foc=5,feasible=True,violation=0,z=5):
+    return dict(FOC_t_h=foc,BHP_kW=30000,Z=z,D=8.,**{'Ae/Ao':1.,'P/D':1.4},cabe_motor=feasible,viol_total=violation,Motores='TESTE' if feasible else '-',motor_proximo='TESTE')
+
+
+class AutoTests(unittest.TestCase):
+    def fake(self,sequence,covered=True):
+        def run(cfg,motor,nivel,state,progresso):
+            i=state['iteracao'] if state else 0
+            rows=sequence[min(i,len(sequence)-1)]
+            frame=pd.DataFrame(rows) if rows else pd.DataFrame(columns=row().keys())
+            accepted=frame[frame.cabe_motor==True].copy()
+            used=copy.deepcopy(cfg)
+            allowed=[z for z in cfg['helice']['z'] if max(cfg['helice']['ae_ao']['min'],p.AE_AO_POR_Z[z][0])<=min(cfg['helice']['ae_ao']['max'],p.AE_AO_POR_Z[z][1])]
+            used['calibracao']=dict(etapa='varredura ampla' if i==0 else 'refinamento',pas_avaliadas=allowed if covered else [])
+            count=p.tamanho_malha(busca.configurar_perfil(cfg,nivel)) if i==0 else 1
+            return accepted,frame,[('geradas',count)],{},used,dict(iteracao=i+1,avaliacoes=(state['avaliacoes'] if state else 0)+count)
+        return run
+
+    def test_approved_case_stops_by_stagnation_and_keeps_inputs(self):
+        cfg=config();original=copy.deepcopy(cfg)
+        with patch.object(busca,'calibrar_motor',side_effect=self.fake([[row()]])) as called:
+            result=auto.otimizar(cfg,paciencia=1)
+        self.assertEqual(result['status'],'aprovado')
+        self.assertEqual(result['parada_codigo'],'estagnacao_pos_cobertura')
+        self.assertEqual(cfg,original)
+        effective=called.call_args.args[0]
+        self.assertEqual(effective['backtest']['objetivo'],'foc')
+        self.assertEqual(effective['helice']['z'],[2,3,4,5,6,7])
+        self.assertIsNone(called.call_args.args[1])
+        self.assertEqual(effective['margens'],original['margens'])
+        self.assertEqual(result['ajustes'],[])
+
+    def test_best_never_worsens_across_rounds(self):
+        with patch.object(busca,'calibrar_motor',side_effect=self.fake([[row(5)],[row(6)],[],[row(4)]])):
+            result=auto.otimizar(config(),paciencia=10,max_rodadas=4)
+        self.assertEqual([h['best_so_far']['FOC_t_h'] for h in result['historico']],[5,5,5,4])
+
+    def test_infeasible_case_reports_binding_rpm_and_fix(self):
+        with patch.object(busca,'calibrar_motor',side_effect=self.fake([[row(1,False,.1)],[row(5,True)],[]])):
+            result=auto.otimizar(config(),paciencia=10,max_rodadas=3)
+        self.assertEqual(result['melhor_viavel']['FOC_t_h'],5)
+        self.assertEqual(result['melhor_diagnostico']['FOC_t_h'],1)
+        self.assertTrue(result['melhor']['cabe_motor'])
+        self.assertEqual(result['ajustes'],[])
+
+    def test_invalid_level_rejected(self):
+        for level in ('infinita','profundo','incorreto'):
+            with self.assertRaises(ValueError):auto.otimizar(config(),nivel=level)
+
+    def test_no_stagnation_before_declared_coverage(self):
+        with patch.object(busca,'calibrar_motor',side_effect=self.fake([[row()]],covered=False)):
+            result=auto.otimizar(config(),paciencia=1,max_rodadas=4)
+        self.assertEqual(len(result['historico']),4)
+        self.assertEqual(result['parada_codigo'],'orcamento')
+        self.assertFalse(result['cobertura']['cobertura_minima_concluida'])
+
+    def test_invalid_parameters_and_input_error(self):
+        for kwargs in (dict(paciencia=0),dict(max_rodadas=0),dict(tolerancia=float('nan')),dict(tolerancia=-1)):
+            with self.assertRaises(ValueError):auto.otimizar(config(),**kwargs)
+        cfg=config();cfg['navio']['velocidade_nos']=-1;original=copy.deepcopy(cfg)
+        with self.assertRaises(ValueError):auto.otimizar(cfg)
+        self.assertEqual(cfg,original)
+
+    def test_nan_inf_not_selected_and_strict_json(self):
+        with patch.object(busca,'calibrar_motor',side_effect=self.fake([[row(float('inf')),row(5)]])):
+            result=auto.otimizar(config(),max_rodadas=1)
+        self.assertEqual(result['melhor']['FOC_t_h'],5)
+        json.dumps(result,allow_nan=False)
+
+    def test_cancel_before_round_preserves_input(self):
+        cfg=config();original=copy.deepcopy(cfg)
+        result=auto.otimizar(cfg,cancelar=lambda:True)
+        self.assertEqual(result['parada_codigo'],'cancelado')
+        self.assertEqual(result['status'],'interrompido')
+        self.assertEqual(cfg,original)
+
+    def test_no_candidates_and_no_approved_status(self):
+        for sequence,status in (([[]],'sem_hidrodinamica_encontrada'),([[row(1,False,.1)]],'sem_aprovados_encontrados')):
+            with patch.object(busca,'calibrar_motor',side_effect=self.fake(sequence)):
+                result=auto.otimizar(config(),max_rodadas=1)
+            self.assertEqual(result['status'],status)
+
+    def test_real_top_one_keeps_both_scientific_reservoirs(self):
+        cfg=config();cfg['backtest']['top']=1
+        cfg['margens'].update(mar=0,rotacao=0,operacional=0)
+        cfg['motor']['catalogo_registrado']=[dict(modelo='ARTIFICIAL_TESTE',n_min=1,n_max=84,p_max_kw=1e6,p_min_kw=.001)]
+        a,b,_,_,_,state=busca.calibrar_motor(cfg,nivel='rapido')
+        self.assertLessEqual(len(b),1)
+        self.assertIsNotNone(state['melhor_diagnostico'])
+        self.assertIsNotNone(state['melhor_viavel'])
+        self.assertTrue(state['melhor_viavel']['cabe_motor'])
+        self.assertFalse(state['melhor_diagnostico']['cabe_motor'])
+        self.assertIn('reservatorios',state)
+        self.assertEqual(state['reservatorios_schema_version'],1)
+
+    def test_hypothetical_alternatives_are_opt_in_and_immutable(self):
+        cfg=config();original=copy.deepcopy(cfg)
+        apply=lambda candidate,value:candidate['navio'].update(velocidade_nos=value)
+        with patch.object(auto,'_alavancas',return_value=[('velocidade','Teste',apply,[20],25)]),patch.object(auto,'_viavel',return_value=(True,0)):
+            alternatives=auto.sugerir_ajustes(cfg)
+        self.assertEqual(cfg,original)
+        self.assertTrue(alternatives[0]['hipotetico'])
+        self.assertEqual(alternatives[0]['status'],'encontrado')
+        with patch.object(busca,'calibrar_motor',side_effect=ValueError('entrada inválida')):
+            with self.assertRaises(ValueError):auto._viavel(cfg,None)
+
+    def test_deterministic_ties_and_explicit_target(self):
+        for rows in ([row(z=5),row(z=4)],[row(z=4),row(z=5)]):
+            with patch.object(busca,'calibrar_motor',side_effect=self.fake([rows])) as called:
+                result=auto.otimizar(config(),motor='8G90ME-C10.5',max_rodadas=1)
+            self.assertEqual(result['melhor']['Z'],4)
+            self.assertEqual(called.call_args.args[1],'8G90ME-C10.5')
+            self.assertEqual(result['catalogo_escopo'],'8G90ME-C10.5')
+
+
+if __name__=='__main__':unittest.main()
+````
+<!-- END_SOURCE projects/test_propulsao_auto.py -->
+
+### 32.36. `projects/Relatorio_Auto_Sprints_0_1.md`
+
+<!-- SOURCE projects/Relatorio_Auto_Sprints_0_1.md SHA256_LF 360afabd9b0e6509bb8c29b631861f5f0d9337e752099e3f249af6d7b7afd4eb FINAL_LF 1 -->
+````markdown
+# Otimização FOC automática — Sprints 0 e 1
+
+## Escopo entregue
+
+O protótipo citado na especificação estava em Downloads, fora do repositório. As cópias originais de `propulsao_auto.py` e de seus quatro testes foram preservadas em `baselines/auto_sprint0/`, com manifesto de hashes, configuração e logs. Foram reutilizados os baselines científicos P0 e acrescentada uma fixture artificial explicitamente identificada, com motor de teste aprovado.
+
+O modo automático está disponível em Python/CLI. A integração de um novo botão/ação Worker continua no Sprint 3. Os fluxos existentes de backtest, calibração, PDF e simulação não receberam novos controles nesta entrega.
+
+## Mudanças
+
+- `propulsao_auto.py`: mantém `otimizar`, `resumo`, auxiliares e CLI do protótipo; expõe API v4. Cenários hipotéticos são opt-in, erros de entrada propagam e os textos não afirmam impossibilidade ou minimalidade global.
+- `propulsao_auto_nucleo.py`: implementação isolada do orquestrador, com cópias original/efetiva do CONFIG, FOC obrigatório, Z=2–7 e catálogo completo por padrão. Um motor explícito restringe o escopo e é registrado.
+- `propulsao_busca.py`: observa candidatos antes dos cortes dos lotes e conserva até cinco viáveis e cinco diagnósticos por Z em reservatórios científicos independentes do `top` da interface e do beam de refinamento. O aprovado de apresentação é selecionado antes do corte global. O retorno permanece com seis elementos, e o ranking legado continua existindo.
+- `propulsao_auditoria.py`: inclui hashes dos módulos automáticos quando presentes.
+- `test_propulsao_auto.py`: doze testes para imutabilidade, objetivo, catálogo, candidatos separados, rodada vazia, estagnação condicionada à cobertura, parâmetros inválidos, NaN/Inf, JSON, cancelamento, empates, alternativas e reservatórios com `top=1`.
+
+Os nomes dos quatro testes do protótipo foram preservados, mas suas expectativas foram atualizadas quando contradiziam o contrato revisado: sugestões automáticas agora ficam desligadas, o status deixa de afirmar inviabilidade comprovada e a monotonicidade é verificada em todas as rodadas. Os quatro testes originais estão arquivados; não são apresentados como quatro testes adicionais aprovados sem alterações.
+
+## Cobertura e parada: limite explícito desta fase
+
+Para `rapido`/`completo`, o orquestrador certifica apenas a malha ampla inicial do perfil escolhido: todas as pás admissíveis precisam constar nas pás avaliadas, a etapa precisa ser `varredura ampla`, e a contagem executada deve coincidir com `tamanho_malha(configurar_perfil(...))`. A estagnação só pode encerrar depois dessa cobertura declarada. Sem essa evidência, a execução termina apenas por orçamento de rodadas ou cancelamento.
+
+`cobertura.global_discreta_concluida=false` é explícito. **Isso não certifica os blocos globais finos do modo infinito.** `nivel='profundo'` é recusado com mensagem explicativa até o Sprint 2; não é traduzido para doze refinamentos completos. Avaliações únicas e cache hits ficam `null`, pois não foram medidos nesta fase. Não são apresentados percentuais de cobertura global inventados.
+
+O melhor viável é escolhido por FOC finito e desempates BHP/Z/D/área/passo/motor. O diagnóstico é escolhido separadamente por violação finita e FOC. Ambos sobrevivem a rodadas vazias. A melhoria significativa controla a paciência, mas ganhos pequenos continuam atualizando o incumbente. Não há arredondamento científico da violação.
+
+## Uso
+
+```powershell
+python projects/propulsao_auto.py --nivel rapido --max-rodadas 3 --json
+python projects/propulsao_auto.py --config navio.json --nivel completo --motor 8G90ME-C10.5
+python projects/propulsao_auto.py --nivel rapido --analisar-alternativas
+```
+
+O último comando executa buscas adicionais em hipóteses modificadas; não faz parte da execução padrão. As alternativas são rotuladas como cenários hipotéticos e não alteram o CONFIG original. O JSON inclui CONFIG original/efetivo, estado, histórico, hashes, resultados separados e cobertura declarada. O modelo SFOC é genérico, não economia específica de fabricante.
+
+## Evidência e testes
+
+- Antes: 36 testes existentes aprovados; log em `baselines/auto_sprint0/testes_antes.log`.
+- Depois: 46 testes Python aprovados na execução integral registrada em `baselines/auto_sprint0/testes_depois.log`; após acrescentar dois cenários, os doze novos testes foram executados separadamente, com log em `testes_auto.log`. A suíte passa a conter 48 testes.
+- Worker real em Pyodide 0.29.2 aprovado, preservando API v4, retornos, transferência e exportações.
+- Teste real de Edge/Playwright: backtest, calibração, parada, seleção por Z, PDFs e largura móvel.
+- Fixture artificial com motor aprovado: `baselines/auto_sprint0/caso_artificial_aprovado.json`, sem alegação de que seu motor existe.
+- Caso real adversarial com `top=1`: catálogo artificial limita RPM a 84 e conserva simultaneamente viável e diagnóstico nos reservatórios, mesmo que a tabela apresente apenas uma linha.
+
+As equações, margens, domínio, catálogo original e solver não foram alterados. O baseline de referência continua verificando RPM MCR aproximadamente 90,27403, limite real 84 e ausência de aprovação no cenário original.
+
+## Próximas fases, sem alegação de conclusão
+
+Sprint 2: cobertura global discreta com orçamento finito, custos estimados, cache, contagem de únicos e testes específicos. Sprint 3: nova ação Worker, interface e checkpoints/retomada compatível. Os PDFs já existentes permanecem operacionais; esta entrega não os usa como evidência de otimização profunda concluída.
+````
+<!-- END_SOURCE projects/Relatorio_Auto_Sprints_0_1.md -->
+
+### 32.37. `projects/baselines/auto_sprint0/propulsao_auto.py`
+
+<!-- SOURCE projects/baselines/auto_sprint0/propulsao_auto.py SHA256_LF 569b0978b58c08c65f212a5a829c34e110d00d4711c66c3798facfb5fa060803 FINAL_LF 1 -->
+````python
+"""Otimização automática em uma chamada: busca, refinamento, parada por estagnação
+e, quando nenhum motor serve, a menor mudança que torna o caso viável.
+
+Uso:
+    python propulsao_auto.py                       # navio padrão do CONFIG
+    python propulsao_auto.py --config navio.json   # CONFIG próprio (JSON)
+    python propulsao_auto.py --motor 8G90ME-C10.5  # restringe a um motor
+"""
+import copy
+import json
+import math
+
+import propulsao as p
+import propulsao_busca as busca
+
+OBJETIVO = {'bhp': 'BHP_kW', 'foc': 'FOC_t_h'}
+
+
+def _melhor_linha(approved, ranking):
+    frame = approved if len(approved) else ranking
+    return None if frame.empty else frame.iloc[0].to_dict()
+
+
+def _chave(linha, objetivo):
+    """Menor é melhor: primeiro a violação do motor, depois o objetivo."""
+    return (round(float(linha['viol_total']), 9), float(linha[objetivo]))
+
+
+def _melhorou(nova, antiga, tolerancia):
+    if antiga is None:
+        return True
+    if nova[0] < antiga[0] - 1e-9:
+        return True
+    return nova[0] <= antiga[0] + 1e-9 and nova[1] < antiga[1] * (1 - tolerancia)
+
+
+def otimizar(cfg, motor=None, nivel='completo', paciencia=2, max_rodadas=12, tolerancia=1e-3,
+             progresso=None, rodada_cb=None):
+    """Roda varredura ampla + refinamentos até a melhoria estagnar.
+
+    Para quando `paciencia` rodadas seguidas não melhoram o melhor resultado
+    (violação do motor, depois objetivo) por mais que `tolerancia` relativa,
+    ou ao atingir `max_rodadas`. Retorna um dicionário serializável.
+    """
+    if nivel not in ('rapido', 'completo'):
+        raise ValueError("nivel deve ser 'rapido' ou 'completo'.")
+    objetivo = OBJETIVO[cfg['backtest']['objetivo']]
+    estado, melhor, chave, sem_melhoria = None, None, None, 0
+    historico, approved, ranking, usado, funil = [], None, None, None, []
+    for rodada in range(1, max_rodadas + 1):
+        approved, ranking, funil, _, usado, estado = busca.calibrar_motor(
+            cfg, motor, nivel, estado, progresso)
+        linha = _melhor_linha(approved, ranking)
+        if linha is None:
+            break
+        nova = _chave(linha, objetivo)
+        # Ganho significativo = acima da tolerância contra a rodada anterior; o melhor
+        # resultado, porém, é sempre atualizado (ganhos pequenos não se perdem).
+        melhorou = _melhorou(nova, chave, tolerancia)
+        if chave is None or nova < chave:
+            melhor, chave = linha, nova
+        sem_melhoria = 0 if melhorou else sem_melhoria + 1
+        registro = dict(rodada=rodada, etapa=usado['calibracao']['etapa'], aprovados=len(approved),
+                        viol_total=nova[0], objetivo=nova[1], melhorou=melhorou,
+                        avaliacoes=estado['avaliacoes'])
+        historico.append(registro)
+        if rodada_cb:
+            rodada_cb(registro)
+        # Com o caso aprovado, o primeiro refinamento já mostra se há ganho;
+        # sem aprovação, só vale insistir enquanto a violação ainda cai.
+        if sem_melhoria >= paciencia:
+            break
+    if melhor is None:
+        return dict(status='sem_hidrodinamica', melhor=None, historico=historico, funil=funil,
+                    parada='nenhuma hélice passa nas restrições hidrodinâmicas', config=usado,
+                    estado=estado, ajustes=[])
+    aprovado = bool(melhor['cabe_motor'])
+    parada = ('estagnou (%d rodadas sem melhoria)' % sem_melhoria if sem_melhoria >= paciencia
+              else 'limite de %d rodadas' % max_rodadas)
+    resultado = dict(status='aprovado' if aprovado else 'inviavel', melhor=melhor, historico=historico,
+                     funil=funil, parada=parada, config=usado, estado=estado, ajustes=[])
+    if not aprovado:
+        resultado['ajustes'] = sugerir_ajustes(cfg, motor)
+    return resultado
+
+
+# --------------------------------------------------------------------------
+# Consultor de viabilidade: o que precisa mudar para algum motor servir?
+# --------------------------------------------------------------------------
+def _viavel(cfg, motor):
+    try:
+        approved, ranking, *_ = busca.calibrar_motor(cfg, motor, 'rapido')
+    except ValueError:
+        return False, None
+    return len(approved) > 0, (None if ranking.empty else float(ranking.iloc[0]['viol_total']))
+
+
+def _passos(inicio, fim, passo):
+    n = int(math.floor(abs(fim - inicio) / passo + 1e-9))
+    return [round(inicio + math.copysign(passo * i, fim - inicio), 6) for i in range(1, n + 1)]
+
+
+def _alavancas(cfg):
+    nv, mg, rs = cfg['navio'], cfg['margens'], cfg['restricoes']
+
+    def velocidade(c, v):
+        c['navio']['velocidade_nos'] = v
+
+    def rotacao(c, v):
+        c['margens']['rotacao'] = v
+
+    def mar(c, v):
+        c['margens']['mar'] = v
+
+    def operacional(c, v):
+        c['margens']['operacional'] = v
+
+    def ta_d(c, v):
+        c['restricoes']['ta_sobre_d_min'] = v
+        c['helice']['diametro']['max'] = None
+
+    return [
+        ('velocidade_nos', 'Velocidade de serviço (nós)', velocidade,
+         _passos(nv['velocidade_nos'], max(1.0, nv['velocidade_nos'] - 12), .5), nv['velocidade_nos']),
+        ('margens.rotacao', 'Margem de rotação (%)', rotacao,
+         _passos(mg['rotacao'], 0, 1), mg['rotacao']),
+        ('margens.mar', 'Margem de mar (%)', mar,
+         _passos(mg['mar'], 0, 5), mg['mar']),
+        ('margens.operacional', 'Margem operacional (%)', operacional,
+         _passos(mg['operacional'], 0, 5), mg['operacional']),
+        ('restricoes.ta_sobre_d_min', 'Ta/D mínimo (permite hélice maior)', ta_d,
+         _passos(rs['ta_sobre_d_min'], 1.0, .05), rs['ta_sobre_d_min']),
+    ]
+
+
+def sugerir_ajustes(cfg, motor=None):
+    """Para cada parâmetro isolado, a menor mudança que aprova algum motor.
+
+    Cada item: parametro, rotulo, de, para (None se mudar só isso não basta).
+    Não altera `cfg`. Cada teste é uma calibração rápida (~1 s).
+    """
+    saida = []
+    for chave, rotulo, aplicar, valores, atual in _alavancas(cfg):
+        achado = None
+        for valor in valores:
+            teste = copy.deepcopy(cfg)
+            aplicar(teste, valor)
+            ok, _ = _viavel(teste, motor)
+            if ok:
+                achado = valor
+                break
+        saida.append(dict(parametro=chave, rotulo=rotulo, de=atual, para=achado))
+    return saida
+
+
+def resumo(resultado):
+    """Texto curto para terminal ou interface."""
+    melhor, linhas = resultado['melhor'], []
+    if melhor is None:
+        return 'Nenhuma hélice passa nas restrições hidrodinâmicas (cavitação, J, η0). Revise D máx., velocidade ou Ae/Ao.'
+    motor = melhor['motor_proximo']
+    linhas.append('Melhor: Z=%d  D=%.3f m  Ae/Ao=%.3f  P/D=%.3f' % (melhor['Z'], melhor['D'], melhor['Ae/Ao'], melhor['P/D']))
+    linhas.append('MCR=%.0f kW a %.2f rpm | FOC=%.3f t/h' % (melhor['MCR_kW'], melhor['RPM_MCR'], melhor['FOC_t_h']))
+    if resultado['status'] == 'aprovado':
+        linhas.append('Motor(es) aprovados: %s' % melhor['Motores'])
+    else:
+        linhas.append('NENHUM motor serve. Mais próximo: %s (%s; violação %.1f%%)' % (
+            motor, melhor['motivo_motor'], 100 * melhor['viol_total']))
+        if melhor['viol_rpm'] > 0:
+            linhas.append('  RPM_MCR %.2f fora de %g–%g rpm do motor.' % (melhor['RPM_MCR'], melhor['motor_n_min'], melhor['motor_n_max']))
+        if melhor['viol_kw'] > 0:
+            linhas.append('  MCR %.0f kW fora de %.0f–%.0f kW na rotação do layout.' % (melhor['MCR_kW'], melhor['motor_p_min_kw'], melhor['motor_p_max_kw']))
+        linhas.append('Menor mudança isolada que viabiliza:')
+        for item in resultado['ajustes']:
+            destino = 'não basta sozinho' if item['para'] is None else '%g → %g' % (item['de'], item['para'])
+            linhas.append('  - %s: %s' % (item['rotulo'], destino))
+    linhas.append('Parada: %s | rodadas: %d' % (resultado['parada'], len(resultado['historico'])))
+    return '\n'.join(linhas)
+
+
+def main(argv=None):
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('--config', help='arquivo JSON com o CONFIG (padrão: CONFIG do propulsao.py)')
+    ap.add_argument('--motor', help='modelo de motor específico (padrão: todo o catálogo)')
+    ap.add_argument('--nivel', choices=('rapido', 'completo'), default='completo')
+    ap.add_argument('--json', action='store_true', help='saída em JSON')
+    args = ap.parse_args(argv)
+    if args.config:
+        with open(args.config, encoding='utf-8') as handle:
+            cfg = json.load(handle)
+    else:
+        cfg = copy.deepcopy(p.CONFIG)
+    resultado = otimizar(cfg, args.motor, args.nivel)
+    if args.json:
+        saida = {k: v for k, v in resultado.items() if k not in ('config', 'estado')}
+        print(json.dumps(saida, ensure_ascii=False, indent=2, default=float))
+    else:
+        print(resumo(resultado))
+
+
+if __name__ == '__main__':
+    main()
+````
+<!-- END_SOURCE projects/baselines/auto_sprint0/propulsao_auto.py -->
+
+### 32.38. `projects/baselines/auto_sprint0/test_propulsao_auto.py`
+
+<!-- SOURCE projects/baselines/auto_sprint0/test_propulsao_auto.py SHA256_LF 9d4137e14b83edf75cee570c030ba821f386c30c3afccee31abca31dd7107d8c FINAL_LF 1 -->
+````python
+import copy
+import unittest
+import propulsao as p
+import propulsao_auto as auto
+
+
+def config():
+    cfg = copy.deepcopy(p.CONFIG)
+    cfg['helice']['z'] = [4, 5]
+    cfg['helice']['diametro'] = dict(min=7.8, max=8, passo=.1)
+    cfg['helice']['ae_ao'] = dict(min=.9, max=1.05, passo=.05)
+    cfg['helice']['p_d'] = dict(min=1.2, max=1.4, passo=.05)
+    return cfg
+
+
+class AutoTests(unittest.TestCase):
+    def test_approved_case_stops_by_stagnation_and_keeps_inputs(self):
+        cfg = config(); cfg['margens'].update(mar=0, rotacao=0, operacional=0)
+        original = copy.deepcopy(cfg)
+        r = auto.otimizar(cfg, '6G90ME-C10.5', 'rapido')
+        self.assertEqual(r['status'], 'aprovado')
+        self.assertEqual(r['melhor']['viol_total'], 0)
+        self.assertIn('estagnou', r['parada'])
+        self.assertLess(len(r['historico']), 12)
+        self.assertEqual(r['ajustes'], [])
+        self.assertEqual(cfg, original)
+
+    def test_best_never_worsens_across_rounds(self):
+        r = auto.otimizar(config(), None, 'rapido', max_rodadas=5)
+        chaves = [(h['viol_total'], h['objetivo']) for h in r['historico'] if h['melhorou']]
+        self.assertEqual(chaves, sorted(chaves, reverse=True))
+
+    def test_infeasible_case_reports_binding_rpm_and_fix(self):
+        r = auto.otimizar(config(), None, 'rapido', paciencia=1, max_rodadas=2)
+        self.assertEqual(r['status'], 'inviavel')
+        self.assertGreater(r['melhor']['viol_rpm'], 0)
+        por_parametro = {a['parametro']: a for a in r['ajustes']}
+        self.assertIsNotNone(por_parametro['velocidade_nos']['para'])
+        self.assertLess(por_parametro['velocidade_nos']['para'], 25)
+        # a ajuda sugerida precisa realmente viabilizar o caso
+        teste = config(); teste['navio']['velocidade_nos'] = por_parametro['velocidade_nos']['para']
+        self.assertTrue(auto._viavel(teste, None)[0])
+        self.assertIn('NENHUM motor serve', auto.resumo(r))
+
+    def test_invalid_level_rejected(self):
+        with self.assertRaises(ValueError):
+            auto.otimizar(config(), None, 'infinita')
+
+
+if __name__ == '__main__':
+    unittest.main()
+````
+<!-- END_SOURCE projects/baselines/auto_sprint0/test_propulsao_auto.py -->
+
+### 32.39. `projects/baselines/auto_sprint0/manifesto.json`
+
+<!-- SOURCE projects/baselines/auto_sprint0/manifesto.json SHA256_LF e31269c84c4a3533c928a52b742b4a6260bedefbbe14f282355674b12a19a516 FINAL_LF 0 -->
+````json
+{
+  "api": 4,
+  "config": {
+    "navio": {
+      "nome": "Navio Holtrop",
+      "lpp": 200.0,
+      "lwl": 205.0,
+      "boca": 32.0,
+      "calado_proa": 10.0,
+      "calado_popa": 10.0,
+      "deslocamento": 37500.0,
+      "lcb_pr": 104.0,
+      "abt": 20.0,
+      "hb": 4.0,
+      "cm": 0.98,
+      "cwp": 0.75,
+      "at": 16.0,
+      "c_popa": 10,
+      "velocidade_nos": 25.0,
+      "n_motores": 1,
+      "n_helices": 1,
+      "apendices": {
+        "Leme a re de cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re de popa": [
+          0,
+          1.4
+        ],
+        "Lemes compensados bi-helice": [
+          0,
+          2.8
+        ],
+        "Pe-de-galinha": [
+          0,
+          3.0
+        ],
+        "Cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re do propulsor": [
+          67,
+          1.96
+        ],
+        "Bosso do eixo": [
+          0,
+          2.0
+        ],
+        "Eixo do propulsor": [
+          0,
+          3.0
+        ],
+        "Estabilizador": [
+          0,
+          2.8
+        ],
+        "Sonar-dome": [
+          0,
+          2.7
+        ],
+        "Bolina": [
+          0,
+          1.4
+        ]
+      }
+    },
+    "agua": {
+      "rho": 1025.0,
+      "mu": 0.00085,
+      "g": 9.805,
+      "p_atm": 101325.0,
+      "p_vapor": 2278.0
+    },
+    "helice": {
+      "z": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "ae_ao": {
+        "min": 0.3,
+        "max": 1.05,
+        "passo": 0.05
+      },
+      "p_d": {
+        "min": 0.5,
+        "max": 1.4,
+        "passo": 0.05
+      },
+      "diametro": {
+        "min": 5.0,
+        "max": null,
+        "passo": 0.1
+      },
+      "rpm": {
+        "min": 40.0,
+        "max": 250.0
+      }
+    },
+    "restricoes": {
+      "eta0_min": 0.1,
+      "eta0_max": 0.9,
+      "j_min": 0.01,
+      "cavitacao_pct": 5,
+      "ta_sobre_d_min": 1.25,
+      "potencia_max_motor_kw": null,
+      "motor": "estrito"
+    },
+    "margens": {
+      "mar": 15.0,
+      "rotacao": 5.0,
+      "operacional": 10.0,
+      "expoente_rpm": 0.3333333333333333,
+      "acoplamento": "direto",
+      "eta_t": {
+        "direto": 0.97,
+        "caixa": 0.93
+      }
+    },
+    "motor": {
+      "sfoc_min": 165.0,
+      "carga_otima": 0.8,
+      "curvatura": 0.3,
+      "arquivo_csv": "motores.csv",
+      "carga_min_sfoc": 0.25,
+      "carga_max_sfoc": 1.0
+    },
+    "compat_planilha": false,
+    "backtest": {
+      "objetivo": "bhp",
+      "top": 15,
+      "saida": "saida"
+    },
+    "perfil_velocidades": [
+      5,
+      7,
+      10,
+      12,
+      15,
+      17,
+      20,
+      22,
+      25,
+      28,
+      30
+    ]
+  },
+  "hashes": {
+    "projects/propulsao.py": {
+      "bruto": "4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4",
+      "lf": "4c05f5f52d817c82fe09a6eb4295d9ad697b7d7d2784232198d6eb1bd655c4f4"
+    },
+    "projects/propulsao_busca.py": {
+      "bruto": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c",
+      "lf": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c"
+    },
+    "projects/propulsao_auditoria.py": {
+      "bruto": "e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b",
+      "lf": "e541b619b0a7696c6a058ea28e776cdd2de0dc4dbf28b9fa0c5aa46f61808b9b"
+    },
+    "projects/motores.csv": {
+      "bruto": "1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e",
+      "lf": "0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8"
+    },
+    "naval.js": {
+      "bruto": "33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880",
+      "lf": "33386d9453a2492e1430ee1a538ff5915fe4716e96694b4ad9836d7745ab4880"
+    },
+    "naval-backtest.js": {
+      "bruto": "330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612",
+      "lf": "330ae9b4a6cd80575d555797b5cd32bff034d6595536d93f0348f85ffac34612"
+    },
+    "naval-backtest-worker.js": {
+      "bruto": "0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e",
+      "lf": "0193bb7845c39ce7a2a588f34c8ccb71b139386fd0edd1e4a87f25b14215071e"
+    },
+    "projects/test_propulsao.py": {
+      "bruto": "8c13101932f70919707610fc50619144cf0bddd71b5314d57a3a768d533acb84",
+      "lf": "8c13101932f70919707610fc50619144cf0bddd71b5314d57a3a768d533acb84"
+    },
+    "projects/test_propulsao_auditoria.py": {
+      "bruto": "4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9",
+      "lf": "4b7d3ba1ecb901fcd9bf01a3a7d3c1ca083b4c7f10aa8d30968883e03a7804c9"
+    },
+    "projects/test_propulsao_busca.py": {
+      "bruto": "76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26",
+      "lf": "76fc5ccf87343733112fac7bc72d5758441b01f14ff8bf859c5df02d24ccea26"
+    },
+    "projects/test_propulsao_calibracao.py": {
+      "bruto": "7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96",
+      "lf": "7112e3810a64cbee8035dbbf5417d92e9a4b7d8208be5ea808a896562cd69a96"
+    },
+    "projects/test_propulsao_diagnostico.py": {
+      "bruto": "01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca",
+      "lf": "01c2631df6483fa9f835d8bafd6dcd7b927c141e658723a39da4d105f6e89bca"
+    },
+    "projects/test_propulsao_pas.py": {
+      "bruto": "c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a",
+      "lf": "c64ccb184a289b15daccc572dd99f9967e62999738dd7c9b1a7fcb7b82bd6a0a"
+    },
+    "projects/baselines/auto_sprint0/propulsao_auto.py": {
+      "bruto": "569b0978b58c08c65f212a5a829c34e110d00d4711c66c3798facfb5fa060803",
+      "lf": "569b0978b58c08c65f212a5a829c34e110d00d4711c66c3798facfb5fa060803"
+    },
+    "projects/baselines/auto_sprint0/test_propulsao_auto.py": {
+      "bruto": "9d4137e14b83edf75cee570c030ba821f386c30c3afccee31abca31dd7107d8c",
+      "lf": "9d4137e14b83edf75cee570c030ba821f386c30c3afccee31abca31dd7107d8c"
+    }
+  }
+}
+````
+<!-- END_SOURCE projects/baselines/auto_sprint0/manifesto.json -->
+
+### 32.40. `projects/baselines/auto_sprint0/caso_artificial_aprovado.json`
+
+<!-- SOURCE projects/baselines/auto_sprint0/caso_artificial_aprovado.json SHA256_LF ea414ffda084b3baf90b067ee268acc446689efc4998a39633d2d871cbe147e5 FINAL_LF 0 -->
+````json
+{
+  "natureza": "fixture artificial, nao motor real",
+  "config": {
+    "navio": {
+      "nome": "Navio Holtrop",
+      "lpp": 200.0,
+      "lwl": 205.0,
+      "boca": 32.0,
+      "calado_proa": 10.0,
+      "calado_popa": 10.0,
+      "deslocamento": 37500.0,
+      "lcb_pr": 104.0,
+      "abt": 20.0,
+      "hb": 4.0,
+      "cm": 0.98,
+      "cwp": 0.75,
+      "at": 16.0,
+      "c_popa": 10,
+      "velocidade_nos": 25.0,
+      "n_motores": 1,
+      "n_helices": 1,
+      "apendices": {
+        "Leme a re de cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re de popa": [
+          0,
+          1.4
+        ],
+        "Lemes compensados bi-helice": [
+          0,
+          2.8
+        ],
+        "Pe-de-galinha": [
+          0,
+          3.0
+        ],
+        "Cadaste": [
+          0,
+          1.75
+        ],
+        "Leme a re do propulsor": [
+          67,
+          1.96
+        ],
+        "Bosso do eixo": [
+          0,
+          2.0
+        ],
+        "Eixo do propulsor": [
+          0,
+          3.0
+        ],
+        "Estabilizador": [
+          0,
+          2.8
+        ],
+        "Sonar-dome": [
+          0,
+          2.7
+        ],
+        "Bolina": [
+          0,
+          1.4
+        ]
+      }
+    },
+    "agua": {
+      "rho": 1025.0,
+      "mu": 0.00085,
+      "g": 9.805,
+      "p_atm": 101325.0,
+      "p_vapor": 2278.0
+    },
+    "helice": {
+      "z": [
+        4
+      ],
+      "ae_ao": {
+        "min": 0.7,
+        "max": 0.7,
+        "passo": 0.05
+      },
+      "p_d": {
+        "min": 0.85,
+        "max": 0.85,
+        "passo": 0.05
+      },
+      "diametro": {
+        "min": 8,
+        "max": 8,
+        "passo": 0.1
+      },
+      "rpm": {
+        "min": 40.0,
+        "max": 250.0
+      }
+    },
+    "restricoes": {
+      "eta0_min": 0.1,
+      "eta0_max": 0.9,
+      "j_min": 0.01,
+      "cavitacao_pct": 5,
+      "ta_sobre_d_min": 1.25,
+      "potencia_max_motor_kw": null,
+      "motor": "estrito"
+    },
+    "margens": {
+      "mar": 15.0,
+      "rotacao": 5.0,
+      "operacional": 10.0,
+      "expoente_rpm": 0.3333333333333333,
+      "acoplamento": "direto",
+      "eta_t": {
+        "direto": 0.97,
+        "caixa": 0.93
+      }
+    },
+    "motor": {
+      "sfoc_min": 165.0,
+      "carga_otima": 0.8,
+      "curvatura": 0.3,
+      "arquivo_csv": "motores.csv",
+      "carga_min_sfoc": 0.25,
+      "carga_max_sfoc": 1.0,
+      "catalogo_registrado": [
+        {
+          "modelo": "ARTIFICIAL_TESTE",
+          "n_min": 1,
+          "n_max": 1000,
+          "p_max_kw": 1000000.0,
+          "p_min_kw": 0.001
+        }
+      ]
+    },
+    "compat_planilha": false,
+    "backtest": {
+      "objetivo": "bhp",
+      "top": 15,
+      "saida": "saida"
+    },
+    "perfil_velocidades": [
+      5,
+      7,
+      10,
+      12,
+      15,
+      17,
+      20,
+      22,
+      25,
+      28,
+      30
+    ]
+  },
+  "funil": [
+    [
+      "Combinacoes geradas",
+      1
+    ],
+    [
+      "Empuxo disponivel = requerido (M12 = 0)",
+      1
+    ],
+    [
+      "J >= 0.01 e KT, KQ > 0",
+      1
+    ],
+    [
+      "0.1 <= eta0 <= 0.9",
+      1
+    ],
+    [
+      "Cavitacao Burrill <= 5% dorso",
+      1
+    ],
+    [
+      "Cabe no layout de um motor MAN B&W",
+      1
+    ]
+  ],
+  "resistencia": {
+    "RT": 1787.4331403028286,
+    "EHP_kW": 22988.376221116934
+  },
+  "melhor": {
+    "Z": 4,
+    "D": 8.0,
+    "Ae/Ao": 0.7,
+    "P/D": 0.85,
+    "w": 0.2568563099071078,
+    "t": 0.19773316643993316,
+    "etaR": 0.9888527366849179,
+    "Va": 9.557653569805808,
+    "rpm": 115.95876981227279,
+    "J": 0.6181714577482252,
+    "KTs": 0.14207656745216676,
+    "KQs": 0.019818697083245785,
+    "eta0": 0.705304146119456,
+    "etaH": 1.079558158476437,
+    "etaD": 0.752929131085084,
+    "tau_c": 0.11354016996623682,
+    "tau_max": 0.11717985587357319,
+    "sigma": 0.24925459256050153,
+    "BHP_kW": 31476.211970749755,
+    "MCR_kW": 46093.62710153857,
+    "RPM_MCR": 131.6809871524179,
+    "motor_proximo": "ARTIFICIAL_TESTE",
+    "viol_rpm": 0.0,
+    "viol_kw": 0.0,
+    "viol_total": 0.0,
+    "motor_n_min": 1.0,
+    "motor_n_max": 1000.0,
+    "rpm_layout": 131.6809871524179,
+    "motor_p_min_kw": 0.0001316809871524179,
+    "motor_p_max_kw": 131680.98715241792,
+    "motivo_motor": "cabe",
+    "Motores": "ARTIFICIAL_TESTE",
+    "cabe_motor": true,
+    "SFOC": 165.67904751634399,
+    "FOC_t_h": 5.214948818736364,
+    "FOC_MCR_t_h": 7.636748234756451
+  }
+}
+````
+<!-- END_SOURCE projects/baselines/auto_sprint0/caso_artificial_aprovado.json -->
+
+### 32.41. `publicado/naval.html`
 
 <!-- SOURCE publicado/naval.html SHA256_LF 409f69afe0dee13cac438880044756d9876d85e6863da2f17af8eb63bf2d86a7 FINAL_LF 1 -->
 ````html
@@ -6604,7 +7940,7 @@ python projects/validar_pdf_propulsao.py <arquivo.pdf>
 ````
 <!-- END_SOURCE publicado/naval.html -->
 
-### 32.34. `publicado/i18n.css`
+### 32.42. `publicado/i18n.css`
 
 <!-- SOURCE publicado/i18n.css SHA256_LF eabff46eb30329533a9a9cd4c4f9f4a5531e0d6e6ae783026b46c470d4b4c213 FINAL_LF 1 -->
 ````css
@@ -6629,7 +7965,7 @@ python projects/validar_pdf_propulsao.py <arquivo.pdf>
 ````
 <!-- END_SOURCE publicado/i18n.css -->
 
-### 32.35. `publicado/i18n.js`
+### 32.43. `publicado/i18n.js`
 
 <!-- SOURCE publicado/i18n.js SHA256_LF 4681989337471f729c930e57a9db7a47f5147657503d437d507df8cfae2dd0ed FINAL_LF 1 -->
 ````javascript
