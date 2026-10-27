@@ -1,0 +1,28 @@
+{
+  "name": "aeon-aqua-rov-simulator",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "three": "^0.180.0",
+    "three-mesh-bvh": "^0.9.16"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.5.1",
+    "@playwright/test": "^1.64.0",
+    "@types/three": "^0.180.0",
+    "serve": "^14.2.6",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^5.0.3"
+  }
+}

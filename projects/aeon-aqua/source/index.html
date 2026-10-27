@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#061522" /><title>AEON AQUA — ROV Operations Simulator</title>
+</head>
+<body>
+<div id="app">
+  <div id="viewport" aria-label="Ambiente 3D do simulador"></div>
+  <header class="topbar"><div class="brand"><span class="brand-mark">A</span><div><strong>AEON AQUA</strong><small>ROV OPERATIONS SIMULATOR</small></div></div><div class="top-status"><span class="status-dot"></span> MODO SIMULAÇÃO <span class="divider">|</span> MISSÃO 001</div></header>
+  <aside class="left-panel panel">
+    <div class="panel-heading"><span>BRIEFING DA MISSÃO</span><span class="pill">TREINAMENTO</span></div>
+    <h1>Hélice do cargueiro obstruída</h1><p class="muted">Inspecione e remova a rede presa à hélice do próprio navio. Reduza a velocidade antes de intervir.</p>
+    <div class="mission-step" data-stage="0"><span class="step-number">01</span><div><b>Aproximar-se do alvo</b><small>Menos de 4 m · velocidade abaixo de 0,35 m/s.</small></div></div>
+    <div class="mission-step" data-stage="1"><span class="step-number">02</span><div><b>Inspecionar a obstrução</b><small>Aponte a frente do ROV para a rede por 3 s.</small></div></div>
+    <div class="mission-step" data-stage="2"><span class="step-number">03</span><div><b>Cortar a rede</b><small>Segure Espaço perto da hélice por 4 s.</small></div></div>
+    <div class="mission-step" data-stage="3"><span class="step-number">04</span><div><b>Verificar hélice livre</b><small>Recue e inspecione por 2 s.</small></div></div>
+    <p id="mission-hint" role="status"></p>
+    <progress id="mission-progress" max="1" value="0" aria-label="Progresso da etapa"></progress>
+    <div id="mission-stats" class="micro"></div>
+    <div class="panel-heading controls-title"><span>CONTROLES DO VEÍCULO</span><span class="key-hint">TECLADO</span></div>
+    <div class="control-grid"><div><kbd>W</kbd><small>Avançar</small></div><div><kbd>S</kbd><small>Recuar</small></div><div><kbd>A</kbd><small>Esquerda</small></div><div><kbd>D</kbd><small>Direita</small></div><div><kbd>R</kbd><small>Subir</small></div><div><kbd>F</kbd><small>Descer</small></div><div><kbd>Q</kbd><small>Girar à esquerda</small></div><div><kbd>E</kbd><small>Girar à direita</small></div></div>
+    <p class="micro muted">Espaço: cortador · Arraste o mouse para orbitar · role para aproximar. O círculo verde marca o alvo.</p>
+    <button id="view-button" type="button">VER CARGUEIRO</button>
+    <details class="micro"><summary>Créditos dos modelos</summary><p>ROV Hercules: <a href="https://sketchfab.com/3d-models/rov-hercules-b182d28a62854465b6574e7edb743dfc" target="_blank" rel="noopener noreferrer">EVNautilus</a>. Cargo Ship Loaded: <a href="https://sketchfab.com/3d-models/cargo-ship-loaded-c14144edcd6f4827a84be12456b51e18" target="_blank" rel="noopener noreferrer">gogiart</a>. Ambos sob <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>, convertidos e otimizados. Areia: texturelib.com. Rochas fornecidas pelo usuário, licença ainda não informada.</p></details>
+  </aside>
+  <aside class="right-panel panel"><div class="panel-heading"><span>TELEMETRIA AO VIVO</span><span class="live">● AO VIVO</span></div>
+    <div class="metric"><div><small>PROFUNDIDADE</small><strong id="depth">12.0 <em>m</em></strong></div><div class="metric-icon">↕</div></div>
+    <div class="metric"><div><small>RUMO</small><strong id="heading">000 <em>°</em></strong></div><div class="metric-icon">⌖</div></div>
+    <div class="metric"><div><small>POTÊNCIA ESTIMADA</small><strong id="power">0 <em>%</em></strong></div><div class="metric-icon">ϟ</div></div>
+    <div class="metric"><div><small>BATERIA SIMULADA</small><strong id="battery">100 <em>%</em></strong></div><div class="metric-icon">▰</div></div>
+    <div class="panel-heading"><span>COMANDOS DE PROPULSÃO</span><span class="micro">NORMALIZADOS</span></div><div id="thruster-bars" class="thruster-bars"></div>
+    <div class="panel-heading"><span>ESTADO DO SISTEMA</span></div>
+    <div class="system-row"><span>Entrada de controle</span><b class="good">PRONTA</b></div><div class="system-row"><span>Modelo hidrodinâmico</span><b class="warn">SIMPLIFICADO</b></div><div class="system-row"><span>Otimização ML</span><b class="muted">NÃO CONECTADA</b></div>
+  </aside>
+  <footer class="bottombar"><div><span class="status-dot"></span> VEÍCULO CONECTADO <span class="divider">|</span> DUAS CÂMERAS</div><div id="coordinates"></div><button id="reset-button" type="button">REINICIAR MISSÃO ↺</button></footer>
+  <div id="rov-camera" aria-label="Câmera de bordo"><span>CÂMERA DO ROV · FRENTE</span></div>
+  <nav id="mobile-toolbar" aria-label="Painéis do simulador">
+    <button type="button" data-panel-button="mission" aria-controls="mission-panel" aria-expanded="false">Missão</button>
+    <button type="button" data-panel-button="telemetry" aria-controls="telemetry-panel" aria-expanded="false">Telemetria</button>
+    <button type="button" id="mobile-view-button">Navio</button>
+  </nav>
+  <div id="touch-controls" aria-label="Controles por toque">
+    <div class="stick-control"><div id="move-stick" class="virtual-stick" aria-label="Joystick de avanço e movimento lateral"><span class="stick-knob"></span></div><span class="stick-label">Mover</span></div>
+    <button id="touch-cutter" type="button" aria-pressed="false">CORTAR<small>Segure</small></button>
+    <div class="stick-control"><div id="depth-stick" class="virtual-stick" aria-label="Joystick de giro e profundidade"><span class="stick-knob"></span></div><span class="stick-label">Girar / profundidade</span></div>
+  </div>
+  <div id="startup-error" role="alert" hidden></div>
+  <div class="crosshair"><span></span><i></i></div><div class="center-note" id="target-distance"></div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body></html>

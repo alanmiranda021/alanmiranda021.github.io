@@ -1,0 +1,55 @@
+/* Manifesto — leitura longa no mesmo design escuro do site, com acento de alerta */
+.manifesto-page{--text:#ece7e1;--muted:#a7a29d;--line:#ffffff1f;background:#06080a}
+.manifesto-page .logo span{color:#aeb6bc}
+.manifesto-cover{position:relative;padding:190px 8vw 0;overflow:hidden;text-align:center;isolation:isolate;background:radial-gradient(ellipse at 50% 78%,#3a1317 0,#160b0e 42%,#06080a 78%)}
+.manifesto-cover:before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(circle at 18% 22%,#ffffff40 0 1px,transparent 1.5px),radial-gradient(circle at 74% 14%,#ffffff40 0 1px,transparent 1.5px),radial-gradient(circle at 42% 38%,#ffffff30 0 1px,transparent 1.5px),radial-gradient(circle at 88% 44%,#ffffff30 0 1px,transparent 1.5px),radial-gradient(circle at 8% 52%,#ffffff30 0 1px,transparent 1.5px);background-size:420px 300px}
+.manifesto-cover .eyebrow{display:inline-flex;align-items:center;gap:12px;color:#ff9d99;margin-bottom:30px;font-size:11px}
+.manifesto-cover .eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:#ff5a55;box-shadow:0 0 12px #ff5a55;animation:alert-dot 1.6s ease-in-out infinite}
+.manifesto-cover h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(40px,5.8vw,86px);line-height:1.09;letter-spacing:-.04em;max-width:1100px;margin:0 auto 30px;text-transform:none;text-wrap:balance;color:#fff3ee}
+.manifesto-deck{font-size:18px;line-height:1.7;max-width:640px;margin:0 auto 28px;color:#cdbfbb}
+.manifesto-byline{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9a8f8b;margin-bottom:35px}
+.landscape{display:block;width:min(100%,1100px);height:auto;margin:0 auto}
+.reading-intro{display:flex;justify-content:space-between;gap:25px;padding:27px 0;border-bottom:1px solid var(--line);margin-bottom:55px;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:#ff9d99}
+.manifesto-reading{width:min(740px,84%);margin:0 auto;padding:30px 0 90px}
+.manifesto-body p{font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.95;color:#d8d2cb;margin:0 0 30px}
+.manifesto-body>p:first-child:first-letter{float:left;font-size:76px;line-height:.85;padding:12px 13px 0 0;color:#ff7a74}
+.manifesto-body p.principle{margin:55px 0;padding:32px 0 32px 28px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-left:2px solid #ff5a55;font-size:26px;line-height:1.55;color:#fff0eb}
+.manifesto-body p.principle strong{font-weight:400}.manifesto-body strong{font-weight:600;color:#fff}.manifesto-body p:last-child{padding-top:25px;color:#e8c9c4}
+.manifesto-recommendations{padding:80px 8vw;border-top:1px solid var(--line);background:#0b0e12}
+.manifesto-recommendations>*{max-width:1100px;margin-left:auto;margin-right:auto}
+.manifesto-recommendations .eyebrow{color:#9fc1d6}
+.manifesto-recommendations h2{font-size:clamp(30px,4vw,56px);text-transform:uppercase}
+.manifesto-recommendations>p:not(.eyebrow){max-width:680px;font-size:16px;line-height:1.8;color:var(--muted);margin-left:auto;margin-right:auto;width:100%}
+.recommended-links{display:flex;flex-wrap:wrap;gap:20px 35px;margin-top:25px}
+.recommended-links .text-link{font-size:13px;line-height:1.6;border-bottom:1px solid #ffffff50;padding:8px 0}
+.manifesto-close{text-align:center;border-top:1px solid var(--line);padding:90px 8vw 100px;background:radial-gradient(ellipse at 50% 100%,#2a0f12,transparent 70%),#06080a}
+.manifesto-close .eyebrow{color:#ff9d99}.manifesto-close h2{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(32px,4vw,56px);margin-bottom:34px}
+@media(max-width:760px){.manifesto-cover{padding:140px 7vw 0}.manifesto-cover h1{font-size:clamp(36px,9vw,64px)}.manifesto-deck{font-size:16px}.manifesto-reading{width:86%;padding-bottom:50px}.reading-intro{font-size:9px;margin-bottom:35px;line-height:1.6}.manifesto-body p{font-size:17px;line-height:1.85;margin-bottom:25px}.manifesto-body p.principle{font-size:22px;margin:35px 0;padding:25px 0 25px 20px}.landscape{width:120%;max-width:none;margin-left:-10%}.manifesto-recommendations{padding:60px 7vw}}
+@media(prefers-reduced-motion:reduce){.manifesto-cover .eyebrow:before{animation:none}}
+
+/* Tema de leitura claro com a fotografia fornecida pelo autor. */
+.manifesto-page{color-scheme:light;--text:#16384e;--muted:#466778;--line:#17435b30;background:#eaf6fb;color:var(--text)}
+.manifesto-page .header{color:#16384e;background:rgba(234,247,253,.96);border-bottom:1px solid var(--line)}
+.manifesto-page .logo span{color:#486878}
+.manifesto-page .menu-toggle span{background:#16384e}
+.manifesto-page nav.open{background:#edf8ff;color:#16384e}
+.manifesto-page a:focus-visible,.manifesto-page button:focus-visible{outline-color:#174b68}
+.manifesto-cover{padding-bottom:64px;background:linear-gradient(90deg,rgba(234,247,253,.96),rgba(234,247,253,.87) 55%,rgba(234,247,253,.72)),url('assets/natureza.jpg') center/cover no-repeat}
+.manifesto-cover:before{background:none}
+.manifesto-cover .eyebrow,.reading-intro{color:#286779}
+.manifesto-cover .eyebrow:before{background:#286779;box-shadow:none}
+.manifesto-cover h1{color:#16384e}
+.manifesto-deck{color:#294c60}
+.manifesto-byline{color:#466778}
+.manifesto-cover .landscape{display:none}
+.manifesto-body p,.manifesto-body p:last-child{color:#29485a}
+.manifesto-body strong{color:#16384e}
+.manifesto-body>p:first-child:first-letter{color:#286779}
+.manifesto-body p.principle{color:#16384e;border-left-color:#32748d}
+.manifesto-recommendations{background:#dceef6}
+.manifesto-recommendations .eyebrow,.manifesto-close .eyebrow{color:#286779}
+.recommended-links .text-link{border-color:#17435b50}
+.manifesto-close{background:#d2e9f1;color:#16384e}
+.manifesto-page footer{background:#d2e9f1;color:#16384e}
+.manifesto-page .button{border-color:#174b68;color:#174b68;background:transparent}
+.manifesto-page .button:hover{background:#174b68;color:white}

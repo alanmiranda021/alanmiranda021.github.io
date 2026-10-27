@@ -1,0 +1,608 @@
+0|Page not found — Alan Miranda
+1|Error 404
+2|This page does not exist or has moved.
+3|Back to the home page ↗
+4|Useful files — Alan Miranda's portfolio.
+5|Useful files — Alan Miranda
+6|Useful programs and more than 70 audiobooks collected on Google Drive.
+7|Skip to content
+9|Research & Systems
+10|Open menu
+11|Main navigation
+12|Maritime
+13|Projects
+14|About
+15|Useful files
+16|Manifesto
+17|← Home page
+18|Useful links
+19|USEFUL FILES.
+20|Alongside useful programs, this folder includes a bonus collection of more than 70 audiobooks across various subjects. Access the materials collected on Google Drive.
+21|Open useful files ↗
+22|The folder opens in a new tab.
+23|Personal library
+24|EBOOKS & AUDIOBOOKS.
+25|A collection for studying and reflecting on habits, productivity, emotional intelligence, communication, business and personal development.
+26|Access the library ↗
+27|Browse the collection's titles
+52|Research · Engineering · Systems
+55|Contact ↗
+56|Research & Systems — Alan Miranda's portfolio.
+57|Research & Systems — Alan Miranda
+58|Page sections
+59|Manifesto · Technology and humanity
+60|Technology must serve humanity. Never the other way around.
+61|Building the future takes more than technical ability. It requires awareness of what we are creating, for whom, and at what cost.
+62|“The greatest technology remains humanity itself. Nature, in turn, is a heritage that no innovation can replace.”
+63|Read the manifesto and reflections
+64|Maritime projects
+65|An ocean of
+66|possibilities.
+67|Explore projects in marine engineering, simulation, propulsion and machine learning.
+68|Propulsion simulator
+69|Illustrative telemetry
+70|TELEMETRY · DEMO
+71|Speed
+72|Heading
+73|J (advance)
+76|Artificial intelligence · AEON
+77|Agents that think,
+78|remember and act.
+79|A multi-agent architecture with memory, validation and knowledge orchestration.
+80|Discover AEON
+81|All projects
+82|Wooden robot assembled in the My First Robot workshop
+83|Robotics · INCLUDE
+84|My first
+85|robot.
+86|A robotics and automation workshop where every part, from laser cutting to electronics, becomes an opportunity to learn.
+87|View the project
+88|View the INCLUDE project
+89|Laser-cut robot parts
+90|Motor and frame details
+91|Front view of the robot
+92|Data & models · Alpha App · ML Learner
+93|Data becomes
+94|decisions.
+95|Predictive experimentation, calibration and evaluation of regression and classification models, directly in the browser.
+98|Discover the book S.O. Humano
+99|Cover of the book S.O. Humano
+100|Original book
+102|An installation guide for consciousness.
+103|A perspective on the mind as a system being updated, connecting technology, neuroscience, psychology and cognitive strategies.
+104|Discover the book
+105|About the author and useful links
+106|Discover. Explore.
+107|About the author ↗
+108|Background, education and experience.
+109|Maritime ↗
+110|Simulator, ML Learner and marine news.
+111|Projects ↗
+112|AEON, INCLUDE and Alpha App.
+113|Useful files ↗
+114|Programs and more than 70 audiobooks.
+115|Alan Miranda's manifesto on technology, humanity, nature and responsibility. Innovating with purpose and putting knowledge in service of life.
+116|Manifesto · Technology and Humanity — Alan Miranda
+117|A WARNING ABOUT THE FUTURE WE ARE BUILDING.
+118|Technology is irreversible. How we choose to use it remains a human responsibility.
+119|A reflection by Alan Miranda
+120|Full manifesto
+121|Humanity · Nature · Awareness
+122|Personal reflection
+123|Automation, artificial intelligence and technology in general represent an irreversible transformation in human history. We are building systems increasingly capable of performing tasks, processing information, making decisions and replacing activities that, for centuries, depended entirely on human ability. I do not believe the way forward is to ignore this progress or try to stop it, but to reflect critically on its direction, its consequences and the boundaries we need to establish.
+124|My personal view is that technological progress does not necessarily mean human progress.
+125|I believe that excessive, indiscriminate and unreflective use of these tools may contribute to weakening intellectual autonomy. When we delegate to machines not only operational tasks, but also the effort of thinking, questioning, interpreting and learning, we risk trading the development of our abilities for the convenience of receiving ready-made answers. Artificial intelligence can be a powerful learning tool, but it can also become an intellectual crutch when it systematically replaces the reasoning it should encourage.
+126|This risk is not limited to artificial intelligence. The constant presence of screens, hyperconnectivity, the continual search for stimulation and the logic of endless content consumption deserve attention. I believe these behaviors may contribute to difficulties with concentration, procrastination, anxiety, isolation and other harms to well-being, especially when boundaries, awareness of use or concern for their effects on physical and mental health are absent. The relationship between technology and human health is complex, however: effects vary with the tool, intensity of use, context and each person's characteristics.
+127|There is another concern I consider essential: malicious use of these technologies. Systems created to make life easier can be used to manipulate behavior, spread misinformation, exploit vulnerabilities, expand fraud and concentrate power. The more capable a technology is, the greater the responsibility of those who develop, control and use it. Innovation without responsibility can turn tools of progress into instruments of exploitation.
+128|For these reasons, I take a critical position on technological advancement. I am not against technology. I am against the idea that everything that can be developed must necessarily be developed, that all automation is beneficial, or that efficiency alone justifies any consequence.
+129|My purpose in studying, researching and developing technology is to seek solutions that benefit humanity.
+130|I want to explore artificial intelligence, automation, robotics, computing systems and engineering to solve real problems, improve quality of life, increase safety, reduce risks, optimize resources and make complex activities more accessible and efficient. I also consider it important to investigate how these same technologies can help address the adverse effects of their own use, encouraging greater human autonomy, healthier relationships with digital media and applications that contribute to collective well-being.
+131|My interest is not limited to making a machine perform a task. It also involves understanding whether that task produces a concrete benefit, respects the people involved, uses resources responsibly and contributes to a better future. Whether developing specialized intelligent agents, automating processes, analyzing marine systems or researching new engineering solutions, I believe human purpose must remain at the center of the project.
+132|I believe we need to develop technologies that extend our abilities without eliminating our initiative; that make work easier without devaluing human knowledge; that automate processes without ignoring the people affected; and that advance without irresponsibly compromising the environment on which we depend.
+133|The greatest technology remains humanity itself. And nature is one of the most extraordinary expressions of complexity, balance and life we know.
+134|These are what we must preserve, understand and care for. No computational advance replaces human dignity, no artificial intelligence fully reproduces the experience of being alive, and no innovation justifies treating the planet as an inexhaustible resource.
+135|That is why I see engineering not only as the ability to design, calculate, build and optimize, but also as a commitment to assess consequences, recognize limits and take responsibility. Being an engineer means transforming possibilities into solutions, but also distinguishing what we can build from what is truly worth building.
+136|The future should not be defined exclusively by the abilities of machines, but by the human choices that guide their development.
+137|The architect is great, the gardener is divine, and the engineer has to be brilliant!
+138|Brilliant not only in creating what does not yet exist, but in understanding the impact of those creations, preserving what has value and putting knowledge in service of life.
+139|This is the principle that guides my view of technology, my research and the systems I intend to develop: innovate with purpose, build responsibly and keep humanity at the center of every solution.
+140|Recommended reading
+141|Self-awareness and
+142|personal improvement.
+143|To continue this reflection, I recommend exploring books on habits, self-help, emotional intelligence and personal development. The library brings together books for discovering new perspectives and building more conscious practices.
+144|Explore the recommended books ↗
+145|Browse the collection's titles ↗
+146|Knowledge in service of life
+147|Innovate with purpose.
+148|Build responsibly.
+149|Technology · Humanity · Nature
+150|Educational Wageningen B-series propeller simulator with transparent calculations and numerical validation.
+151|Propulsion simulator — Alan Miranda
+152|PROPULSION LABORATORY · V0.1.0
+156|Mission 01 · First Propeller. Explore the Wageningen B-series propeller and follow each calculation step.
+157|V0.1 SCOPE
+158|B-series in open water
+159|Quadratic mission resistance
+160|Holtrop and Burrill: coming soon
+161|Propeller simulation
+162|Ship view
+163|MISSION 01 / OPEN OCEAN
+164|Operating condition
+165|SIMULATION READY
+166|SPEED
+168|VISUAL ROTATION
+170|THRUST MARGIN
+173|IN EQUILIBRIUM
+174|Main results
+175|ADVANCE COEFFICIENT
+177|EFFICIENCY η₀
+178|open water
+179|THRUST T
+181|POWER P
+183|delivered kW
+184|PERFORMANCE CURVES
+185|Coefficients × advance
+186|OPERATING POINT MARKED · CURVES 0 → J₀
+188|Thrust coefficient KT versus J chart
+190|Ten times the torque coefficient versus J chart
+192|maximum marked
+193|Open-water efficiency versus J chart
+194|View curve table
+198|CONTROL PANEL
+199|Parameters
+200|Reset mission
+201|Model level
+203|POLYNOMIAL
+207|+ ROUGHNESS
+208|Model C · Reynolds + 30 µm roughness.
+209|Ship speed
+212|Rotation
+215|Diameter
+217|Number of blades
+219|blades
+220|Pitch / diameter
+222|Area ratio
+224|range for Z = 4: 0.40–1.00
+225|Wake coefficient
+227|Thrust deduction
+229|Water density
+231|Displacement
+232|used only for visual dynamics
+233|Kinematic viscosity
+235|UPDATE SIMULATION
+236|Export results as JSON
+238|WITHIN DOMAIN
+239|B-series · Z = 4 · P/D = 0.75
+240|FIXED MISSION DATA
+241|Reference resistance
+243|Reference speed
+245|Resistance curve
+247|HOW WERE THE RESULTS CALCULATED?
+248|EXPORT CSV CURVES ↓
+249|CHALLENGE MODE
+250|MODEL TRANSPARENCY
+251|Wageningen B-series · Oosterveld & van Oossanen (1975). η₀ is open-water efficiency; the resistance criterion is an educational quadratic approximation. Burrill and Holtrop-Mennen are not included in this version.
+252|VALIDATED COEFFICIENTS · SOURCE AND LIMITS SHOWN
+253|Close explanation
+255|CALCULATION CHAIN / CURRENT CASE
+256|How was this value calculated?
+257|Each quantity below uses the current simulation values. Calculations use SI units.
+258|Wageningen B-series polynomial · Reynolds corrections for Rn > 2×10⁶ · roughness kp = 30 µm.
+259|Other projects — Alan Miranda's portfolio.
+260|Other projects — Alan Miranda
+261|AEON, INCLUDE and Alpha App: AI, robotics and data.
+262|Artificial intelligence · Robotics · Data
+263|OTHER PROJECTS.
+264|Three paths to investigate, learn and build.
+265|Network of agents connected to a core
+266|Artificial intelligence
+268|Intelligent agents, memory and knowledge orchestration.
+269|Open ↗
+270|Robotics
+272|Robotics and automation as tools for learning.
+273|Data pipeline and performance chart
+274|Data & models
+275|Predictive experimentation, calibration and model evaluation.
+276|Maritime projects — Alan Miranda's portfolio.
+277|Maritime projects — Alan Miranda
+278|Propulsion simulator, ML Learner and news on ROVs and marine engineering.
+279|Ocean engineering
+280|MARITIME PROJECTS.
+281|Explore AEON AQUA's cargo ship and operate the ROV in the propeller-clearing mission, or access the other tools below.
+282|Ship and projects
+283|Loaded cargo ship from the AEON AQUA simulator
+284|Operate ROV Hercules
+285|Operate ROV ↗
+286|Open the propulsion simulator
+287|Propulsion ↗
+289|ML Learner ↗
+290|ROV Hercules operating alongside the cargo ship's propeller
+291|3D simulation · ROV
+293|Pilot Hercules, inspect the ship's propeller and cut the net preventing it from operating.
+294|Four-bladed marine propeller
+295|Marine engineering
+296|Investigate Kt, Kq, J and propulsive efficiency.
+297|Scatter plot with a regression line
+299|Compare regression and classification models in the browser.
+300|Marine news
+301|ROV & MARINE ENGINEERING.
+302|Filter news
+303|All
+305|Refresh ↻
+306|Loading news…
+307|News from external sources. Links open the original content.
+308|Contact
+309|LET'S TALK.
+310|Research, projects and challenges in engineering and technology.
+311|Your name
+312|Your email
+313|Message
+314|Prepare email ↗
+315|Your message will open in your email application for you to send.
+317|About the author — Alan Miranda's portfolio.
+318|About the author — Alan Miranda
+319|Alan Miranda's education, background and skills; master's student in Ocean Engineering at COPPE/UFRJ.
+320|About the author
+322|Technology grounded in operations.
+323|Ocean Engineering
+324|Information Systems
+325|AI & Robotics
+326|Linux & Networks
+327|Portrait of Alan Miranda
+329|EDUCATION
+330|& RESEARCH.
+331|Master's student in Ocean Engineering at PEnO/COPPE — UFRJ.
+332|I hold a bachelor's degree in Information Systems, with practical experience in software, hardware, Linux, networking, data, automation, robotics and artificial intelligence. I apply this multidisciplinary perspective to advanced robotics, remote systems and operations in complex environments.
+333|Lattes CV ↗
+334|Background
+335|FROM OPERATIONS
+336|TO TECHNOLOGY.
+337|Beginning
+338|Operations
+339|Sales, logistics and professional driving (Brazilian AE license category).
+340|Support
+341|Equipment
+342|Diagnostics, technical support and business equipment.
+345|Today
+347|Master's degree in Ocean Engineering, focusing on robotics and remote systems.
+348|My career has included sales, customer prospecting, logistics and work as a professional driver with an AE-category license. I have also worked with business equipment, support, diagnostics and technical assistance. This experience shapes how I understand systems before automating them.
+349|At NUCLEP, from 2020 to 2022, I worked with SQL Server, C#, JavaScript, maintenance, hardware and networking. At INCLUDE, I worked with robotics and automation in a technology education experience associated with Campus Party.
+350|Skills
+351|TOOLS FOR BUILDING.
+352|Software & data
+353|JavaScript, C#, SQL Server, Linux, networking and systems integration.
+354|AI & robotics
+355|Intelligent agents, RAG, memory, automation, electronics and prototyping.
+356|TECHNOLOGY MUST SERVE
+357|HUMANITY.
+358|Read the manifesto and reflections ↗
+359|Author's links
+360|LET'S CONNECT.
+361|Email ↗
+364|AEON — an experimental modular, multi-agent artificial intelligence architecture built around memory, knowledge, validation and execution.
+366|← Other projects
+371|An experimental architecture for turning artificial intelligence models into
+372|systems that interpret, remember, retrieve, reason, coordinate, validate and execute.
+374|Explore the architecture
+384|VISION
+385|Why AEON exists and what architectural problem it seeks to solve.
+386|THE PROBLEM
+387|An isolated LLM is powerful at generating and interpreting language, but does not, by itself, constitute a complete operational intelligence system.
+388|It should not be confused with
+389|persistent memory, structured knowledge, agents, validation or execution
+390|THE PROPOSAL
+391|AEON places the model within a modular architecture where each capability has a defined role.
+392|A model
+393|is one component. An
+394|intelligent system
+395|emerges from the combination of model, memory, knowledge, agents, reasoning, validation and action.
+397|From the user's request to a verifiable result and a record in memory.
+411|The layers that turn independent components into a coordinated architecture.
+413|input, interaction and presentation
+415|intent, tasks and coordination
+417|specialization and collaboration
+419|logical core and workflow control
+421|context, retrieval and relationships
+422|consistency, evidence and rules
+424|local LLMs or other models
+425|tools, automation and actions
+427|Each module has a distinct responsibility.
+428|The coordination core. It receives tasks, creates context, calls agents, accesses memory and knowledge, routes results for validation and controls execution.
+431|The context and state persistence layer. It can organize short-term, long-term, episodic, semantic and operational memory.
+433|Retrieves relevant information before generation. RAG complements the model, but is not the whole of AEON.
+436|Represents entities, properties and relationships. It complements RAG by providing explicit structure for knowledge.
+440|Specialized agents can plan, research, analyze, program, validate or execute different parts of a task.
+443|A layer for analyzing consistency, evidence, context, rules and conflicts before a result is considered valid.
+447|The AEON Kernel acts as the architecture's “cognitive operating system.”
+448|RESPONSIBILITIES
+449|Receive tasks · create context · select agents · access memory · consult knowledge · call models · route results · validate · execute · record state.
+450|SEPARATION OF LAYERS
+451|The Kernel allows the model, memory, RAG, agents, knowledge and execution to evolve without the entire architecture depending on a single component.
+453|A task can be divided into specialized roles.
+454|understands the task and coordinates the workflow
+456|breaks the problem into steps
+458|analyzes data and alternatives
+460|retrieves context and evidence
+462|performs actions and operations
+463|checks the result
+465|Persistent context and structured knowledge work together.
+466|Short-term:
+467|the context of the current task.
+468|Long-term:
+469|persistent information.
+470|Episodic:
+471|events and interactions.
+472|Semantic:
+473|abstracted knowledge.
+474|Operational:
+475|the state required for execution.
+478|retrieves relevant content to contextualize generation.
+480|represents entities and relationships.
+481|Together, they allow information retrieval and understanding of its structure.
+483|Experimental explorations of symbolic representation and packaging.
+485|An experimental symbolic representation layer. The proposal is to represent entities, operations, states, relationships, rules and instructions in a structured form.
+489|An experimental container concept for organizing models, metadata, configurations, vocabulary, parameters and the components required for execution.
+493|Exploration of local models and formats such as GGUF and safetensors, with the possibility of using runtimes such as llama.cpp.
+498|A knowledge architecture also needs to manage its indexes.
+504|project isolation + metadata + namespaces + versioning + cleanup/reindexing + source validation Index contamination is a significant issue when different knowledge sets are mixed without appropriate isolation.
+506|An example of how AEON can handle a complex task.
+507|INPUT
+508|“I want to reduce the cost of a logistics operation.”
+509|The system identifies the intent, creates a task and gathers the necessary context.
+510|PROCESSING
+511|Memory + RAG + Knowledge Graph → specialized agents → analysis → planning → validation → recommendation.
+512|The result can be recorded for future use.
+514|One of AEON's strategic directions is applying agents to logistics operations.
+515|PLANNING
+516|Analysis of scenarios, resources, constraints and operational alternatives.
+517|ROUTE PLANNING
+518|Potential support for route, movement and allocation decisions.
+519|MAINTENANCE
+520|Agents can cross-reference history, equipment, events and technical knowledge.
+521|NOTE: these applications should be distinguished as current implementation, experimentation or roadmap.
+523|Technical precision is part of the project's identity.
+524|NOT JUST
+525|× a chatbot
+526|× an LLM
+527|× a RAG system
+529|× an isolated agent
+530|× a vector database
+531|AN ARCHITECTURE
+540|A progressive evolution of the architecture.
+542|The coordination and workflow control core.
+544|Persistence of context, state and experiences.
+546|Contextual retrieval and the vector pipeline.
+548|Entities, relationships and structured knowledge.
+550|Specialization, planning and collaboration.
+552|Verification, consistency and evidence.
+554|Experimental symbolic representation.
+556|Packaging and component organization.
+558|Local models and controlled execution.
+561|Practical applications, including logistics operations.
+563|An honest view of the project.
+565|ARCHITECTURE
+566|A modular structure in development.
+569|Exploration and progressive integration.
+571|Concepts and experiments.
+573|Progress toward real applications.
+574|“Not merely building an AI that answers.
+575|Building an architecture that retrieves, reasons, validates and executes.”
+577|ALPHA APP — an experimental analysis, modeling, calibration and backtesting system applied to Lotofácil.
+579|Project 03 · Data · Experimentation · Mobile app
+582|Predictive Lottery Intelligence Engine: an experimental system for analysis, modeling, calibration, model combination and historical validation applied to Lotofácil.
+583|Explore the architecture
+584|Download the app
+585|experimental methods
+587|walk-forward validation
+589|modeling and calibration
+591|01 / OVERVIEW
+592|Alpha App is a laboratory for data engineering and predictive modeling. Its purpose is not to sell promises of winning, but to organize hypotheses, signals, metrics and experiments within a comparable architecture.
+593|The system works with historical data, builds features, runs families of models, calibrates scores, combines signals and evaluates results through backtesting.
+594|02 / PRINCIPLE
+595|Observed data is not a prediction.
+596|The project separates descriptive statistics, signal generation, calibrated scores and final combinations to avoid confusing historical patterns with a guarantee of future results.
+597|The appropriate interpretation is experimental: every output must be compared, validated and interpreted within scientific limits.
+598|03 / PIPELINE ARCHITECTURE
+610|04 / DATA PIPELINE
+611|Ingestion of historical draws and the input dataset
+612|Validation of integrity, duplication and format
+613|Normalization and preparation of records
+614|Generation of statistical and temporal features
+615|Model execution and score composition
+616|Output with rankings, metrics and experimental combinations
+626|Features turn historical data into computational representations. They feed the methods, but should not individually be interpreted as predictions.
+627|06 / MODEL FAMILIES
+629|Frequency, distribution, recurrence and statistical relationships.
+632|Windows, recency, dynamics and recent changes in signals.
+635|Combining different families to produce composite signals.
+638|Feature representation and experimental neural inference.
+641|An experimental layer connected to the AEON ecosystem and pattern analysis.
+644|Methods and variations for investigating and comparing hypotheses.
+662|08 / CALIBRATION
+664|Original score produced by each method
+666|Application of parameters and transformations
+668|Calibrated score for comparison and ranking
+669|Calibration makes scores more comparable and useful for the decision layer.
+671|Select an available historical window
+672|Train or configure the experiment
+673|Generate scores and combinations for the next point
+674|Compare with the observed result
+675|Record metrics and method stability
+683|The window advances through the historical data to observe stability across different periods, reducing methodological shortcuts.
+685|M30 explores a neural pipeline perspective: feature vector, normalization, representation layers, transformation and output score.
+691|M105 represents an experimental approach to neural execution in a lightweight runtime, focusing on conversion, compatibility and local inference.
+695|13 / STACK & ENGINEERING
+706|14 / SCIENTIFIC LIMITATION
+707|ALPHA APP is an experimental modeling and analysis system. Its methods produce scores and combinations based on statistical, temporal and computational patterns. This does not demonstrate an ability to predict a random process or guarantee future results. Backtesting measures historical behavior; it does not turn the system into a guarantee of winning.
+708|15 / EXPERIMENTAL M99 WINDOW
+709|Interactive M99 demonstration: fetch the latest Lotofácil draws, calculate number frequency, recency and delay, and generate an experimental 15-number combination.
+710|Draws analyzed
+711|Latest 10
+712|Latest 20
+713|Latest 30
+714|Latest 50
+715|FETCH LOTOFÁCIL DATA
+716|GENERATE M99
+717|Waiting to query official draws.
+718|Demonstration method. No guarantee of future results.
+719|16 / DOWNLOAD
+720|A version provided for experimentation and project demonstration.
+721|DOWNLOAD ALPHA APP →
+722|Google Drive · build provided by the project
+723|↙ ALL PROJECTS
+724|NEXT PROJECT →
+725|My First Robot workshop: educational robotics, assembly, mechanics, electrical energy and control in the INCLUDE project.
+726|INCLUDE — My First Robot — Alan Miranda
+727|Project 02 · INCLUDE · Workshop · Educational robotics
+728|robot
+729|A hands-on robotics workshop introducing children and teenagers to structure, movement, mechanics, electrical energy and control by assembling a simple, physical and customizable robot.
+730|photographic records
+731|3–6 V motors
+732|assembly kit
+733|Wooden robot assembled during the My First Robot workshop
+734|An assembled prototype with a wooden frame, DC motors, wheels, mechanical arms and a 9 V battery connection.
+736|01 / WORKSHOP OVERVIEW
+737|The My First Robot project was designed as a hands-on experience: participants stop merely hearing about technology and start building an object that moves, connects mechanics and electricity, and lets them test cause and effect in practice.
+738|The workshop turns basic robotics concepts into visual, accessible steps, using cut parts, screws, motors, wheels, wires and a battery to create a simple, educational and customizable robot.
+739|02 / FACILITATION
+740|I led the initiative as a technical specialist, serving as a facilitator at the Realengo Lab in Rio de Janeiro.
+741|The workshop's purpose was to share a passion for technology and support children and teenagers on a journey of creativity, innovation and discovery in robotics.
+742|03 / LEARNING OBJECTIVES
+743|BASIC ROBOTICS
+744|STRUCTURE
+745|MOVEMENT
+746|MECHANICS
+747|ELECTRICAL ENERGY
+748|CONTROL
+749|CREATIVITY
+750|PROTOTYPING
+751|04 / STEP BY STEP
+752|Gather the kit's cut parts
+753|Separate the lower section, torso, limbs and head
+754|Assemble the torso following the numbered fittings
+755|Prepare the arms with a large screw and nut
+756|Assemble the upper section and head
+757|Install the motors, wheels and rear axle
+758|Make the electrical connections and test movement
+759|Give the robot its own identity
+760|05 / REQUIRED MATERIALS
+761|9 standard nuts and 1 cap nut
+762|8 washers
+763|2 small screws
+764|1 large screw for the arms, 10 cm
+765|1 medium screw for the rear wheels, 6.5 cm
+766|2 small servo motor screws
+767|2 single-shaft 3–6 V motors
+768|1 metal paper clip
+769|1 9 V battery clip
+770|2 wires, 10 cm each
+771|06 / PROTOTYPE IN DETAIL
+772|Internal robot details: axle, nuts, wires and motors
+773|Internal view showing the axle, fasteners, wires and motors.
+774|Laser-cut plates with the robot's head, torso and limb parts
+775|Cut and identified assembly parts.
+776|Initial technical drawing with templates for the robot's head and body
+777|A technical sketch used to develop the parts.
+778|07 / PROJECT FILES
+779|Workshop presentation / PPTX
+780|Materials list / DOCX
+781|Robot vector / SVG
+782|Revised vector / SVG
+783|Cutting file / WCVR
+784|Full sheet / WCVR
+785|08 / FULL GALLERY
+786|Robot templates drawn on graph paper
+787|Initial template
+788|MDF sheets with laser-cut robot parts
+789|Parts kit
+790|Robot parts separated for assembly
+791|Organization
+792|Robot parts with head, torso and limb identification
+793|Numbered parts
+794|Assembled robot outdoors
+795|Assembled robot
+796|Front view of the wooden robot with wheels and arms
+797|Front view
+798|Completed robot with side details and connections
+799|Side details
+800|Assembled robot frame with articulated arms
+801|Structure
+802|Robot body details and mechanical assembly
+803|Body
+804|Robot showing wheels, motors and internal structure
+805|Motors
+806|Close-up of the robot's mechanical assembly
+807|Mechanical assembly
+808|Robot interior with nuts, axle and wires
+809|Interior
+810|Final robot details: electrical and mechanical components
+811|Final test
+812|09 / NEXT LEVEL
+813|Organize the workshop as a reusable educational kit, with assembly instructions, cutting files, a materials list, a facilitation guide, additional challenges and records of the prototypes built by participants.
+814|NEXT PROJECT →
+815|ML Learner: a Python laboratory for comparing regression and classification models.
+817|← Maritime projects
+818|Machine learning · Browser laboratory
+820|Upload a dataset, compare regression and classification models and download the results — all running in your browser.
+821|ML LEARNER / LABORATORY
+822|Starting the laboratory…
+823|ML Learner laboratory: regression and classification
+824|Enable JavaScript to run the laboratory.
+825|If loading fails,
+826|open the laboratory in a new tab ↗
+827|How does it work and what are its limitations?
+828|Upload the dataset, check the target variable and choose Automatic or Manual mode. After evaluation, train the final model and download the files before closing the tab. Automatic mode treats a small number of distinct numeric values as classes; use manual mode to override this choice.
+829|Browser execution depends on packages available in WebAssembly. MAT with table, MAT v7.3 and balancing may have restrictions. For larger datasets, run the local Python version following the
+830|project guide
+831|. Each experiment uses one target.
+833|Simulator's 3D environment
+835|SIMULATION MODE
+836|MISSION 001
+837|MISSION BRIEFING
+838|TRAINING
+839|Cargo ship propeller obstruction
+840|Inspect and remove the net caught in the ship's own propeller. Reduce your speed before intervening.
+841|Approach the target
+842|Under 4 m · speed below 0.35 m/s.
+843|Inspect the obstruction
+844|Point the front of the ROV toward the net for 3 s.
+845|Cut the net
+846|Hold Space near the propeller for 4 s.
+847|Verify the propeller is clear
+848|Move back and inspect for 2 s.
+849|Stage progress
+850|VEHICLE CONTROLS
+851|KEYBOARD
+853|Forward
+855|Reverse
+856|Left
+857|Right
+859|Ascend
+861|Descend
+863|Turn left
+865|Turn right
+866|Space: cutter · Drag to orbit the camera · Scroll to zoom. The green circle marks the target.
+867|VIEW CARGO SHIP
+868|Model credits
+873|. Both licensed under
+875|, converted and optimized. Sand: texturelib.com. Rocks supplied by the user; license not yet specified.
+876|LIVE TELEMETRY
+877|● LIVE
+878|DEPTH
+879|HEADING
+880|ESTIMATED POWER
+881|SIMULATED BATTERY
+882|PROPULSION COMMANDS
+883|NORMALIZED
+884|SYSTEM STATUS
+885|Control input
+886|READY
+887|Hydrodynamic model
+888|SIMPLIFIED
+889|ML optimization
+890|NOT CONNECTED
+891|VEHICLE CONNECTED
+892|TWO CAMERAS
+893|RESET MISSION ↺
+894|Onboard camera
+895|ROV CAMERA · FRONT

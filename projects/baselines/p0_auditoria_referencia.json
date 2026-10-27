@@ -1,0 +1,124 @@
+{
+  "rodada": 1,
+  "data_utc": "2026-10-14T01:29:46.216274+00:00",
+  "duracao_s": 115.71556969999801,
+  "avaliados_brutos": 214415,
+  "analisados_motor": 14213,
+  "rejeitados_antes_motor": 200202,
+  "aprovados_motor": 0,
+  "rejeicoes_e_resultados": {
+    "SEM_BRACKET": 14858,
+    "J_KT_KQ": 0,
+    "EFICIENCIA": 0,
+    "CAVITACAO": 185344,
+    "VIAVEL": 0,
+    "RPM_E_POTENCIA_MOTOR": 14149,
+    "RPM_MOTOR": 64,
+    "POTENCIA_MOTOR": 0
+  },
+  "funil_rodada": [
+    [
+      "Combinacoes geradas",
+      214415
+    ],
+    [
+      "Empuxo disponivel = requerido (M12 = 0)",
+      199557
+    ],
+    [
+      "J >= 0.01 e KT, KQ > 0",
+      199557
+    ],
+    [
+      "0.1 <= eta0 <= 0.9",
+      199557
+    ],
+    [
+      "Cavitacao Burrill <= 5% dorso",
+      14213
+    ],
+    [
+      "Cabe no layout de um motor MAN B&W",
+      0
+    ]
+  ],
+  "contexto": {},
+  "objetivo": "bhp",
+  "melhor": {
+    "Z": 5,
+    "D": 8.0,
+    "Ae/Ao": 0.975,
+    "P/D": 1.4,
+    "w": 0.2568563099071078,
+    "t": 0.19773316643993316,
+    "etaR": 0.9726057366849179,
+    "Va": 9.557653569805808,
+    "rpm": 79.49564871830827,
+    "J": 0.9017147847619831,
+    "KTs": 0.3023033356968156,
+    "KQs": 0.06517364523238109,
+    "eta0": 0.6656719380250781,
+    "etaH": 1.079558158476437,
+    "etaD": 0.6989451890658444,
+    "tau_c": 0.18724929299075918,
+    "tau_max": 0.19029191784903376,
+    "sigma": 0.4898930255559815,
+    "BHP_kW": 33907.318198528905,
+    "MCR_kW": 49653.728425408626,
+    "RPM_MCR": 90.27403028244929,
+    "motor_proximo": "8G90ME-C10.5",
+    "viol_rpm": 0.06949983580902624,
+    "viol_kw": 0.0,
+    "viol_total": 0.06949983580902624,
+    "motor_n_min": 72.0,
+    "motor_n_max": 84.0,
+    "rpm_layout": 84.0,
+    "motor_p_min_kw": 37360.0,
+    "motor_p_max_kw": 49920.0,
+    "motivo_motor": "só rpm",
+    "Motores": "-",
+    "cabe_motor": false,
+    "SFOC": 165.67904751634399,
+    "FOC_t_h": 5.617732182965866,
+    "FOC_MCR_t_h": 8.226582431156915
+  },
+  "nota": "Contagens da rodada; avaliações podem repetir geometrias entre rodadas. Sem cache ou contagem de únicos nesta entrega.",
+  "fontes_sha256": {
+    "projects/propulsao.py": {
+      "bytes_sha256": "f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032",
+      "lf_sha256": "f1741e8722a58ff407ad2be1354820c71cfcada25dc66ec266ab25d71026d032"
+    },
+    "projects/propulsao_busca.py": {
+      "bytes_sha256": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c",
+      "lf_sha256": "c6b20331515dae74eb94f3f0241ab6aea73e398dc78e780abb0bed522921914c"
+    },
+    "projects/propulsao_auditoria.py": {
+      "bytes_sha256": "1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41",
+      "lf_sha256": "1d4cd06249800710123eb558635335cac438652c46c9449567d8b2a4d6bb5d41"
+    },
+    "projects/motores.csv": {
+      "bytes_sha256": "1fc5d0c89b3c2b541bc45d56d2d00a55b8cfdaaec6106f4669eab56f915a390e",
+      "lf_sha256": "0e9a595c665332162034809a8c6ae9c8582481913514e771efac3e40b277a3b8"
+    },
+    "naval.js": {
+      "bytes_sha256": "1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062",
+      "lf_sha256": "1810ff77179f93fdc21b5729a971fb6308ad1910fcde55e7d5196aeb02d4e062"
+    },
+    "naval-backtest.js": {
+      "bytes_sha256": "914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb",
+      "lf_sha256": "914bdbd61ba3a418a48ec316896f3d3f82003f15d55af418b1406f77c677a9cb"
+    },
+    "naval-backtest-worker.js": {
+      "bytes_sha256": "70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e",
+      "lf_sha256": "70949dbfe02cd09a459bb3ebec341c91e654e485d01448ca3da3c92be0922e3e"
+    },
+    "naval.html": {
+      "bytes_sha256": "496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663",
+      "lf_sha256": "496f5cb5557fd78e51f26046d265d520497b43c3bc413b52f6c058e5d806c663"
+    },
+    "naval.css": {
+      "bytes_sha256": "4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b",
+      "lf_sha256": "4d5af14e89746e4b502e486ef51dd7bf0136f1b345e1b379852dbbebf9ca7d4b"
+    }
+  }
+}

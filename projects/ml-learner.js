@@ -1,0 +1,14 @@
+(() => {
+  const shell = document.querySelector('.ml-app-shell');
+  const frame = document.querySelector('#ml-app');
+  const status = document.querySelector('#app-status');
+  const appUrl = new URL(shell.dataset.appUrl, window.location.href);
+  frame.hidden = false;
+  status.textContent = 'Iniciando o laboratório…';
+  frame.src = appUrl.href;
+  window.addEventListener('message', (event) => {
+    if (event.origin !== appUrl.origin || event.source !== frame.contentWindow) return;
+    if (event.data?.type === 'ml-learner-ready') status.textContent = 'Interface disponível — confira o laboratório abaixo';
+    if (event.data?.type === 'ml-learner-error') status.textContent = 'Falha ao carregar — tente abrir em nova aba';
+  });
+})();

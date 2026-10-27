@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#080a0c"><meta name="description" content="AEON — arquitetura experimental de Inteligência Artificial modular, multiagente, orientada a memória, conhecimento, validação e execução."><title>AEON — Intelligent Systems Architecture — Alan Miranda</title><link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../minimal.css"><link rel="stylesheet" href="../pages.css"><link rel="stylesheet" href="../project-pages.css"><script src="../minimal.js" defer></script><link rel="stylesheet" href="../i18n.css"><script src="../i18n.js" defer></script></head><body class="project-page aeon-page"><a class="skip-link" href="#conteudo">Ir para o conteúdo</a><header class="header"><a class="logo" href="../index.html">ALAN MIRANDA<span>Pesquisa & Sistemas</span></a><button class="menu-toggle" aria-expanded="false" aria-controls="navigation" aria-label="Abrir menu"><span></span><span></span></button><nav id="navigation" aria-label="Navegação principal"><a href="../projetos-navais.html">Navais</a><a href="../outros-projetos.html" aria-current="page">Projetos</a><a href="../sobre.html">Autor</a><a href="../arquivos-uteis.html">Arquivos úteis</a><a class="nav-alert" href="../manifesto.html">Manifesto</a></nav></header><main id="conteudo"><section class="page-heading section-wrap project-hero aeon-hero"><a class="text-link" href="../outros-projetos.html">← Outros projetos</a><div class="project-hero-grid"><div><p class="eyebrow">AEON // Intelligent Systems Architecture</p><h1>Not just<br><span>AI.</span><br>A system.</h1><p class="lead">Uma arquitetura experimental para transformar modelos de Inteligência Artificial em <b>sistemas capazes de interpretar, lembrar, consultar, raciocinar, coordenar, validar e executar.</b></p><div class="terminal-line">MODEL ≠ SYSTEM // MEMORY + KNOWLEDGE + AGENTS + VALIDATION + ACTION</div><a class="button solid" href="#visao">Explorar a arquitetura <span>↓</span></a></div><div class="hero-orbit" aria-hidden="true"><div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div><div class="core"><strong>AEON</strong><small>INTELLIGENT CORE</small></div><div class="node n1"><b>MEMORY</b>persistent context &amp; state</div><div class="node n2"><b>AGENTS</b>specialized intelligence</div><div class="node n3"><b>RAG / KG</b>knowledge retrieval</div><div class="node n4"><b>VALIDATOR</b>consistency &amp; evidence</div></div></div></section><section id="visao"><div class="container">
+  <div class="section-head"><span class="num">01</span><h2>VISÃO</h2><p>Por que o AEON existe e qual problema arquitetural ele tenta resolver.</p></div>
+  <div class="statement glass reveal">
+    <div><h3>O PROBLEMA</h3><p>Uma LLM isolada é poderosa para geração e interpretação de linguagem, mas não constitui, sozinha, um sistema completo de inteligência operacional.</p><p>Ela não precisa ser confundida com <strong>memória persistente, conhecimento estruturado, agentes, validação ou execução</strong>.</p></div>
+    <div><h3>A PROPOSTA</h3><p>O AEON coloca o modelo dentro de uma arquitetura modular onde cada capacidade possui uma função definida.</p><p><strong>Modelo</strong> é um componente. O <strong>sistema inteligente</strong> nasce da combinação entre modelo, memória, conhecimento, agentes, raciocínio, validação e ação.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="container">
+  <div class="section-head"><span class="num">02</span><h2>EXECUTION FLOW</h2><p>Do pedido do usuário ao resultado verificável e ao registro na memória.</p></div>
+  <div class="flow glass reveal"><pre>
+<span class="cyan">USER</span>
+  │
+  ▼
+<span class="cyan">INTENT / INTERPRETATION</span>
+  │
+  ▼
+<span class="violet">TASK + CONTEXT</span>
+  │
+  ├───────────────┬────────────────┐
+  ▼               ▼                ▼
+<span class="cyan">MEMORY</span>          <span class="cyan">RAG</span>             <span class="cyan">KNOWLEDGE GRAPH</span>
+  │               │                │
+  └───────────────┴────────────────┘
+                  ▼
+          <span class="violet">AGENT ORCHESTRATION</span>
+                  │
+          ┌───────┼───────┐
+          ▼       ▼       ▼
+       AGENT A AGENT B AGENT C
+          │       │       │
+          └───────┼───────┘
+                  ▼
+             <span class="violet">REASONING</span>
+                  │
+                  ▼
+             <span class="green">VALIDATOR</span>
+                  │
+            ┌─────┴─────┐
+            ▼           ▼
+        CONSISTENT   REPROCESS
+            │
+            ▼
+          <span class="green">EXECUTION</span>
+            │
+            ▼
+          RESULT
+            │
+            ▼
+          <span class="cyan">MEMORY / STATE</span>
+  </pre></div>
+</div></section>
+
+<section id="arquitetura"><div class="container">
+  <div class="section-head"><span class="num">03</span><h2>ARCHITECTURE</h2><p>As camadas que transformam componentes independentes em uma arquitetura coordenada.</p></div>
+  <div class="arch-layers reveal">
+    <div class="layer"><b>INTERFACE</b><span>entrada, interação e apresentação</span></div>
+    <div class="layer"><b>ORCHESTRATOR</b><span>intenção, tarefas e coordenação</span></div>
+    <div class="layer"><b>AGENT SYSTEM</b><span>especialização e colaboração</span></div>
+    <div class="layer"><b>AEON KERNEL</b><span>núcleo lógico e controle do fluxo</span></div>
+    <div class="layer"><b>MEMORY · RAG · KNOWLEDGE GRAPH</b><span>contexto, recuperação e relações</span></div>
+    <div class="layer"><b>VALIDATOR</b><span>consistência, evidências e regras</span></div>
+    <div class="layer"><b>MODEL LAYER</b><span>LLMs locais ou outros modelos</span></div>
+    <div class="layer"><b>EXECUTION</b><span>ferramentas, automação e ações</span></div>
+  </div>
+</div></section>
+
+<section id="componentes"><div class="container">
+  <div class="section-head"><span class="num">04</span><h2>CORE COMPONENTS</h2><p>Cada módulo possui uma responsabilidade distinta.</p></div>
+  <div class="arch-grid">
+    <article class="card glass reveal" data-id="01"><div class="icon">◈</div><h3>AEON KERNEL</h3><p>O núcleo de coordenação. Recebe tarefas, cria contexto, chama agentes, acessa memória e conhecimento, encaminha resultados para validação e controla a execução.</p><span class="tag">ORCHESTRATION</span><span class="tag">STATE</span></article>
+    <article class="card glass reveal" data-id="02"><div class="icon">◌</div><h3>MEMORY</h3><p>Camada de persistência de contexto e estado. Pode organizar memória de curto prazo, longo prazo, episódica, semântica e operacional.</p><span class="tag">CONTEXT</span><span class="tag">STATE</span></article>
+    <article class="card glass reveal" data-id="03"><div class="icon">⌁</div><h3>RAG</h3><p>Recupera informação relevante antes da geração. O RAG complementa o modelo, mas não é o AEON inteiro.</p><span class="tag">EMBEDDING</span><span class="tag">RETRIEVAL</span></article>
+    <article class="card glass reveal" data-id="04"><div class="icon">◇</div><h3>KNOWLEDGE GRAPH</h3><p>Representa entidades, propriedades e relações. Complementa o RAG oferecendo estrutura explícita para o conhecimento.</p><span class="tag">ENTITIES</span><span class="tag">RELATIONS</span></article>
+    <article class="card glass reveal" data-id="05"><div class="icon">⌬</div><h3>MULTI-AGENT</h3><p>Agentes especializados podem planejar, pesquisar, analisar, programar, validar ou executar partes diferentes de uma tarefa.</p><span class="tag">SPECIALISTS</span><span class="tag">COLLABORATION</span></article>
+    <article class="card glass reveal" data-id="06"><div class="icon">✓</div><h3>VALIDATOR</h3><p>Camada destinada a analisar consistência, evidências, contexto, regras e conflitos antes que um resultado seja considerado válido.</p><span class="tag">VERIFY</span><span class="tag">CONSISTENCY</span></article>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">05</span><h2>KERNEL</h2><p>O AEON Kernel funciona como o “sistema operacional cognitivo” da arquitetura.</p></div>
+  <div class="kernel">
+    <article class="card glass reveal"><div class="icon">⌘</div><h3>RESPONSABILIDADES</h3><p>Receber tarefas · criar contexto · selecionar agentes · acessar memória · consultar conhecimento · chamar modelos · encaminhar resultados · validar · executar · registrar estado.</p></article>
+    <article class="card glass reveal"><div class="icon">∞</div><h3>SEPARAÇÃO DE CAMADAS</h3><p>O Kernel permite que modelo, memória, RAG, agentes, conhecimento e execução evoluam sem que toda a arquitetura dependa de um único componente.</p></article>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">06</span><h2>AGENT NETWORK</h2><p>Uma tarefa pode ser decomposta em papéis especializados.</p></div>
+  <div class="pipeline reveal">
+    <div class="step"><small>01</small><b>ORCHESTRATOR</b><span>entende a tarefa e coordena o fluxo</span></div>
+    <div class="step"><small>02</small><b>PLANNER</b><span>decompõe o problema em etapas</span></div>
+    <div class="step"><small>03</small><b>ANALYST</b><span>analisa dados e alternativas</span></div>
+    <div class="step"><small>04</small><b>RESEARCHER</b><span>busca contexto e evidências</span></div>
+    <div class="step"><small>05</small><b>EXECUTOR</b><span>realiza ações e operações</span></div>
+    <div class="step"><small>06</small><b>VALIDATOR</b><span>verifica o resultado</span></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">07</span><h2>MEMORY + KNOWLEDGE</h2><p>Contexto persistente e conhecimento estruturado trabalham juntos.</p></div>
+  <div class="compare">
+    <article class="card glass reveal"><div class="icon">◉</div><h3>MEMORY</h3><p><strong>Curto prazo:</strong> contexto da tarefa atual.</p><p><strong>Longo prazo:</strong> informações persistentes.</p><p><strong>Episódica:</strong> eventos e interações.</p><p><strong>Semântica:</strong> conhecimento abstraído.</p><p><strong>Operacional:</strong> estado necessário para execução.</p></article>
+    <article class="card glass reveal"><div class="icon">◈</div><h3>RAG + KNOWLEDGE GRAPH</h3><p><strong>RAG:</strong> recupera conteúdo relevante para contextualizar a geração.</p><p><strong>Graph:</strong> representa entidades e relações.</p><p>Combinados, permitem recuperar informação e compreender sua estrutura.</p></article>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">08</span><h2>AEON-KL / AMX</h2><p>Explorações experimentais para representação simbólica e empacotamento.</p></div>
+  <div class="arch-grid">
+    <article class="card glass reveal"><div class="icon">λ</div><h3>AEON-KL</h3><p>Camada experimental de representação simbólica. A proposta é representar entidades, operações, estados, relações, regras e instruções de forma estruturada.</p><span class="tag">SYMBOLIC</span><span class="tag">REPRESENTATION</span></article>
+    <article class="card glass reveal"><div class="icon">▣</div><h3>AMX</h3><p>Conceito experimental de container para organizar modelos, metadados, configurações, vocabulário, parâmetros e componentes necessários à execução.</p><span class="tag">PACKAGING</span><span class="tag">MODEL BUNDLE</span></article>
+    <article class="card glass reveal"><div class="icon">◫</div><h3>LOCAL AI</h3><p>Exploração de modelos locais e formatos como GGUF e safetensors, com possibilidade de utilizar runtimes como llama.cpp.</p><span class="tag">GGUF</span><span class="tag">SAFETENSORS</span><span class="tag">LLAMA.CPP</span></article>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">09</span><h2>VECTOR PIPELINE</h2><p>Uma arquitetura de conhecimento também precisa controlar seus índices.</p></div>
+  <div class="flow glass reveal"><pre>
+DOCUMENT
+   │
+   ▼
+<span class="cyan">CHUNKING</span>
+   │
+   ▼
+<span class="cyan">EMBEDDING</span>
+   │
+   ▼
+<span class="violet">VECTOR INDEX</span>
+   │
+   ▼
+RETRIEVAL
+   │
+   ▼
+CONTEXT
+   │
+   ▼
+MODEL
+
+<span class="green">ARCHITECTURAL CONCERN:</span>
+isolamento por projeto + metadata + namespaces + versionamento +
+limpeza/reindexação + validação de origem
+
+A contaminação de índices é um problema importante quando diferentes
+conjuntos de conhecimento são misturados sem isolamento adequado.
+  </pre></div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">10</span><h2>REAL USE CASE</h2><p>Exemplo de como o AEON pode atuar sobre uma tarefa complexa.</p></div>
+  <div class="statement glass reveal">
+    <div><h3>ENTRADA</h3><p><strong>“Quero reduzir o custo de uma operação logística.”</strong></p><p>O sistema identifica a intenção, cria uma tarefa e reúne o contexto necessário.</p></div>
+    <div><h3>PROCESSAMENTO</h3><p>Memória + RAG + Knowledge Graph → agentes especializados → análise → planejamento → validação → recomendação.</p><p>O resultado pode ser registrado para uso futuro.</p></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">11</span><h2>LOGISTICS</h2><p>Uma das direções estratégicas do AEON é a aplicação de agentes em operações logísticas.</p></div>
+  <div class="arch-grid">
+    <article class="card glass reveal"><div class="icon">↗</div><h3>PLANEJAMENTO</h3><p>Análise de cenários, recursos, restrições e alternativas operacionais.</p></article>
+    <article class="card glass reveal"><div class="icon">⌖</div><h3>ROTEIRIZAÇÃO</h3><p>Possibilidade de apoiar decisões de rotas, deslocamentos e alocação.</p></article>
+    <article class="card glass reveal"><div class="icon">◫</div><h3>MANUTENÇÃO</h3><p>Agentes podem cruzar histórico, equipamentos, eventos e conhecimento técnico.</p></article>
+  </div>
+  <p style="font:11px ui-monospace,Menlo,Consolas,monospace;color:#7d858c;margin-top:18px">NOTA: estas aplicações devem ser diferenciadas entre implementação atual, experimentação e roadmap.</p>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">12</span><h2>WHAT AEON IS NOT</h2><p>Precisão técnica é parte da identidade do projeto.</p></div>
+  <div class="compare">
+    <article class="card glass reveal"><h3 class="bad">NÃO É APENAS</h3><p>× um chatbot</p><p>× uma LLM</p><p>× um sistema RAG</p><p>× um Knowledge Graph</p><p>× um agente isolado</p><p>× um banco vetorial</p></article>
+    <article class="card glass reveal"><h3 class="good">É UMA ARQUITETURA</h3><p>✓ Model layer</p><p>✓ Memory</p><p>✓ Knowledge</p><p>✓ Agents</p><p>✓ Reasoning</p><p>✓ Validation</p><p>✓ Execution</p></article>
+  </div>
+</div></section>
+
+<section id="roadmap"><div class="container">
+  <div class="section-head"><span class="num">13</span><h2>ROADMAP</h2><p>Uma evolução progressiva da arquitetura.</p></div>
+  <div class="timeline">
+    <div class="phase"><small>PHASE 01</small><h3>KERNEL</h3><p>Núcleo de coordenação e controle do fluxo.</p></div>
+    <div class="phase"><small>PHASE 02</small><h3>MEMORY</h3><p>Persistência de contexto, estado e experiências.</p></div>
+    <div class="phase"><small>PHASE 03</small><h3>RAG</h3><p>Recuperação contextual e pipeline vetorial.</p></div>
+    <div class="phase"><small>PHASE 04</small><h3>KNOWLEDGE GRAPH</h3><p>Entidades, relações e conhecimento estruturado.</p></div>
+    <div class="phase"><small>PHASE 05</small><h3>MULTI-AGENT</h3><p>Especialização, planejamento e colaboração.</p></div>
+    <div class="phase"><small>PHASE 06</small><h3>VALIDATOR</h3><p>Verificação, consistência e evidências.</p></div>
+    <div class="phase"><small>PHASE 07</small><h3>AEON-KL</h3><p>Representação simbólica experimental.</p></div>
+    <div class="phase"><small>PHASE 08</small><h3>AMX</h3><p>Empacotamento e organização de componentes.</p></div>
+    <div class="phase"><small>PHASE 09</small><h3>LOCAL AI</h3><p>Modelos locais e execução controlada.</p></div>
+    <div class="phase"><small>PHASE 10</small><h3>REAL APPLICATIONS</h3><p>Aplicações práticas, incluindo operações logísticas.</p></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="section-head"><span class="num">14</span><h2>STATUS</h2><p>Uma visão honesta do projeto.</p></div>
+  <div class="status-grid">
+    <div class="status-card glass"><small>CORE</small><b>ARQUITETURA</b><p>Estrutura modular em desenvolvimento.</p></div>
+    <div class="status-card glass"><small>EXPERIMENTAL</small><b>AGENTS / RAG / MEMORY</b><p>Exploração e integração progressiva.</p></div>
+    <div class="status-card glass"><small>RESEARCH</small><b>AEON-KL / AMX</b><p>Conceitos e experimentações.</p></div>
+    <div class="status-card glass"><small>ROADMAP</small><b>AUTONOMOUS SYSTEMS</b><p>Evolução para aplicações reais.</p></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="quote glass reveal"><p>“Não construir apenas uma IA que responde.<br>Construir uma arquitetura que consulta, raciocina, valida e executa.”</p><span>AEON // PROJECT PHILOSOPHY</span></div>
+</div></section>
+</main><footer><a href="../index.html">ALAN MIRANDA</a><span>Pesquisa · Engenharia · Sistemas</span><span class="foot-links"><a href="https://www.linkedin.com/in/alanmirandax" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/alanmiranda021" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:alanmirandarj@gmail.com">Contato ↗</a></span></footer></body></html>
